@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
+import { Label } from "@/components/ui/label";
 
 interface StepDetailsProps {
   register: UseFormRegister<FormData>;
@@ -12,7 +13,11 @@ export function StepEventDetails({ register, errors }: StepDetailsProps) {
   return (
     <>
       <div>
+        <Label>
+          Title <span className="text-red-500 p-2">*</span>
+        </Label>
         <Input placeholder="Event Title" {...register("title")} />
+
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
       </div>
       <div>
