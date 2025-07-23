@@ -16,7 +16,7 @@ interface EventFormStepperProps {
 function isStepValid(step: number, values: FormData): boolean {
   switch (step) {
     case 0:
-      return !!(values.title && values.description && values.location);
+      return !!(values.title && values.organiser);
     case 1:
       return !!(values.startDate && values.endDate && values.startTime && values.endTime);
     default:
@@ -45,7 +45,9 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
       {step === 0 && (
         <>
           <StepEventDetails register={register} errors={errors} />
-          <p className="text-xs text-muted-foreground italic">* All fields above are required</p>
+          <p className="text-xs text-muted-foreground italic">
+            * Not all fields above are required
+          </p>
         </>
       )}
       {step === 1 && <StepEventDateTime control={control} errors={errors} />}
