@@ -42,8 +42,8 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 mt-1 text-muted-foreground" />
             <div>
-              <Label className="text-muted-foreground">Location</Label>
-              <p>{values.location}</p>
+              <Label className="text-muted-foreground">City</Label>
+              <p>{values.city}</p>
             </div>
           </div>
 
@@ -54,7 +54,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-                  <span>{format(values.startDate, "dd.MM.yyyy")}</span>
+                  <span>{values.startDate ? format(values.startDate, "dd.MM.yyyy") : "N/A"}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4 text-muted-foreground" />
@@ -71,7 +71,9 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-                  <span>{format(values.endDate, "dd.MM.yyyy")}</span>
+                  <span>
+                    {values.endDate ? format(values.endDate, "dd.MM.yyyy") : "No end date"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4 text-muted-foreground" />

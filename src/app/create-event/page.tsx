@@ -28,10 +28,13 @@ export default function CreateEventPage() {
 
   const { mutate } = useCreateEvent();
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 2));
+  const nextStep = () => setStep((s) => Math.min(s + 1, 3));
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
+  console.log("Current step:", step);
+
   const onSubmit = (data: FormData) => {
+    console.log("running");
     try {
       const payload: CreateEventDto = createPayload(data);
 
@@ -81,7 +84,7 @@ export default function CreateEventPage() {
 
         <div className="w-full max-w-xl mb-6">
           <div className="flex justify-between text-sm font-medium mb-2">
-            {["Details", "Timing", "Confirm"].map((label, i) => (
+            {["Details", "Location", "Timing", "Confirm"].map((label, i) => (
               <span key={i} className={i <= step ? "text-black" : "text-gray-500"}>
                 {label}
               </span>
@@ -90,7 +93,7 @@ export default function CreateEventPage() {
           <div className="h-2 bg-gray-300 rounded-full">
             <div
               className="h-2 bg-black rounded-full transition-all duration-300"
-              style={{ width: `${((step + 1) / 3) * 100}%` }}
+              style={{ width: `${((step + 1) / 4) * 100}%` }}
             />
           </div>
         </div>

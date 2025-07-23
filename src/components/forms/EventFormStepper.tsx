@@ -5,6 +5,7 @@ import { StepEventDateTime } from "./steps/StepEventDateTime";
 import { StepEventDetails } from "./steps/StepEventDetails";
 import { StepReviewEvent } from "./steps/StepEventReview";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { StepEventLocation } from "./steps/StepEventLocation";
 
 interface EventFormStepperProps {
   step: number;
@@ -18,6 +19,8 @@ function isStepValid(step: number, values: FormData): boolean {
     case 0:
       return !!(values.title && values.organiser);
     case 1:
+      return !!(values.streetName && values.city && values.postalCode);
+    case 2:
       return !!(values.startDate && values.endDate && values.startTime && values.endTime);
     default:
       return true; // Final step is just review
@@ -50,14 +53,15 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
           </p>
         </>
       )}
-      {step === 1 && <StepEventDateTime control={control} errors={errors} />}
-      {step === 2 && <StepReviewEvent values={getValues()} />}
+      {step === 1 && <StepEventLocation register={register} errors={errors} />}
+      {step === 2 && <StepEventDateTime control={control} errors={errors} />}
+      {step === 3 && <StepReviewEvent values={getValues()} />}
 
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={prevStep} disabled={step === 0}>
           Back
         </Button>
-        {step < 2 ? (
+        {step < 3 ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
