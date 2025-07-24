@@ -1,6 +1,12 @@
 import { Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 type TimeOption = { value: string; label: string };
@@ -17,53 +23,50 @@ const timeOptions: TimeOption[] = Array.from({ length: 24 * 2 }, (_, i) => {
   return { value: raw, label: display };
 });
 
+interface TimePickerProps {
+  value?: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  label?: string;
+  disabledOptions?: (value: string) => boolean;
+}
+
 export function TimePicker({
   value,
   onChange,
   placeholder,
   label,
-}: {
-  value?: string;
-  onChange: (val: string) => void;
-  placeholder?: string;
-  label?: string;
-}) {
+  disabledOptions = () => false,
+}: TimePickerProps) {
+  const handleValueChange = (val: string) => {
+    if (!disabledOptions(val)) {
+      onChange(val);
+    }
+  };
+
   return (
-    <div className="w-full">
-      {label && <label className="block text-sm font-medium mb-1">{label}</label>}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn("w-full justify-between font-normal", !value && "text-muted-foreground")}
-          >
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              {value
-                ? timeOptions.find((t) => t.value === value)?.label
-                : placeholder || "Pick time"}
-            </div>
-            <span className="text-xl leading-none">⌄</span>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-48 max-h-60 overflow-y-auto p-1 bg-white">
-          {timeOptions.map((t) => (
-            <button
-              key={t.value}
-              className={cn(
-                "w-full text-left px-3 py-1.5 rounded hover:bg-gray-100 text-sm",
-                value === t.value && "bg-gray-200 font-semibold"
-              )}
-              onClick={(e) => {
-                e.preventDefault();
-                onChange(t.value);
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
-        </PopoverContent>
-      </Popover>
+    <div className="w-full space-y-1">
+      {label && <Label className="text-sm">{label}</Label>}
+      <Select value={value} onValueChange={handleValueChange}>
+        <SelectTrigger className="w-full">
+          <Clock className="w-4 h-4 mr-2 text-muted-foreground" />
+          <SelectValue placeholder={placeholder || "Pick time"} />
+        </SelectTrigger>
+        <SelectContent className="max-h-48 overflow-y-auto">
+          {timeOptions.map((t) => {
+            const isDisabled = disabledOptions(t.value);
+            return (
+              <SelectItem
+                key={t.value}
+                value={t.value}
+                className={cn(isDisabled && "opacity-50 pointer-events-none cursor-not-allowed")}
+              >
+                {t.label}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

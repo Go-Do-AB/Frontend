@@ -40,8 +40,6 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
   const values = watch();
   const isValidStep = isStepValid(step, values);
 
-  console.log("errors", errors); // <--- Add this
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

@@ -48,7 +48,7 @@ export const defaultFormValues: CreateEventFormData = {
 
   streetName: "",
   streetName2: "",
-  houseNumber: undefined,
+  houseNumber: 0,
 
   city: "",
   postalCode: "",
