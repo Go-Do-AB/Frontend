@@ -5,6 +5,7 @@ export const createEventSchema = z.object({
   organiser: z.string().min(1, "Organiser is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
+  categories: z.array(z.string()).min(1, "Please select at least one category").optional(),
 
   eventUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 
@@ -42,6 +43,7 @@ export const defaultFormValues: CreateEventFormData = {
   organiser: "",
   title: "",
   description: "",
+  categories: [],
 
   eventUrl: "",
   bookingUrl: "",
