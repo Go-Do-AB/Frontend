@@ -167,6 +167,7 @@ export function StepEventDateTime({ control, errors }: Props) {
                     selected={field.value}
                     onSelect={field.onChange}
                     className="rounded-md border shadow bg-white"
+                    disabled={(date) => (watch("endDate") ? date < watch("endDate")! : false)}
                   />
                 )}
               />
@@ -187,6 +188,7 @@ export function StepEventDateTime({ control, errors }: Props) {
                     selected={field.value}
                     onSelect={field.onChange}
                     className="rounded-md border shadow bg-white"
+                    disabled={(date) => (watch("startDate") ? date < watch("startDate")! : false)}
                   />
                 )}
               />
@@ -277,6 +279,17 @@ export function StepEventDateTime({ control, errors }: Props) {
                   onChange={field.onChange}
                   placeholder="End"
                   label="End Time"
+                  disabledOptions={(opt) => {
+                    if (
+                      startDate &&
+                      endDate &&
+                      startDate.toDateString() === endDate.toDateString() &&
+                      startTime
+                    ) {
+                      return opt < startTime;
+                    }
+                    return false; // default to not disabled
+                  }}
                 />
               )}
             />

@@ -21,7 +21,7 @@ function isStepValid(step: number, values: FormData): boolean {
     case 1:
       return !!(values.streetName && values.city && values.postalCode);
     case 2:
-      return !!(values.startDate && values.endDate && values.startTime && values.endTime);
+      return !!(values.startDate && values.endDate);
     default:
       return true; // Final step is just review
   }

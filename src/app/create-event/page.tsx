@@ -16,6 +16,14 @@ import {
   createPayload,
   defaultFormValues,
 } from "@/lib/validation/create-event-schema";
+import { Info, MapPin, Clock, CheckCircleIcon } from "lucide-react"; // or your preferred icon set
+
+const steps = [
+  { label: "Details", icon: <Info className="w-4 h-4 mr-1" /> },
+  { label: "Location", icon: <MapPin className="w-4 h-4 mr-1" /> },
+  { label: "Date & Time", icon: <Clock className="w-4 h-4 mr-1" /> },
+  { label: "Confirm", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
+];
 
 export default function CreateEventPage() {
   const [step, setStep] = useState(0);
@@ -84,9 +92,13 @@ export default function CreateEventPage() {
 
         <div className="w-full max-w-xl mb-6">
           <div className="flex justify-between text-sm font-medium mb-2">
-            {["Details", "Location", "Timing", "Confirm"].map((label, i) => (
-              <span key={i} className={i <= step ? "text-black" : "text-gray-500"}>
-                {label}
+            {steps.map((stepObj, i) => (
+              <span
+                key={i}
+                className={`flex items-center gap-1 ${i <= step ? "text-black" : "text-gray-500"}`}
+              >
+                {stepObj.icon}
+                {stepObj.label}
               </span>
             ))}
           </div>
