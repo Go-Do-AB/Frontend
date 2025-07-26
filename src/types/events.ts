@@ -2,6 +2,8 @@ export type CreateEventDto = {
   organiser: string;
   title: string;
   description?: string;
+  categories: string[];
+  subcategories: Record<string, string[]>;
   eventUrl?: string;
   bookingUrl?: string;
 
