@@ -7,10 +7,11 @@ export const createEventSchema = z.object({
   description: z.string().optional(),
   categories: z.array(z.string()).min(1, "Please select at least one category").optional(),
   subcategories: z.record(z.string(), z.array(z.string())).optional(),
+  filters: z.array(z.string()).min(1, "Please select at least one category").optional(),
 
-  eventUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  eventUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
 
-  bookingUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  bookingUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
 
   streetName: z.string().min(1, "Street name is required"),
   streetName2: z.string().optional(),
@@ -46,6 +47,7 @@ export const defaultFormValues: CreateEventFormData = {
   description: "",
   categories: [],
   subcategories: {},
+  filters: [],
 
   eventUrl: "",
   bookingUrl: "",
@@ -82,6 +84,7 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     description: data.description || undefined,
     categories: data.categories || [],
     subcategories: data.subcategories || {},
+    filters: data.filters || [],
     eventUrl: data.eventUrl || undefined,
     bookingUrl: data.bookingUrl || undefined,
 

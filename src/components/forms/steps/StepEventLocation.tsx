@@ -50,6 +50,7 @@ export function StepEventLocation({ register, errors }: StepEventLocationProps) 
         <Input placeholder="12345" {...register("postalCode")} />
         {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
       </div>
+      <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );
 }

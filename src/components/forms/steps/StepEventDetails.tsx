@@ -5,50 +5,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Controller, FieldErrors, UseFormRegister, Control } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
-import {
-  Baby,
-  CalendarDays,
-  Dribbble,
-  Clapperboard,
-  Landmark,
-  Mountain,
-  BookOpen,
-  HeartPulse,
-} from "lucide-react";
 import { useState } from "react";
-
-// Subcategories per category
-const subcategoriesMap: Record<string, string[]> = {
-  "Fun for Kids": [
-    "Playgrounds",
-    "Museums",
-    "Outdoor Activities",
-    "Creative Workshops",
-    "Animal Parks",
-    "Indoor Fun",
-    "Theater for Kids",
-    "Fairs",
-    "Other",
-  ],
-  Events: ["Concerts", "Markets", "Conventions", "Festivals", "Street Events"],
-  Sports: ["Football", "Running", "Cycling", "Swimming", "Winter Sports", "Other"],
-  Entertainment: ["Movies", "Comedy", "Nightlife", "Theater", "Shows"],
-  "Culture & Sights": ["Museums", "Art", "Architecture", "Historical Sites", "Galleries"],
-  "Experiences & Adventures": ["Hiking", "Escape Rooms", "Climbing", "Zipline", "Amusement Parks"],
-  "Learn & Explore": ["Workshops", "Courses", "Lectures", "Science Centers", "Library Events"],
-  "Health & Wellbeing": ["Yoga", "Meditation", "Spa", "Nature Walks", "Fitness Classes"],
-};
-
-const categoryOptions = [
-  { label: "Fun for Kids", icon: Baby },
-  { label: "Events", icon: CalendarDays },
-  { label: "Sports", icon: Dribbble },
-  { label: "Entertainment", icon: Clapperboard },
-  { label: "Culture & Sights", icon: Landmark },
-  { label: "Experiences & Adventures", icon: Mountain },
-  { label: "Learn & Explore", icon: BookOpen },
-  { label: "Health & Wellbeing", icon: HeartPulse },
-];
+import { categoryOptions, filterOptions, subcategoriesMap } from "@/lib/content/contentText";
 
 interface StepDetailsProps {
   register: UseFormRegister<FormData>;
@@ -59,10 +17,9 @@ interface StepDetailsProps {
 export function StepEventDetails({ register, control, errors }: StepDetailsProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // Handlers lifted out to avoid scope issues
   const toggleSubcategory = (
     subFieldValue: Record<string, string[]> | undefined,
-    onChange: (...event: any[]) => void,
+    onChange: (...event: unknown[]) => void,
     category: string,
     sub: string
   ) => {
@@ -73,16 +30,13 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
 
   const toggleAllSubs = (
     subFieldValue: Record<string, string[]> | undefined,
-    onChange: (...event: any[]) => void,
+    onChange: (...event: unknown[]) => void,
     category: string
   ) => {
-    const allSubs = subcategoriesMap[category] || [];
+    const allSubs = subcategoriesMap[category].map((s) => s.label);
     const current = subFieldValue?.[category] ?? [];
     const allSelected = current.length === allSubs.length;
-    onChange({
-      ...subFieldValue,
-      [category]: allSelected ? [] : [...allSubs],
-    });
+    onChange({ ...subFieldValue, [category]: allSelected ? [] : [...allSubs] });
   };
 
   return (
@@ -124,7 +78,6 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             {row.map(({ label, icon: Icon }) => {
                               const isSelected = (catField.value ?? []).includes(label);
-                              const subSelected = subField.value?.[label] ?? [];
 
                               const toggleCategory = () => {
                                 const current = catField.value ?? [];
@@ -136,71 +89,75 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                               };
 
                               return (
-                                <div key={label}>
-                                  <button
-                                    type="button"
-                                    onClick={toggleCategory}
-                                    className={cn(
-                                      "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border transition-all",
-                                      isSelected
-                                        ? "bg-yellow-400 text-black border-yellow-600"
-                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                                    )}
-                                  >
-                                    <Icon className="w-6 h-6 mb-2" />
-                                    <span className="text-xs font-medium text-center">{label}</span>
-                                  </button>
-                                </div>
+                                <button
+                                  key={label}
+                                  type="button"
+                                  onClick={toggleCategory}
+                                  className={cn(
+                                    "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border transition-all",
+                                    isSelected
+                                      ? "bg-yellow-400 text-black border-yellow-600"
+                                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                                  )}
+                                >
+                                  <Icon className="w-6 h-6 mb-2" />
+                                  <span className="text-xs font-medium text-center">{label}</span>
+                                </button>
                               );
                             })}
                           </div>
 
                           {openInThisRow && openDropdown && (
-                            <div className="w-full bg-white border rounded p-4 shadow">
+                            <div className="w-full bg-white border rounded-lg p-4 shadow">
                               <p className="text-sm font-semibold mb-2 text-gray-700">
                                 {openDropdown} Subcategories
                               </p>
                               <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto scroll-smooth">
-                                {subcategoriesMap[openDropdown]?.map((sub) => {
-                                  const selected =
-                                    subField.value?.[openDropdown]?.includes(sub) ?? false;
-                                  return (
-                                    <button
-                                      key={sub}
-                                      type="button"
-                                      onClick={() =>
-                                        toggleSubcategory(
-                                          subField.value,
-                                          subField.onChange,
-                                          openDropdown,
-                                          sub
-                                        )
-                                      }
-                                      className={cn(
-                                        "text-xs px-3 py-1 border rounded-full transition",
-                                        selected
-                                          ? "bg-yellow-300 border-yellow-500"
-                                          : "bg-white hover:bg-gray-100 border-gray-300"
-                                      )}
-                                    >
-                                      {sub}
-                                    </button>
-                                  );
-                                })}
+                                {subcategoriesMap[openDropdown]?.map(
+                                  ({ label: sub, icon: SubIcon }) => {
+                                    const selected =
+                                      subField.value?.[openDropdown]?.includes(sub) ?? false;
+                                    return (
+                                      <button
+                                        key={sub}
+                                        type="button"
+                                        onClick={() =>
+                                          toggleSubcategory(
+                                            subField.value,
+                                            subField.onChange,
+                                            openDropdown,
+                                            sub
+                                          )
+                                        }
+                                        className={cn(
+                                          "flex flex-col items-center justify-center w-20 h-20 text-xs border rounded-lg transition p-2",
+                                          selected
+                                            ? "bg-yellow-300 border-yellow-500"
+                                            : "bg-white hover:bg-gray-100 border-gray-300"
+                                        )}
+                                      >
+                                        <SubIcon className="w-4 h-4 mb-1" />
+                                        <span className="text-center">{sub}</span>
+                                      </button>
+                                    );
+                                  }
+                                )}
                               </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="mt-3"
-                                onClick={() =>
-                                  toggleAllSubs(subField.value, subField.onChange, openDropdown)
-                                }
-                              >
-                                {subField.value?.[openDropdown]?.length ===
-                                subcategoriesMap[openDropdown]?.length
-                                  ? "Unselect all"
-                                  : "Select all"}
-                              </Button>
+                              <div className="flex justify-center mt-4">
+                                <Button
+                                  variant="outline"
+                                  size="lg"
+                                  className="text-sm font-semibold px-6 py-2 border-yellow-500 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() =>
+                                    toggleAllSubs(subField.value, subField.onChange, openDropdown)
+                                  }
+                                >
+                                  {subField.value?.[openDropdown]?.length ===
+                                  subcategoriesMap[openDropdown]?.length
+                                    ? "Unselect All"
+                                    : "Select All"}
+                                </Button>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -210,6 +167,45 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                 </div>
               )}
             />
+          )}
+        />
+      </div>
+      <div>
+        <Label className="py-2 block">Filters</Label>
+        <Controller
+          name="filters"
+          control={control}
+          render={({ field }) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {filterOptions.map(({ label, icon }) => {
+                const isSelected = (field.value ?? []).includes(label);
+
+                const toggle = () => {
+                  const current = field.value ?? [];
+                  const newVal = isSelected
+                    ? current.filter((f) => f !== label)
+                    : [...current, label];
+                  field.onChange(newVal);
+                };
+
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={toggle}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border transition-all text-sm font-medium",
+                      isSelected
+                        ? "bg-yellow-400 text-black border-yellow-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                    )}
+                  >
+                    {icon}
+                    <span className="text-center text-xs">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
           )}
         />
       </div>
@@ -231,6 +227,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         <Input placeholder="https://booking-link.com" {...register("bookingUrl")} />
         {errors.bookingUrl && <p className="text-red-500 text-sm">{errors.bookingUrl.message}</p>}
       </div>
+      <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );
 }

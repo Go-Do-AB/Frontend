@@ -19,6 +19,7 @@ interface StepReviewEventProps {
 }
 
 export function StepReviewEvent({ values }: StepReviewEventProps) {
+  console.log(values);
   return (
     <div className="w-full max-w-xl space-y-4">
       <h2 className="text-xl font-semibold text-center">Review your event info</h2>

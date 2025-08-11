@@ -326,6 +326,7 @@ export function StepEventDateTime({ control, errors }: Props) {
       {selected === "always" && (
         <p className="text-muted-foreground italic">This event will be listed as always open.</p>
       )}
+      <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );
 }

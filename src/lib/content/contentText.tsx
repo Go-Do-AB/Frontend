@@ -1,0 +1,108 @@
+import {
+  BabyIcon,
+  PersonStandingIcon,
+  SmileIcon,
+  CalendarDays,
+  Users,
+  Landmark,
+  Sparkles,
+  Tent,
+  Dribbble,
+  Bike,
+  Mountain,
+  Star,
+  Film,
+  Clapperboard,
+  Paintbrush2,
+  TreeDeciduous,
+  BookOpen,
+  GraduationCap,
+  Book,
+  HeartPulse,
+  Dumbbell,
+  Baby,
+  Home,
+  Accessibility,
+  Glasses,
+  Ticket,
+  TreePine,
+} from "lucide-react";
+import { JSX } from "react";
+
+export const subcategoriesMap: Record<string, { label: string; icon: React.ElementType }[]> = {
+  "Fun for Kids": [
+    { label: "0-4", icon: BabyIcon },
+    { label: "5-10", icon: PersonStandingIcon },
+    { label: "11-15", icon: SmileIcon },
+  ],
+  Events: [
+    { label: "Concerts", icon: CalendarDays },
+    { label: "Markets", icon: Users },
+    { label: "Conventions", icon: Landmark },
+    { label: "Festivals", icon: Sparkles },
+    { label: "Street Events", icon: Tent },
+  ],
+  Sports: [
+    { label: "Football", icon: Dribbble },
+    { label: "Running", icon: Bike },
+    { label: "Cycling", icon: Bike },
+    { label: "Swimming", icon: Dribbble },
+    { label: "Winter Sports", icon: Mountain },
+    { label: "Other", icon: Star },
+  ],
+  Entertainment: [
+    { label: "Movies", icon: Film },
+    { label: "Comedy", icon: Clapperboard },
+    { label: "Nightlife", icon: Sparkles },
+    { label: "Theater", icon: Clapperboard },
+    { label: "Shows", icon: Star },
+  ],
+  "Culture & Sights": [
+    { label: "Museums", icon: Landmark },
+    { label: "Art", icon: Paintbrush2 },
+    { label: "Architecture", icon: Landmark },
+    { label: "Historical Sites", icon: Landmark },
+    { label: "Galleries", icon: Landmark },
+  ],
+  "Experiences & Adventures": [
+    { label: "Hiking", icon: Mountain },
+    { label: "Escape Rooms", icon: Sparkles },
+    { label: "Climbing", icon: Mountain },
+    { label: "Zipline", icon: TreeDeciduous },
+    { label: "Amusement Parks", icon: Tent },
+  ],
+  "Learn & Explore": [
+    { label: "Workshops", icon: BookOpen },
+    { label: "Courses", icon: GraduationCap },
+    { label: "Lectures", icon: Book },
+    { label: "Science Centers", icon: Sparkles },
+    { label: "Library Events", icon: Book },
+  ],
+  "Health & Wellbeing": [
+    { label: "Yoga", icon: HeartPulse },
+    { label: "Meditation", icon: HeartPulse },
+    { label: "Spa", icon: HeartPulse },
+    { label: "Nature Walks", icon: TreeDeciduous },
+    { label: "Fitness Classes", icon: Dumbbell },
+  ],
+};
+
+export const categoryOptions = [
+  { label: "Fun for Kids", icon: Baby },
+  { label: "Events", icon: CalendarDays },
+  { label: "Sports", icon: Dribbble },
+  { label: "Entertainment", icon: Clapperboard },
+  { label: "Culture & Sights", icon: Landmark },
+  { label: "Experiences & Adventures", icon: Mountain },
+  { label: "Learn & Explore", icon: BookOpen },
+  { label: "Health & Wellbeing", icon: HeartPulse },
+];
+
+export const filterOptions: { label: string; icon: JSX.Element }[] = [
+  { label: "Inside", icon: <Home className="w-6 h-6 mb-2" /> },
+  { label: "Outside", icon: <TreePine className="w-6 h-6 mb-2" /> },
+  { label: "Free", icon: <Ticket className="w-6 h-6 mb-2" /> },
+  { label: "Family Friendly", icon: <Users className="w-6 h-6 mb-2" /> },
+  { label: "Senior Focus", icon: <Glasses className="w-6 h-6 mb-2" /> },
+  { label: "Tillgänglighetsanpassat", icon: <Accessibility className="w-6 h-6 mb-2" /> },
+];

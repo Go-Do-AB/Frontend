@@ -4,6 +4,7 @@ export type CreateEventDto = {
   description?: string;
   categories: string[];
   subcategories: Record<string, string[]>;
+  filters: string[];
   eventUrl?: string;
   bookingUrl?: string;
 
