@@ -58,7 +58,9 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
       </div>
 
       <div>
-        <Label className="py-2 block">Select Categories</Label>
+        <Label className="py-2 block">
+          Select Categories <span className="text-red-500">*</span>
+        </Label>
         <Controller
           name="categories"
           control={control}

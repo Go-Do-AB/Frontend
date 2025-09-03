@@ -5,7 +5,7 @@ export const createEventSchema = z.object({
   organiser: z.string().min(1, "Organiser is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  categories: z.array(z.string()).min(1, "Please select at least one category").optional(),
+  categories: z.array(z.string()).min(1, "Please select at least one category"),
   subcategories: z.record(z.string(), z.array(z.string())).optional(),
   filters: z.array(z.string()).min(1, "Please select at least one category").optional(),
 

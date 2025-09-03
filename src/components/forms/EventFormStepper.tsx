@@ -43,7 +43,7 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full max-w-xl bg-white p-6 rounded-lg shadow space-y-4"
+      className="w-full max-w-4xl bg-white p-6 rounded-lg shadow space-y-4"
     >
       {step === 0 && <StepEventDetails control={control} register={register} errors={errors} />}
       {step === 1 && <StepEventLocation register={register} errors={errors} />}
