@@ -49,6 +49,14 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         {errors.organiser && <p className="text-red-500 text-sm">{errors.organiser.message}</p>}
       </div>
 
+        <div>
+        <Label className="py-2 block">
+          Organisation number <span className="text-red-500">*</span>
+        </Label>
+        <Input placeholder="XXXXXX-XXXX" {...register("organisationNumber")} />
+        {errors.organisationNumber && <p className="text-red-500 text-sm">{errors.organisationNumber.message}</p>}
+      </div>
+
       <div>
         <Label className="py-2 block">
           Title <span className="text-red-500">*</span>

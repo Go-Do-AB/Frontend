@@ -1,8 +1,14 @@
 import { CreateEventDto } from "@/types/events";
 import { z } from "zod";
+import { ORGNR_REGEX, isValidSwedishOrgNr } from "@/lib/utils";
 
 export const createEventSchema = z.object({
   organiser: z.string().min(1, "Organiser is required"),
+organisationNumber: z
+    .string()
+    .min(1, "Organisation number is required")
+    .regex(ORGNR_REGEX, "Use format XXXXXX-XXXX")
+    .refine(isValidSwedishOrgNr, "Invalid organisation number (checksum)"),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   categories: z.array(z.string()).min(1, "Please select at least one category"),
@@ -43,6 +49,7 @@ export const createEventSchema = z.object({
 
 export const defaultFormValues: CreateEventFormData = {
   organiser: "",
+  organisationNumber:"",
   title: "",
   description: "",
   categories: [],
@@ -80,6 +87,7 @@ export const defaultFormValues: CreateEventFormData = {
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {
   return {
     organiser: data.organiser,
+    organisationNumber: data.organisationNumber,
     title: data.title,
     description: data.description || undefined,
     categories: data.categories || [],

@@ -46,6 +46,16 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             </div>
           )}
 
+          {values.organisationNumber && (
+            <div className="flex items-start gap-3">
+              <User className="w-5 h-5 mt-1 text-muted-foreground" />
+              <div>
+                <Label className="text-muted-foreground">Organisation number</Label>
+                <p>{values.organisationNumber}</p>
+              </div>
+            </div>
+          )}
+
           {values.description && (
             <div className="flex items-start gap-3">
               <AlignLeft className="w-5 h-5 mt-1 text-muted-foreground" />

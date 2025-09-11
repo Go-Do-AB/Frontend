@@ -1,5 +1,6 @@
 export type CreateEventDto = {
   organiser: string;
+  organisationNumber: string;
   title: string;
   description?: string;
   categories: string[];

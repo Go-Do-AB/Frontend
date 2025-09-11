@@ -17,7 +17,7 @@ interface EventFormStepperProps {
 function isStepValid(step: number, values: FormData): boolean {
   switch (step) {
     case 0:
-      return !!(values.title && values.organiser && values.categories);
+      return !!(values.title && values.organiser && values.categories && values.organisationNumber);
     case 1:
       return !!(values.streetName && values.city && values.postalCode);
     case 2:
