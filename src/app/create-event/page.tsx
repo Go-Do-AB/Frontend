@@ -9,7 +9,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { Navbar } from "@/components/global/Navbar";
 import { EventFormStepper } from "@/components/forms/EventFormStepper";
 import { useCreateEvent } from "@/hooks/useCreateEvent";
-import { FormData } from "@/hooks/useEventForm";
+import type { CreateEventFormData } from "@/lib/validation/create-event-schema";
 import { CreateEventDto } from "@/types/events";
 import {
   createEventSchema,
@@ -29,10 +29,13 @@ export default function CreateEventPage() {
   const [step, setStep] = useState(0);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const form = useForm<FormData>({
+  const form = useForm<CreateEventFormData>({
     resolver: zodResolver(createEventSchema),
     defaultValues: defaultFormValues,
-  });
+    mode: "onChange",
+    reValidateMode: "onChange",
+    criteriaMode: "firstError",
+ });
 
   const { mutate } = useCreateEvent();
 
@@ -41,7 +44,7 @@ export default function CreateEventPage() {
 
   console.log("Current step:", step);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: CreateEventFormData) => {
     console.log("running");
     try {
       const payload: CreateEventDto = createPayload(data);
