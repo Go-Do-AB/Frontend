@@ -14,8 +14,8 @@ type TimeOption = { value: string; label: string };
 const timeOptions: TimeOption[] = Array.from({ length: 24 * 2 }, (_, i) => {
   const h = Math.floor(i / 2);
   const m = i % 2 === 0 ? "00" : "30";
-  const raw = `${h.toString().padStart(2, "0")}:${m}`;
-  const display = new Date(`1970-01-01T${raw}:00`).toLocaleTimeString([], {
+  const raw = `${h.toString().padStart(2, "0")}:${m}:00`;
+  const display = new Date(`1970-01-01T${raw}`).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,

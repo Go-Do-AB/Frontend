@@ -26,6 +26,6 @@ export type CreateEventDto = {
   recurrence?: string;
 
   isAlwaysOpen?: boolean;
-  spotlight?: boolean;
-  spotlightDate?: string;
+  spotlight?: false; // change once implemented
+  spotlightDate?: null; // change once implemented
 };
