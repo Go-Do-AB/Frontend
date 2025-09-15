@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormWatch } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
+import type { CreateEventFormData } from "@/lib/validation/create-event-schema"
 import { StepEventDateTime } from "./steps/StepEventDateTime";
 import { StepEventDetails } from "./steps/StepEventDetails";
 import { StepReviewEvent } from "./steps/StepEventReview";
@@ -14,18 +15,25 @@ interface EventFormStepperProps {
   onSubmit: () => void;
 }
 
-function isStepValid(step: number, values: FormData): boolean {
-  switch (step) {
-    case 0:
-      return !!(values.title && values.organiser && values.categories && values.organisationNumber);
-    case 1:
-      return !!(values.streetName && values.city && values.postalCode);
-    case 2:
-      return !!(values.startDate && values.endDate);
-    default:
-      return true; // Final step is just review
-  }
-}
+// function isStepValid(step: number, values: FormData): boolean {
+//   switch (step) {
+//     case 0:
+//       return !!(values.title && values.organiser && values.categories && values.organisationNumber);
+//     case 1:
+//       return !!(values.streetName && values.city && values.postalCode);
+//     case 2:
+//       return !!(values.startDate && values.endDate);
+//     default:
+//       return true; // Final step is just review
+//   }
+// }
+
+// per-step fields to validate
+const stepFields: Record<number, (keyof CreateEventFormData)[]> = {
+  0: ["title", "organiser", "categories", "organisationNumber"],
+  1: ["streetName", "city", "postalCode"],
+  2: ["startDate", "endDate", "startTime", "endTime"],
+};
 
 export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFormStepperProps) {
   const {
@@ -35,10 +43,20 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
     getValues,
     watch,
     handleSubmit,
+    trigger,
   } = useFormContext<FormData>();
 
+    // disabled "Next" UX
+  const isStepFilled = useIsStepFilled(step, watch);
+
+    const handleNext = async () => {
+    const fields = stepFields[step] ?? [];
+    const ok = await trigger(fields, { shouldFocus: true }); // focuses first invalid field
+    if (ok) nextStep();
+  };
+
   const values = watch();
-  const isValidStep = isStepValid(step, values);
+  // const isValidStep = isStepValid(step, values);
 
   return (
     <form
@@ -59,12 +77,12 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
             <Tooltip>
               <TooltipTrigger asChild>
                 <span>
-                  <Button type="button" onClick={nextStep} disabled={!isValidStep}>
+                  <Button type="button" onClick={handleNext} disabled={!isStepFilled}>
                     Next
                   </Button>
                 </span>
               </TooltipTrigger>
-              {!isValidStep && (
+              {!isStepFilled && (
                 <TooltipContent>
                   Please fill out all required fields before continuing.
                 </TooltipContent>
@@ -79,4 +97,40 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
       </div>
     </form>
   );
+}
+
+// ---------- helper for disabled-Next UX ----------
+function truthy(v: any) {
+  if (Array.isArray(v)) return v.length > 0;
+  if (v instanceof Date) return !isNaN(v.getTime());
+  return v !== undefined && v !== null && String(v).trim() !== "";
+}
+
+function useIsStepFilled(step: number, watch: UseFormWatch<CreateEventFormData>) {
+  switch (step) {
+    case 0: {
+      const [title, organiser, categories, organisationNumber] = watch([
+        "title",
+        "organiser",
+        "categories",
+        "organisationNumber",
+      ]);
+      return [title, organiser, organisationNumber].every(truthy) && truthy(categories);
+    }
+    case 1: {
+      const [streetName, city, postalCode] = watch(["streetName", "city", "postalCode"]);
+      return [streetName, city, postalCode].every(truthy);
+    }
+    case 2: {
+      const [startDate, endDate, startTime, endTime] = watch([
+        "startDate",
+        "endDate",
+        "startTime",
+        "endTime",
+      ]);
+      return [startDate, endDate, startTime, endTime].every(truthy);
+    }
+    default:
+      return true;
+  }
 }
