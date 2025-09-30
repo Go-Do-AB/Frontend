@@ -35,7 +35,7 @@ export default function CreateEventPage() {
     mode: "onChange",
     reValidateMode: "onChange",
     criteriaMode: "firstError",
- });
+  });
 
   const { mutate } = useCreateEvent();
 
@@ -75,6 +75,7 @@ export default function CreateEventPage() {
         },
       });
     } catch (err) {
+      console.log(err);
       toast(
         <div className="flex items-start gap-3 text-black">
           <XCircle className="text-red-500 mt-1" />

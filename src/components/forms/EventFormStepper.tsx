@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useFormContext, type UseFormWatch } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
-import type { CreateEventFormData } from "@/lib/validation/create-event-schema"
+import type { CreateEventFormData } from "@/lib/validation/create-event-schema";
 import { StepEventDateTime } from "./steps/StepEventDateTime";
 import { StepEventDetails } from "./steps/StepEventDetails";
 import { StepReviewEvent } from "./steps/StepEventReview";
@@ -46,16 +46,17 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
     trigger,
   } = useFormContext<FormData>();
 
-    // disabled "Next" UX
+  // disabled "Next" UX
   const isStepFilled = useIsStepFilled(step, watch);
 
-    const handleNext = async () => {
+  const handleNext = async () => {
     const fields = stepFields[step] ?? [];
     const ok = await trigger(fields, { shouldFocus: true }); // focuses first invalid field
     if (ok) nextStep();
   };
 
   const values = watch();
+  console.log(values);
   // const isValidStep = isStepValid(step, values);
 
   return (
@@ -100,10 +101,13 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
 }
 
 // ---------- helper for disabled-Next UX ----------
-function truthy(v: any) {
+function truthy(v: unknown): boolean {
   if (Array.isArray(v)) return v.length > 0;
   if (v instanceof Date) return !isNaN(v.getTime());
-  return v !== undefined && v !== null && String(v).trim() !== "";
+  if (typeof v === "string") return v.trim() !== "";
+  if (typeof v === "number") return !isNaN(v);
+  if (typeof v === "boolean") return v;
+  return v !== undefined && v !== null;
 }
 
 function useIsStepFilled(step: number, watch: UseFormWatch<CreateEventFormData>) {

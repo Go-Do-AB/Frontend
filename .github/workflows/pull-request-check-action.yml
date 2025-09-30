@@ -1,0 +1,36 @@
+name: Pull Request Action Check
+
+# 📌 This workflow runs automatically when someone opens a Pull Request to "development"
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-check:
+    name: Pull Request Action Check
+    runs-on: ubuntu-latest # 🖥️ Use the latest Ubuntu runner provided by GitHub
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+        # 👉 This pulls the repo’s code into the GitHub Actions machine
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+        # 👉 Makes sure Node.js v18 is installed so Next.js can run
+
+      - name: 📦 Install dependencies
+        run: npm install
+        # 👉 Installs everything from package.json
+
+      - name: 🏗️ Build Next.js app
+        run: npm run build
+        # 👉 Runs the Next.js build (fails PR if it doesn’t compile)
+
+      - name: ✨ Lint code
+        run: npm run lint
+        continue-on-error: true
+        # 👉 Optional: checks code style with ESLint
+        # "continue-on-error: true" means it won’t fail the PR, just warn

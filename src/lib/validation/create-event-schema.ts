@@ -4,7 +4,7 @@ import { ORGNR_REGEX, isValidSwedishOrgNr } from "@/lib/utils";
 
 export const createEventSchema = z.object({
   organiser: z.string().min(1, "Organiser is required"),
-organisationNumber: z
+  organisationNumber: z
     .string()
     .min(1, "Organisation number is required")
     .regex(ORGNR_REGEX, "Use format XXXXXX-XXXX")
@@ -49,7 +49,7 @@ organisationNumber: z
 
 export const defaultFormValues: CreateEventFormData = {
   organiser: "",
-  organisationNumber:"",
+  organisationNumber: "",
   title: "",
   description: "",
   categories: [],
