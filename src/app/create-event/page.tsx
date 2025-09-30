@@ -35,7 +35,7 @@ export default function CreateEventPage() {
     mode: "onChange",
     reValidateMode: "onChange",
     criteriaMode: "firstError",
- });
+  });
 
   const { mutate } = useCreateEvent();
 

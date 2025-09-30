@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useFormContext, type UseFormWatch } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
-import type { CreateEventFormData } from "@/lib/validation/create-event-schema"
+import type { CreateEventFormData } from "@/lib/validation/create-event-schema";
 import { StepEventDateTime } from "./steps/StepEventDateTime";
 import { StepEventDetails } from "./steps/StepEventDetails";
 import { StepReviewEvent } from "./steps/StepEventReview";
@@ -46,10 +46,10 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
     trigger,
   } = useFormContext<FormData>();
 
-    // disabled "Next" UX
+  // disabled "Next" UX
   const isStepFilled = useIsStepFilled(step, watch);
 
-    const handleNext = async () => {
+  const handleNext = async () => {
     const fields = stepFields[step] ?? [];
     const ok = await trigger(fields, { shouldFocus: true }); // focuses first invalid field
     if (ok) nextStep();
