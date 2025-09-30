@@ -56,6 +56,7 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
   };
 
   const values = watch();
+  console.log(values);
   // const isValidStep = isStepValid(step, values);
 
   return (
@@ -100,10 +101,13 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
 }
 
 // ---------- helper for disabled-Next UX ----------
-function truthy(v: any) {
+function truthy(v: unknown): boolean {
   if (Array.isArray(v)) return v.length > 0;
   if (v instanceof Date) return !isNaN(v.getTime());
-  return v !== undefined && v !== null && String(v).trim() !== "";
+  if (typeof v === "string") return v.trim() !== "";
+  if (typeof v === "number") return !isNaN(v);
+  if (typeof v === "boolean") return v;
+  return v !== undefined && v !== null;
 }
 
 function useIsStepFilled(step: number, watch: UseFormWatch<CreateEventFormData>) {

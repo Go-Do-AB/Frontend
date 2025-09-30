@@ -43,6 +43,7 @@ export function StepEventDateTime({ control, errors }: Props) {
     if (!timingType.includes(true)) {
       setValue("hasSingleDates", true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
