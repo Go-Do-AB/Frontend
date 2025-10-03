@@ -5,6 +5,8 @@ import { CreateEventDto } from "@/types/events";
 export function useCreateEvent() {
   return useMutation({
     mutationFn: async (data: CreateEventDto) => {
+      console.log("This is mutation");
+      console.log("DATA FOR BE", data);
       const response = await api.post("/events", data); // Adjust if your route is different
       return response.data;
     },

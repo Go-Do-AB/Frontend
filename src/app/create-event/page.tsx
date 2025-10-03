@@ -42,8 +42,6 @@ export default function CreateEventPage() {
   const nextStep = () => setStep((s) => Math.min(s + 1, 3));
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
-  console.log("Current step:", step);
-
   const onSubmit = (data: CreateEventFormData) => {
     console.log("running");
     try {
@@ -125,7 +123,7 @@ export default function CreateEventPage() {
               step={step}
               nextStep={nextStep}
               prevStep={prevStep}
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={onSubmit}
             />
           </FormProvider>
         )}

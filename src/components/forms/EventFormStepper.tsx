@@ -12,7 +12,7 @@ interface EventFormStepperProps {
   step: number;
   nextStep: () => void;
   prevStep: () => void;
-  onSubmit: () => void;
+  onSubmit: (values: CreateEventFormData) => void;
 }
 
 // function isStepValid(step: number, values: FormData): boolean {
@@ -32,7 +32,7 @@ interface EventFormStepperProps {
 const stepFields: Record<number, (keyof CreateEventFormData)[]> = {
   0: ["title", "organiser", "categories", "organisationNumber"],
   1: ["streetName", "city", "postalCode"],
-  2: ["startDate", "endDate", "startTime", "endTime"],
+  2: ["startDate", "endDate", "scheduleStartTime", "scheduleEndTime"], // ✅ updated
 };
 
 export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFormStepperProps) {
@@ -40,11 +40,11 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
     register,
     control,
     formState: { errors },
+    handleSubmit,
     getValues,
     watch,
-    handleSubmit,
     trigger,
-  } = useFormContext<FormData>();
+  } = useFormContext<CreateEventFormData>();
 
   // disabled "Next" UX
   const isStepFilled = useIsStepFilled(step, watch);
@@ -56,12 +56,17 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
   };
 
   const values = watch();
-  console.log(values);
+
+  const handleSubmitRaw = (e: React.FormEvent) => {
+    e.preventDefault(); // stop page reload
+    const values = getValues(); // grab all form values
+    onSubmit(values); // just send it straight
+  };
   // const isValidStep = isStepValid(step, values);
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmitRaw}
       className="w-full max-w-4xl bg-white p-6 rounded-lg shadow space-y-4"
     >
       {step === 0 && <StepEventDetails control={control} register={register} errors={errors} />}
@@ -126,13 +131,8 @@ function useIsStepFilled(step: number, watch: UseFormWatch<CreateEventFormData>)
       return [streetName, city, postalCode].every(truthy);
     }
     case 2: {
-      const [startDate, endDate, startTime, endTime] = watch([
-        "startDate",
-        "endDate",
-        "startTime",
-        "endTime",
-      ]);
-      return [startDate, endDate, startTime, endTime].every(truthy);
+      const [startDate, endDate] = watch(["startDate", "endDate"]);
+      return [startDate, endDate].every(truthy);
     }
     default:
       return true;
