@@ -110,27 +110,27 @@ export const filterOptions: { code: string; label: string; icon: JSX.Element }[]
     icon: <TreePine className="w-6 h-6 mb-2" />,
   },
   {
-    code: "BCDE2E29-78BD-496F-AFCF-3C65DF898AA1",
+    code: "BCDE2E29-7B8D-496F-AFCF-3C65DF898AA1",
     label: "Senior focus",
     icon: <Glasses className="w-6 h-6 mb-2" />,
   },
   {
-    code: "48987691-B0DE-43A8-9A26-5E74736F853F",
+    code: "48987691-B0DE-438A-9A26-5E747368F53F",
     label: "Family-friendly",
     icon: <Users className="w-6 h-6 mb-2" />,
   },
   {
-    code: "0A710366-C231-4AE1-BEED-B67A9927D5C4",
+    code: "0A710366-C231-4AE1-8EED-B67A9927D5C4",
     label: "Wheelchair accessible",
     icon: <Accessibility className="w-6 h-6 mb-2" />,
   },
   {
-    code: "A288C40B-4F85-4880-BD6C-C9A1B32CCCE5",
+    code: "A288CA0B-4F85-4880-BCD6-C9A1B32CCCE5",
     label: "Free",
     icon: <Ticket className="w-6 h-6 mb-2" />,
   },
   {
-    code: "7294E109-1786-4AB6-83B5-8DDAE8358B83",
+    code: "7294E109-17B6-4AB6-83B5-D8DAE8358B83",
     label: "Indoor",
     icon: <Home className="w-6 h-6 mb-2" />,
   },
