@@ -15,28 +15,30 @@ interface StepDetailsProps {
 }
 
 export function StepEventDetails({ register, control, errors }: StepDetailsProps) {
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 
   const toggleSubcategory = (
-    subFieldValue: Record<string, string[]> | undefined,
+    subFieldValue: Record<number, number[]> | undefined,
     onChange: (...event: unknown[]) => void,
-    category: string,
-    sub: string
+    categoryCode: number,
+    subCode: number
   ) => {
-    const current = subFieldValue?.[category] ?? [];
-    const newSet = current.includes(sub) ? current.filter((s) => s !== sub) : [...current, sub];
-    onChange({ ...subFieldValue, [category]: newSet });
+    const current = subFieldValue?.[categoryCode] ?? [];
+    const newSet = current.includes(subCode)
+      ? current.filter((s) => s !== subCode)
+      : [...current, subCode];
+    onChange({ ...subFieldValue, [categoryCode]: newSet });
   };
 
   const toggleAllSubs = (
-    subFieldValue: Record<string, string[]> | undefined,
+    subFieldValue: Record<number, number[]> | undefined,
     onChange: (...event: unknown[]) => void,
-    category: string
+    categoryCode: number
   ) => {
-    const allSubs = subcategoriesMap[category].map((s) => s.label);
-    const current = subFieldValue?.[category] ?? [];
+    const allSubs = subcategoriesMap[categoryCode].map((s) => s.code);
+    const current = subFieldValue?.[categoryCode] ?? [];
     const allSelected = current.length === allSubs.length;
-    onChange({ ...subFieldValue, [category]: allSelected ? [] : [...allSubs] });
+    onChange({ ...subFieldValue, [categoryCode]: allSelected ? [] : [...allSubs] });
   };
 
   return (
@@ -67,6 +69,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
       </div>
 
+      {/* Categories + Subcategories */}
       <div>
         <Label className="py-2 block">
           Select Categories <span className="text-red-500">*</span>
@@ -83,26 +86,26 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                   {Array.from({ length: Math.ceil(categoryOptions.length / 4) }).map(
                     (_, rowIdx) => {
                       const row = categoryOptions.slice(rowIdx * 4, rowIdx * 4 + 4);
-                      const openInThisRow = row.some((cat) => cat.label === openDropdown);
+                      const openInThisRow = row.some((cat) => cat.code === openDropdown);
 
                       return (
                         <div key={rowIdx} className="space-y-4">
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            {row.map(({ label, icon: Icon }) => {
-                              const isSelected = (catField.value ?? []).includes(label);
+                            {row.map(({ code, label, icon: Icon }) => {
+                              const isSelected = (catField.value ?? []).includes(code);
 
                               const toggleCategory = () => {
                                 const current = catField.value ?? [];
                                 const newVal = isSelected
-                                  ? current.filter((c) => c !== label)
-                                  : [...current, label];
+                                  ? current.filter((c) => c !== code)
+                                  : [...current, code];
                                 catField.onChange(newVal);
-                                setOpenDropdown((prev) => (prev === label ? null : label));
+                                setOpenDropdown((prev) => (prev === code ? null : code));
                               };
 
                               return (
                                 <button
-                                  key={label}
+                                  key={code}
                                   type="button"
                                   onClick={toggleCategory}
                                   className={cn(
@@ -119,26 +122,27 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                             })}
                           </div>
 
-                          {openInThisRow && openDropdown && (
+                          {openInThisRow && openDropdown !== null && (
                             <div className="w-full bg-white border rounded-lg p-4 shadow">
                               <p className="text-sm font-semibold mb-2 text-gray-700">
-                                {openDropdown} Subcategories
+                                {categoryOptions.find((c) => c.code === openDropdown)?.label}{" "}
+                                Subcategories
                               </p>
                               <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto scroll-smooth">
                                 {subcategoriesMap[openDropdown]?.map(
-                                  ({ label: sub, icon: SubIcon }) => {
+                                  ({ code: subCode, label: subLabel, icon: SubIcon }) => {
                                     const selected =
-                                      subField.value?.[openDropdown]?.includes(sub) ?? false;
+                                      subField.value?.[openDropdown]?.includes(subCode) ?? false;
                                     return (
                                       <button
-                                        key={sub}
+                                        key={subCode}
                                         type="button"
                                         onClick={() =>
                                           toggleSubcategory(
                                             subField.value,
                                             subField.onChange,
                                             openDropdown,
-                                            sub
+                                            subCode
                                           )
                                         }
                                         className={cn(
@@ -149,7 +153,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                                         )}
                                       >
                                         <SubIcon className="w-4 h-4 mb-1" />
-                                        <span className="text-center">{sub}</span>
+                                        <span className="text-center">{subLabel}</span>
                                       </button>
                                     );
                                   }
@@ -182,6 +186,8 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
           )}
         />
       </div>
+
+      {/* Filters */}
       <div>
         <Label className="py-2 block">Filters</Label>
         <Controller
@@ -189,20 +195,20 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
           control={control}
           render={({ field }) => (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {filterOptions.map(({ label, icon }) => {
-                const isSelected = (field.value ?? []).includes(label);
+              {filterOptions.map(({ code, label, icon }) => {
+                const isSelected = (field.value ?? []).includes(code);
 
                 const toggle = () => {
                   const current = field.value ?? [];
                   const newVal = isSelected
-                    ? current.filter((f) => f !== label)
-                    : [...current, label];
+                    ? current.filter((f) => f !== code)
+                    : [...current, code];
                   field.onChange(newVal);
                 };
 
                 return (
                   <button
-                    key={label}
+                    key={code}
                     type="button"
                     onClick={toggle}
                     className={cn(
@@ -222,6 +228,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         />
       </div>
 
+      {/* Description & URLs */}
       <div>
         <Label className="py-2 block">Description</Label>
         <Textarea placeholder="Event Description" {...register("description")} />

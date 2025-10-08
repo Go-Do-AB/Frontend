@@ -3,9 +3,6 @@ export type CreateEventDto = {
   organisationNumber: string;
   title: string;
   description?: string;
-  categories: string[];
-  subcategories: Record<string, string[]>;
-  filters: string[];
   eventUrl?: string;
   bookingUrl?: string;
 
@@ -16,16 +13,22 @@ export type CreateEventDto = {
   postalCode: string;
 
   hasSingleDates?: boolean;
-  startDate?: string; // ISO format string
+  startDate?: string; // ISO 8601
   endDate?: string;
 
   hasSchedule?: boolean;
-  weekday?: "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
-  scheduleStartTime?: string; // HH:mm format string
+  weekday?: number;
+  scheduleStartTime?: string; // "HH:mm"
   scheduleEndTime?: string;
   recurrence?: string;
 
   isAlwaysOpen?: boolean;
-  spotlight?: boolean; // change once implemented
-  spotlightDate?: string | null;
+  spotlight?: boolean;
+  spotlightStartDate?: string | null;
+  spotlightEndDate?: string | null;
+
+  // ---- Matching backend ----
+  categoryCodes: number[];
+  subcategoryCodesByCategory: Record<number, number[]>;
+  tagIds?: string[];
 };
