@@ -1,5 +1,5 @@
 "use client";
-import { api } from "@/lib/axios";
+
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormValues>({
     defaultValues: { username: "", password: "" },
   });
@@ -44,8 +44,12 @@ export default function LoginPage() {
       localStorage.setItem("accessToken", payload.data.accessToken);
       toast.success("Logged in");
       router.push("/landing"); // this is landing page after login
-    } catch (e: any) {
-      toast.error(e?.message ?? "Login failed");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        toast.error(e.message ?? "Login failed");
+      } else {
+        toast.error("Login failed");
+      }
     }
   };
 
