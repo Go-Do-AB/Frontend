@@ -9,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 type OrganizerRegisterForm = {
-  name: string;
-  businessName: string;
-  phoneNumber: string;
-  organisationNumber: string;
+  username: string;
   email: string;
+  password: string;
+  fullName: string;
+  phoneNumber: string;
+  businessName: string;
+  organisationNumber: string;
 };
 
 export default function OrganizerRegisterPage() {
@@ -24,11 +26,13 @@ export default function OrganizerRegisterPage() {
     formState: { errors },
   } = useForm<OrganizerRegisterForm>({
     defaultValues: {
-      name: "",
-      businessName: "",
-      phoneNumber: "",
-      organisationNumber: "",
+      username: "",
       email: "",
+      password: "",
+      fullName: "",
+      phoneNumber: "",
+      businessName: "",
+      organisationNumber: "",
     },
   });
 
@@ -80,10 +84,22 @@ export default function OrganizerRegisterPage() {
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 
+                  <div>
+                    <Label htmlFor="username">Username</Label>
+                    <Input id="username" {...register("username", { required: "Username is required" })} />
+                    {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" type="password" {...register("password", { required: "Password is required" })} />
+                    {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+                  </div> 
+
                 <div>
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" {...register("name", { required: "Name is required" })} />
-                  {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+                  <Label htmlFor="fullname">Full name</Label>
+                  <Input id="fullname" {...register("fullName", { required: "Full name is required" })} />
+                  {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName.message}</p>}
                 </div>
 
                 <div>
