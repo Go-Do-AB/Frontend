@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import * as React from "react";
 
 type OrganizerRegisterForm = {
   username: string;
@@ -16,14 +17,20 @@ type OrganizerRegisterForm = {
   phoneNumber: string;
   businessName: string;
   organisationNumber: string;
+  acceptTerms: boolean;
 };
+
+const API_BASE_URL = "https://localhost:7030";
 
 export default function OrganizerRegisterPage() {
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    setError,
+    watch,
   } = useForm<OrganizerRegisterForm>({
     defaultValues: {
       username: "",
@@ -33,152 +40,263 @@ export default function OrganizerRegisterPage() {
       phoneNumber: "",
       businessName: "",
       organisationNumber: "",
+      acceptTerms: false,
     },
+    mode: "onBlur",
   });
 
   const onSubmit = async (values: OrganizerRegisterForm) => {
     try {
-      const res = await fetch("https://localhost:7030/api/auth/register-organizer", {
+      // Mapping to BE-DTO och add to termsVersion
+      const payload = {
+        username: values.username.trim(),
+        email: values.email.trim(),
+        password: values.password,
+        fullName: values.fullName.trim(),
+        phoneNumber: values.phoneNumber.trim(),
+        businessName: values.businessName.trim(),
+        organisationNumber: values.organisationNumber.trim(),
+        acceptTerms: values.acceptTerms === true,
+        termsVersion: "v1.0",
+      };
+
+      const res = await fetch(`${API_BASE_URL}/api/organisers/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-        credentials: "include",
+        body: JSON.stringify(payload),
+        credentials: "include", // refresh-token-cookie
       });
 
-      const payload = await res.json();
+      // För felsök: läs text först (kan vara tom), försök sedan json
+      const text = await res.text();
+      let data: any = undefined;
+      try {
+        data = text ? JSON.parse(text) : undefined;
+      } catch {
+        /* ignore JSON parse error */
+      }
 
       if (!res.ok) {
-        throw new Error(payload?.message ?? "Registration failed");
+        // OperationResult-message/validator
+        const msg =
+          data?.message ||
+          data?.error ||
+          data?.errors?.join?.(", ") ||
+          "Registration failed";
+        throw new Error(msg);
       }
 
       toast.success("Organizer account created successfully!");
       router.push("/login");
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        toast.error(e.message ?? "Registration failed");
-      } else {
-        toast.error("Registration failed");
-      }
+      const message = e instanceof Error ? e.message : "Registration failed";
+      // form-error 
+      setError("root", { message });
+      toast.error(message);
     }
   };
 
   return (
-  <main className="min-h-screen flex flex-col bg-yellow-400 text-black">
-    <section className="flex flex-1 items-center justify-center px-10 py-20 relative">
-      {/* left: Go.Do.-text */}
-      <div className="absolute left-20 top-1/2 -translate-y-1/2">
-        <h2 className="text-6xl font-extrabold mb-4">Go.Do.</h2>
-        <p className="text-2xl">More to do. Close to you.</p>
-      </div>
+    <main className="min-h-screen flex flex-col bg-yellow-400 text-black">
+      <section className="flex flex-1 items-center justify-center px-6 md:px-10 py-14 md:py-20 relative">
+        {/* left branding */}
+        <div className="hidden md:block absolute left-20 top-1/2 -translate-y-1/2">
+          <h2 className="text-6xl font-extrabold mb-4">Go.Do.</h2>
+          <p className="text-2xl">More to do. Close to you.</p>
+        </div>
 
-      {/* Register box — centered */}
-      <div className="flex justify-center items-center w-full">
-        <div className="w-full max-w-md">
-          <Card className="shadow-lg border-black/10 bg-white">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-semibold text-black">
-                Register as an organizer
-              </CardTitle>
-            </CardHeader>
+        {/* Register-card */}
+        <div className="flex justify-center items-center w-full">
+          <div className="w-full max-w-md">
+            <Card className="shadow-lg border-black/10 bg-white">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-semibold text-black">
+                  Register as an organizer
+                </CardTitle>
+              </CardHeader>
 
-            <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                
+              <CardContent>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  {/* Username */}
                   <div>
                     <Label htmlFor="username">Username</Label>
-                    <Input id="username" {...register("username", { required: "Username is required" })} />
-                    {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
+                    <Input
+                      id="username"
+                      autoComplete="username"
+                      {...register("username", {
+                        required: "Username is required",
+                        minLength: { value: 3, message: "Min 3 characters" },
+                        maxLength: { value: 64, message: "Max 64 characters" },
+                      })}
+                    />
+                    {errors.username && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.username.message}
+                      </p>
+                    )}
                   </div>
 
+                  {/* Password */}
                   <div>
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" {...register("password", { required: "Password is required" })} />
-                    {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-                  </div> 
+                    <Input
+                      id="password"
+                      type="password"
+                      autoComplete="new-password"
+                      {...register("password", {
+                        required: "Password is required",
+                        minLength: { value: 6, message: "Min 6 characters" },
+                      })}
+                    />
+                    {errors.password && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.password.message}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label htmlFor="fullname">Full name</Label>
-                  <Input id="fullname" {...register("fullName", { required: "Full name is required" })} />
-                  {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName.message}</p>}
-                </div>
+                  {/* Full name */}
+                  <div>
+                    <Label htmlFor="fullName">Full name</Label>
+                    <Input
+                      id="fullName"
+                      autoComplete="name"
+                      {...register("fullName", {
+                        required: "Full name is required",
+                        minLength: { value: 2, message: "Min 2 characters" },
+                      })}
+                    />
+                    {errors.fullName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fullName.message}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label htmlFor="businessName">Business Name</Label>
-                  <Input
-                    id="businessName"
-                    {...register("businessName", { required: "Business name is required" })}
-                  />
-                  {errors.businessName && (
-                    <p className="text-red-500 text-sm">{errors.businessName.message}</p>
+                  {/* Business name */}
+                  <div>
+                    <Label htmlFor="businessName">Business name</Label>
+                    <Input
+                      id="businessName"
+                      {...register("businessName", {
+                        required: "Business name is required",
+                      })}
+                    />
+                    {errors.businessName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.businessName.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Phone number */}
+                  <div>
+                    <Label htmlFor="phoneNumber">Phone number</Label>
+                    <Input
+                      id="phoneNumber"
+                      type="tel"
+                      autoComplete="tel"
+                      {...register("phoneNumber", {
+                        required: "Phone number is required",
+                      })}
+                    />
+                    {errors.phoneNumber && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.phoneNumber.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Organisation number */}
+                  <div>
+                    <Label htmlFor="organisationNumber">Organisation number</Label>
+                    <Input
+                      id="organisationNumber"
+                      {...register("organisationNumber", {
+                        required: "Organisation number is required",
+                      })}
+                    />
+                    {errors.organisationNumber && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.organisationNumber.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      {...register("email", {
+                        required: "Email is required",
+                        pattern: {
+                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                          message: "Invalid email address",
+                        },
+                      })}
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Terms */}
+                  <div className="flex items-center gap-2 mt-4">
+                    <input
+                      id="acceptTerms"
+                      type="checkbox"
+                      className="h-4 w-4"
+                      {...register("acceptTerms", {
+                        validate: (v) => v === true || "You must accept the terms",
+                      })}
+                    />
+                    <Label htmlFor="acceptTerms" className="text-sm text-gray-700">
+                      I agree to the Terms and Conditions
+                    </Label>
+                  </div>
+                  {errors.acceptTerms && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.acceptTerms.message as string}
+                    </p>
                   )}
-                </div>
 
-                <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    type="tel"
-                    {...register("phoneNumber", { required: "Phone number is required" })}
-                  />
-                  {errors.phoneNumber && (
-                    <p className="text-red-500 text-sm">{errors.phoneNumber.message}</p>
+                  <Button
+                    type="submit"
+                    className="w-full bg-black text-white hover:bg-gray-800 mt-4 disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Registering..." : "Register"}
+                  </Button>
+
+                  {/* Form-level error */}
+                  {errors.root?.message && (
+                    <p className="text-red-600 text-sm mt-2 text-center">
+                      {errors.root.message}
+                    </p>
                   )}
-                </div>
+                </form>
+              </CardContent>
 
-                <div>
-                  <Label htmlFor="organisationNumber">Organisation Number</Label>
-                  <Input
-                    id="organisationNumber"
-                    {...register("organisationNumber", {
-                      required: "Organisation number is required",
-                    })}
-                  />
-                  {errors.organisationNumber && (
-                    <p className="text-red-500 text-sm">{errors.organisationNumber.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register("email", { required: "Email is required" })}
-                  />
-                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-                </div>
-
-                {/* Terms and Conditions */}
-                <div className="flex items-center gap-2 mt-4">
-                  <input id="terms" type="checkbox" required className="h-4 w-4" />
-                  <Label htmlFor="terms" className="text-sm text-gray-700">
-                    I agree to the Terms and Conditions
-                  </Label>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-black text-white hover:bg-gray-800 mt-4"
-                >
-                  Register
-                </Button>
-              </form>
-            </CardContent>
-
-            <CardFooter className="text-center">
-              <p className="text-sm text-gray-600">
-                Already have an account?{" "}
-                <span
-                  className="text-blue-600 cursor-pointer hover:underline"
-                  onClick={() => router.push("/login")}
-                >
-                  Log in
-                </span>
-              </p>
-            </CardFooter>
-          </Card>
+              <CardFooter className="text-center">
+                <p className="text-sm text-gray-600">
+                  Already have an account{" "}
+                  <span
+                    className="text-blue-600 cursor-pointer hover:underline"
+                    onClick={() => router.push("/login")}
+                  >
+                    Log in
+                  </span>
+                </p>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
-)};
+      </section>
+    </main>
+  );
+}
