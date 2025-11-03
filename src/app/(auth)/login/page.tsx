@@ -23,33 +23,40 @@ export default function LoginPage() {
     defaultValues: { username: "", password: "" },
   });
 
+  const LANDING_PATH = "/landing";
+
+  type FormValues = { username: string; password: string };
+
   const onSubmit = async (values: FormValues) => {
     try {
-      const res = await fetch("https://localhost:7030/api/auth/login", {
+      const res = await fetch("https://localhost:7030/api/organisers/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // BE puts refresh-cookie
-        body: JSON.stringify(values),
+        credentials: "include",
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+        }),
       });
-
-      console.log("res.ok:", res.ok);
 
       const payload = await res.json();
 
-      if (!res.ok) {
-        throw new Error(payload?.message ?? "Login failed");
+      // Backend wrapping in OperationResult<T>
+      if (!res.ok || payload?.isSuccess === false) {
+        throw new Error(payload?.message ?? `Login failed (${res.status})`);
       }
-      console.log("data:", payload);
 
-      localStorage.setItem("accessToken", payload.data.accessToken);
-      toast.success("Logged in");
-      router.push("/landing"); // this is landing page after login
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        toast.error(e.message ?? "Login failed");
-      } else {
-        toast.error("Login failed");
+      const token: string | undefined = payload?.data?.token;
+      if (token) {
+        localStorage.setItem("accessToken", token);
       }
+
+      toast.success("Logged in");
+      router.replace(LANDING_PATH);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Login failed";
+      toast.error(msg);
+      console.error("Login error:", msg);
     }
   };
 
