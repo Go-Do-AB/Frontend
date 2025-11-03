@@ -201,8 +201,8 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                 const toggle = () => {
                   const current = field.value ?? [];
                   const newVal = isSelected
-                    ? current.filter((f) => f !== code)
-                    : [...current, code];
+                    ? (field.value ?? []).filter((f: number) => f !== code)
+                    : [ ...(field.value ?? []), code ];
                   field.onChange(newVal);
                 };
 

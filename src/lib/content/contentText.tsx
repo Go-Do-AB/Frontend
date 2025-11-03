@@ -103,35 +103,11 @@ export const categoryOptions: { code: number; label: string; icon: React.Element
 
 // Here filters could be GUIDs if your BE provides them.
 // For now I’ll use simple string IDs.
-export const filterOptions: { code: string; label: string; icon: JSX.Element }[] = [
-  {
-    code: "A0AA8B3B-153B-4504-BE03-259236AB9677",
-    label: "Outdoor",
-    icon: <TreePine className="w-6 h-6 mb-2" />,
-  },
-  {
-    code: "BCDE2E29-7B8D-496F-AFCF-3C65DF898AA1",
-    label: "Senior focus",
-    icon: <Glasses className="w-6 h-6 mb-2" />,
-  },
-  {
-    code: "48987691-B0DE-438A-9A26-5E747368F53F",
-    label: "Family-friendly",
-    icon: <Users className="w-6 h-6 mb-2" />,
-  },
-  {
-    code: "0A710366-C231-4AE1-8EED-B67A9927D5C4",
-    label: "Wheelchair accessible",
-    icon: <Accessibility className="w-6 h-6 mb-2" />,
-  },
-  {
-    code: "A288CA0B-4F85-4880-BCD6-C9A1B32CCCE5",
-    label: "Free",
-    icon: <Ticket className="w-6 h-6 mb-2" />,
-  },
-  {
-    code: "7294E109-17B6-4AB6-83B5-D8DAE8358B83",
-    label: "Indoor",
-    icon: <Home className="w-6 h-6 mb-2" />,
-  },
+export const filterOptions: { code: number; label: string; icon: JSX.Element }[] = [
+  { code: 1001, label: "Free", icon: <Ticket className="w-6 h-6 mb-2" /> }, 
+  { code: 1002, label: "Family-friendly", icon: <Users className="w-6 h-6 mb-2" /> },
+  { code: 1003, label: "Indoor", icon: <Home className="w-6 h-6 mb-2" /> },
+  { code: 1004, label: "Outdoor", icon: <TreePine className="w-6 h-6 mb-2" /> },
+  { code: 1005, label: "Senior focus", icon: <Glasses className="w-6 h-6 mb-2" /> },
+  { code: 1006, label: "Wheelchair accessible", icon: <Accessibility className="w-6 h-6 mb-2" /> },
 ];
