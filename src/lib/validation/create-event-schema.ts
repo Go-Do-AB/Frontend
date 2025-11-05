@@ -13,7 +13,7 @@ export const createEventSchema = z.object({
   description: z.string().optional(),
   categories: z.array(z.number()).min(1, "Please select at least one category"),
   subcategories: z.record(z.number(), z.array(z.number())).optional(),
-  filters: z.array(z.string()).min(1, "Please select at least one category").optional(),
+  filters: z.array(z.number()).min(1, "Please select at least one category").optional(),
 
   eventUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
 
@@ -55,7 +55,7 @@ export const defaultFormValues: CreateEventFormData = {
   description: "",
   categories: [],
   subcategories: {},
-  filters: [],
+  filters: [] as number[],
 
   eventUrl: "",
   bookingUrl: "",
@@ -102,7 +102,7 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     ),
 
     // ✅ must be GUIDs
-    tagIds: data.filters?.length ? data.filters : undefined,
+    tagCodes: data.filters?.length ? data.filters.map(Number) : undefined,
 
     eventUrl: data.eventUrl || undefined,
     bookingUrl: data.bookingUrl || undefined,
@@ -127,8 +127,8 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
       : undefined,
 
     // ✅ ensure proper TimeSpan JSON
-    scheduleStartTime: data.scheduleStartTime ? `${data.scheduleStartTime}:00` : undefined,
-    scheduleEndTime: data.scheduleEndTime ? `${data.scheduleEndTime}:00` : undefined,
+    scheduleStartTime: data.scheduleStartTime ? `${data.scheduleStartTime}` : undefined,
+    scheduleEndTime: data.scheduleEndTime ? `${data.scheduleEndTime}` : undefined,
 
     recurrence: data.recurrence || undefined,
 

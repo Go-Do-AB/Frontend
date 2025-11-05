@@ -30,5 +30,5 @@ export type CreateEventDto = {
   // ---- Matching backend ----
   categoryCodes: number[];
   subcategoryCodesByCategory: Record<number, number[]>;
-  tagIds?: string[];
+  tagCodes?: number[];
 };
