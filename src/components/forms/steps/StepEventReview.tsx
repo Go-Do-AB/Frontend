@@ -11,6 +11,7 @@ import {
   CalendarArrowUp,
   Link,
   User,
+  Sparkles,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -19,6 +20,7 @@ interface StepReviewEventProps {
 }
 
 export function StepReviewEvent({ values }: StepReviewEventProps) {
+  const fmt = (d?: Date | null) => (d ? format(d, "dd.MM.yyyy") : "—");
   return (
     <div className="w-full max-w-xl space-y-4">
       <h2 className="text-xl font-semibold text-center">Review your event info</h2>
@@ -142,6 +144,18 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
               </div>
             </div>
           )}
+
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 mt-1 text-muted-foreground" />
+            <div>
+              <Label className="text-muted-foreground">Spotlight</Label>
+              <p className="mt-0.5">
+                {values.spotlight
+                  ? `Enabled — ${fmt(values.spotlightStartDate)} → ${fmt(values.spotlightEndDate)}`
+                  : "Disabled"}
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

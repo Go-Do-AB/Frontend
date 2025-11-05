@@ -70,7 +70,9 @@ export const defaultFormValues: CreateEventFormData = {
   hasSingleDates: false,
   startDate: undefined as unknown as Date,
   endDate: undefined as unknown as Date,
-
+  startTime: "",
+  endTime: "",
+  
   hasSchedule: false,
   weekday: undefined,
   scheduleStartTime: "",
@@ -82,8 +84,7 @@ export const defaultFormValues: CreateEventFormData = {
   spotlight: false,
   spotlightStartDate: undefined as unknown as Date,
   spotlightEndDate: undefined as unknown as Date,
-  startTime: "",
-  endTime: "",
+
 };
 
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {
@@ -101,7 +102,6 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
       ])
     ),
 
-    // ✅ must be GUIDs
     tagCodes: data.filters?.length ? data.filters.map(Number) : undefined,
 
     eventUrl: data.eventUrl || undefined,
