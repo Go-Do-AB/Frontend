@@ -72,7 +72,7 @@ export const defaultFormValues: CreateEventFormData = {
   endDate: undefined as unknown as Date,
   startTime: "",
   endTime: "",
-  
+
   hasSchedule: false,
   weekday: undefined,
   scheduleStartTime: "",
@@ -84,7 +84,6 @@ export const defaultFormValues: CreateEventFormData = {
   spotlight: false,
   spotlightStartDate: undefined as unknown as Date,
   spotlightEndDate: undefined as unknown as Date,
-
 };
 
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {

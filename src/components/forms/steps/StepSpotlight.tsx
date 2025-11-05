@@ -127,7 +127,7 @@ export function StepSpotlight() {
                       mode="single"
                       selected={field.value ?? undefined}
                       onSelect={(d) => field.onChange(d ?? null)}
-                      disabled={{ before: (startDate && startDate > nextDay ? startDate : nextDay) }}
+                      disabled={{ before: startDate && startDate > nextDay ? startDate : nextDay }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -144,8 +144,7 @@ export function StepSpotlight() {
       {/* Inline summary */}
       {spotlight && startDate && endDate && (
         <p className="text-sm text-muted-foreground">
-          Spotlight period:{" "}
-          <span className="font-medium">{format(startDate, "dd.MM.yyyy")}</span> →{" "}
+          Spotlight period: <span className="font-medium">{format(startDate, "dd.MM.yyyy")}</span> →{" "}
           <span className="font-medium">{format(endDate, "dd.MM.yyyy")}</span>
         </p>
       )}

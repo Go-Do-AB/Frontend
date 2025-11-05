@@ -104,7 +104,7 @@ export const categoryOptions: { code: number; label: string; icon: React.Element
 // Here filters could be GUIDs if your BE provides them.
 // For now I’ll use simple string IDs.
 export const filterOptions: { code: number; label: string; icon: JSX.Element }[] = [
-  { code: 1001, label: "Free", icon: <Ticket className="w-6 h-6 mb-2" /> }, 
+  { code: 1001, label: "Free", icon: <Ticket className="w-6 h-6 mb-2" /> },
   { code: 1002, label: "Family-friendly", icon: <Users className="w-6 h-6 mb-2" /> },
   { code: 1003, label: "Indoor", icon: <Home className="w-6 h-6 mb-2" /> },
   { code: 1004, label: "Outdoor", icon: <TreePine className="w-6 h-6 mb-2" /> },
