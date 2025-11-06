@@ -33,76 +33,72 @@ export const subcategoriesMap: Record<
   number,
   { code: number; label: string; icon: React.ElementType }[]
 > = {
+   // 1 — Events
   1: [
-    { code: 101, label: "0-4", icon: BabyIcon },
-    { code: 102, label: "5-10", icon: PersonStandingIcon },
-    { code: 103, label: "11-15", icon: SmileIcon },
+    { code: 101, label: "Festivals & fun", icon: Sparkles },
+    { code: 102, label: "Leisure & lifestyle", icon: Users },
+    { code: 103, label: "Fairs & markets", icon: Landmark },
   ],
+
+  // 2 — Sports & sporting activities
   2: [
-    { code: 201, label: "Concerts", icon: CalendarDays },
-    { code: 202, label: "Markets", icon: Users },
-    { code: 203, label: "Conventions", icon: Landmark },
-    { code: 204, label: "Festivals", icon: Sparkles },
-    { code: 205, label: "Street Events", icon: Tent },
+    { code: 201, label: "Sports to do", icon: Dumbbell },
+    { code: 202, label: "Sports to watch", icon: Dribbble },
+    { code: 203, label: "Sports to try", icon: Bike },
   ],
+
+  // 3 — Entertainment
   3: [
-    { code: 301, label: "Football", icon: Dribbble },
-    { code: 302, label: "Running", icon: Bike },
-    { code: 303, label: "Cycling", icon: Bike },
-    { code: 304, label: "Swimming", icon: Dribbble },
-    { code: 305, label: "Winter Sports", icon: Mountain },
-    { code: 306, label: "Other", icon: Star },
+    { code: 301, label: "Cinema & film", icon: Film },
+    { code: 302, label: "Music & concerts", icon: Sparkles },
+    { code: 303, label: "Theater & shows", icon: Clapperboard },
   ],
+
+  // 4 — Culture & sights
   4: [
-    { code: 401, label: "Movies", icon: Film },
-    { code: 402, label: "Comedy", icon: Clapperboard },
-    { code: 403, label: "Nightlife", icon: Sparkles },
-    { code: 404, label: "Theater", icon: Clapperboard },
-    { code: 405, label: "Shows", icon: Star },
+    { code: 401, label: "Guided tours", icon: Landmark },
+    { code: 402, label: "Art & galleries", icon: Paintbrush2 },
+    { code: 403, label: "Museums & sights", icon: Landmark },
   ],
+
+  // 5 — Adventure & activities
   5: [
-    { code: 501, label: "Museums", icon: Landmark },
-    { code: 502, label: "Art", icon: Paintbrush2 },
-    { code: 503, label: "Architecture", icon: Landmark },
-    { code: 504, label: "Historical Sites", icon: Landmark },
-    { code: 505, label: "Galleries", icon: Landmark },
+    { code: 501, label: "Parks & trails", icon: TreeDeciduous },
+    { code: 502, label: "Food & drink activities", icon: Tent },
+    { code: 503, label: "Trips & adventures", icon: Mountain },
   ],
+
+  // 6 — Learn & explore
   6: [
-    { code: 601, label: "Hiking", icon: Mountain },
-    { code: 602, label: "Escape Rooms", icon: Sparkles },
-    { code: 603, label: "Climbing", icon: Mountain },
-    { code: 604, label: "Zipline", icon: TreeDeciduous },
-    { code: 605, label: "Amusement Parks", icon: Tent },
+    { code: 601, label: "Talks & lectures", icon: Book },
+    { code: 602, label: "Learn to…", icon: GraduationCap },
+    { code: 603, label: "Gatherings & meetings", icon: Users },
   ],
+
+  // 7 — Health & wellbeing
   7: [
-    { code: 701, label: "Workshops", icon: BookOpen },
-    { code: 702, label: "Courses", icon: GraduationCap },
-    { code: 703, label: "Lectures", icon: Book },
-    { code: 704, label: "Science Centers", icon: Sparkles },
-    { code: 705, label: "Library Events", icon: Book },
-  ],
-  8: [
-    { code: 801, label: "Yoga", icon: HeartPulse },
-    { code: 802, label: "Meditation", icon: HeartPulse },
-    { code: 803, label: "Spa", icon: HeartPulse },
-    { code: 804, label: "Nature Walks", icon: TreeDeciduous },
-    { code: 805, label: "Fitness Classes", icon: Dumbbell },
+    { code: 701, label: "Spas & pools", icon: HeartPulse },
+    { code: 702, label: "Support & interaction", icon: Users },
+    { code: 703, label: "Activities of faith", icon: Book },
   ],
 };
 
-export const categoryOptions: { code: number; label: string; icon: React.ElementType }[] = [
-  { code: 1, label: "Fun for Kids", icon: Baby },
-  { code: 2, label: "Events", icon: CalendarDays },
-  { code: 3, label: "Sports", icon: Dribbble },
-  { code: 4, label: "Entertainment", icon: Clapperboard },
-  { code: 5, label: "Culture & Sights", icon: Landmark },
-  { code: 6, label: "Experiences & Adventures", icon: Mountain },
-  { code: 7, label: "Learn & Explore", icon: BookOpen },
-  { code: 8, label: "Health & Wellbeing", icon: HeartPulse },
+// Category list
+export const categoryOptions: {
+  code: number;
+  label: string;
+  icon: React.ElementType;
+}[] = [
+  { code: 1, label: "Events", icon: CalendarDays },
+  { code: 2, label: "Sports & sporting activities", icon: Dribbble },
+  { code: 3, label: "Entertainment", icon: Clapperboard },
+  { code: 4, label: "Culture & sights", icon: Landmark },
+  { code: 5, label: "Adventure & activities", icon: Mountain },
+  { code: 6, label: "Learn & explore", icon: BookOpen },
+  { code: 7, label: "Health & wellbeing", icon: HeartPulse },
 ];
 
-// Here filters could be GUIDs if your BE provides them.
-// For now I’ll use simple string IDs.
+// Tag list
 export const filterOptions: { code: number; label: string; icon: JSX.Element }[] = [
   { code: 1001, label: "Free", icon: <Ticket className="w-6 h-6 mb-2" /> },
   { code: 1002, label: "Family-friendly", icon: <Users className="w-6 h-6 mb-2" /> },
