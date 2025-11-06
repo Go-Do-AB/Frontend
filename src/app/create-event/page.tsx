@@ -16,12 +16,13 @@ import {
   createPayload,
   defaultFormValues,
 } from "@/lib/validation/create-event-schema";
-import { Info, MapPin, Clock, CheckCircleIcon } from "lucide-react"; // or your preferred icon set
+import { Info, MapPin, Clock, CheckCircleIcon, Sparkles } from "lucide-react"; // or your preferred icon set
 
 const steps = [
   { label: "Details", icon: <Info className="w-4 h-4 mr-1" /> },
   { label: "Location", icon: <MapPin className="w-4 h-4 mr-1" /> },
   { label: "Date & Time", icon: <Clock className="w-4 h-4 mr-1" /> },
+  { label: "Spotlight", icon: <Sparkles className="w-4 h-4 mr-1" /> },
   { label: "Confirm", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
 ];
 
@@ -39,7 +40,10 @@ export default function CreateEventPage() {
 
   const { mutate } = useCreateEvent();
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 3));
+  const totalSteps = steps.length;
+  const lastIndex = totalSteps - 1;
+
+  const nextStep = () => setStep((s) => Math.min(s + 1, lastIndex));
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = (data: CreateEventFormData) => {
@@ -107,7 +111,7 @@ export default function CreateEventPage() {
           <div className="h-2 bg-gray-300 rounded-full">
             <div
               className="h-2 bg-black rounded-full transition-all duration-300"
-              style={{ width: `${((step + 1) / 4) * 100}%` }}
+              style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
             />
           </div>
         </div>

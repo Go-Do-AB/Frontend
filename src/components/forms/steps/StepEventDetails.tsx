@@ -202,7 +202,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                   const current = field.value ?? [];
                   const newVal = isSelected
                     ? (field.value ?? []).filter((f: number) => f !== code)
-                    : [ ...(field.value ?? []), code ];
+                    : [...(field.value ?? []), code];
                   field.onChange(newVal);
                 };
 

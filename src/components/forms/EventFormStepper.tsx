@@ -7,6 +7,7 @@ import { StepEventDetails } from "./steps/StepEventDetails";
 import { StepReviewEvent } from "./steps/StepEventReview";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { StepEventLocation } from "./steps/StepEventLocation";
+import { StepSpotlight } from "./steps/StepSpotlight";
 
 interface EventFormStepperProps {
   step: number;
@@ -33,7 +34,9 @@ const stepFields: Record<number, (keyof CreateEventFormData)[]> = {
   0: ["title", "organiser", "categories", "organisationNumber"],
   1: ["streetName", "city", "postalCode"],
   2: ["startDate", "endDate", "scheduleStartTime", "scheduleEndTime"], // ✅ updated
+  3: ["spotlight", "spotlightStartDate", "spotlightEndDate"],
 };
+const LAST_STEP = 4;
 
 export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFormStepperProps) {
   const {
@@ -72,13 +75,14 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
       {step === 0 && <StepEventDetails control={control} register={register} errors={errors} />}
       {step === 1 && <StepEventLocation register={register} errors={errors} />}
       {step === 2 && <StepEventDateTime control={control} errors={errors} />}
-      {step === 3 && <StepReviewEvent values={getValues()} />}
+      {step === 3 && <StepSpotlight />}
+      {step === 4 && <StepReviewEvent values={getValues()} />}
 
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={prevStep} disabled={step === 0}>
           Back
         </Button>
-        {step < 3 ? (
+        {step < LAST_STEP ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -133,6 +137,17 @@ function useIsStepFilled(step: number, watch: UseFormWatch<CreateEventFormData>)
     case 2: {
       const [startDate, endDate] = watch(["startDate", "endDate"]);
       return [startDate, endDate].every(truthy);
+    }
+    case 3: {
+      const [spotlight, spotlightStartDate, spotlightEndDate] = watch([
+        "spotlight",
+        "spotlightStartDate",
+        "spotlightEndDate",
+      ]);
+      // If spotlight is OFF, we allow proceeding without dates.
+      if (!spotlight) return true;
+      // Spotlight ON => both dates required
+      return truthy(spotlightStartDate) && truthy(spotlightEndDate);
     }
     default:
       return true;
