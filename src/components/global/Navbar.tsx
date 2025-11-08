@@ -1,12 +1,24 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"; 
 import { Search } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
+import { useRouter } from "next/navigation";               
+import { api } from "@/lib/axios"; 
+
 export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
+   const router = useRouter();
+
+     // logout
+  const onLogout = () => {
+    try { localStorage.removeItem("token"); } catch {}
+    try { delete (api.defaults.headers.common as any).Authorization; } catch {}
+    router.replace("/login");
+  };
 
   return (
     <header className="w-full border-b bg-white p-4">
@@ -40,6 +52,12 @@ export function Navbar() {
               onClick={() => setShowSearch(true)}
             />
           )}
+
+            {/* logout button */}
+          <Button variant="outline" size="sm" onClick={onLogout}>
+            Log out
+          </Button>
+
         </div>
       </div>
     </header>
