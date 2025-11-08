@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Navbar } from "@/components/global/Navbar";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ export default function Home() {
       <Navbar />
 
       <section className="flex-1 flex justify-between items-center bg-yellow-400 text-black px-10 py-20 relative">
-        
         {/* Left: Brand */}
         <div>
           <h2 className="text-6xl font-extrabold mb-4">Go.Do.</h2>

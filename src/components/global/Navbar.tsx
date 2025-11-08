@@ -1,22 +1,27 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
-import { useRouter } from "next/navigation";               
-import { api } from "@/lib/axios"; 
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
 
 export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
-   const router = useRouter();
+  const router = useRouter();
 
-     // logout
+  // logout
   const onLogout = () => {
-    try { localStorage.removeItem("token"); } catch {}
-    try { delete (api.defaults.headers.common as any).Authorization; } catch {}
+    try {
+      localStorage.removeItem("token");
+    } catch {}
+    try {
+      const common = api.defaults.headers.common as Record<string, string | undefined>;
+      delete common.Authorization;
+    } catch {}
     router.replace("/login");
   };
 
@@ -53,11 +58,10 @@ export function Navbar() {
             />
           )}
 
-            {/* logout button */}
+          {/* logout button */}
           <Button variant="outline" size="sm" onClick={onLogout}>
             Log out
           </Button>
-
         </div>
       </div>
     </header>
