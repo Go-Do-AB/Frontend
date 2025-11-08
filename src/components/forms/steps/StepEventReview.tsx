@@ -189,22 +189,22 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
 
                   <div className="text-sm">
                     <div className="flex justify-between">
-                      <span>{days} dygn × 99 kr</span>
+                      <span>{days} days × 99 kr</span>
                       <span className="font-medium">{money.format(subtotal)}</span>
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span>Moms (inkluderad)</span>
+                      <span>VAT (included)</span>
                       <span className="font-medium">{money.format(vat)}</span>
                     </div>
                     <hr className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">Totalt (inkl. moms)</span>
+                      <span className="font-semibold">Total (incl. VAT)</span>
                       <span className="font-semibold">{money.format(total)}</span>
                     </div>
                   </div>
 
                   <p className="text-xs text-muted-foreground mt-2">
-                    Priset är 99 kr per dygn + 125 kr moms. Moms är inkluderad i totalsumman.
+                    The price is 99 kr per day plus 125 kr VAT. VAT is included in the total
                   </p>
                 </div>
               )}

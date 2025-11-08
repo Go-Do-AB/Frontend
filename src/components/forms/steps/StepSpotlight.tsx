@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import type { FormData } from "@/hooks/useEventForm";
 
 const PRICE_PER_DAY = 99; //price
-const VAT_FLAT = 125;     // moms in kr 
+const VAT_FLAT = 125;     // moms in SEK 
 
 export function StepSpotlight() {
   const { control, watch, setValue, clearErrors } = useFormContext<FormData>();
@@ -176,21 +176,21 @@ export function StepSpotlight() {
     <div className="rounded-2xl border p-4 bg-muted/30">
       <div className="text-sm">
         <div className="flex justify-between">
-          <span>{days} dygn × 99 kr</span>
+          <span>{days} days × 99 kr</span>
           <span className="font-medium">{fmt.format(subtotal)}</span>
         </div>
         <div className="flex justify-between mt-1">
-          <span>Moms (inkluderad)</span>
+          <span>VAT (included)</span>
           <span className="font-medium">{fmt.format(vat)}</span>
         </div>
         <hr className="my-2" />
         <div className="flex justify-between text-base">
-          <span className="font-semibold">Totalt (inkl. moms)</span>
+          <span className="font-semibold">Total (incl. VAT)</span>
           <span className="font-semibold">{fmt.format(total)}</span>
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-2">
-        Priset är 99 kr per dygn + 125 kr moms. Moms är inkluderad i totalsumman ovan.
+        The price is 99 SEK per day plus 125 SEK VAT. VAT is included in the total
       </p>
     </div>
   </>
