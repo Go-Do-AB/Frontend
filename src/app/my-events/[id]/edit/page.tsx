@@ -5,7 +5,17 @@ import { useParams, useRouter } from "next/navigation";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Info, MapPin, Clock, CheckCircleIcon, Sparkles, Loader2, ArrowLeft } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Info,
+  MapPin,
+  Clock,
+  CheckCircleIcon,
+  Sparkles,
+  Loader2,
+  ArrowLeft,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Navbar } from "@/components/global/Navbar";
@@ -131,7 +141,9 @@ export default function EditEventPage() {
           <div className="bg-white p-6 rounded-lg shadow text-center">
             <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Event not found</h2>
-            <p className="text-gray-600 mb-4">The event you&apos;re trying to edit doesn&apos;t exist.</p>
+            <p className="text-gray-600 mb-4">
+              The event you&apos;re trying to edit doesn&apos;t exist.
+            </p>
             <button
               onClick={() => router.push("/my-events")}
               className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"

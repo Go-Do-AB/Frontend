@@ -1,15 +1,15 @@
 // Quick-create DTO for Admin endpoint - all fields optional
 export type QuickCreateEventDto = {
   organisationNumber?: string;
-  name?: string;              // Maps to Title
-  organiserName?: string;     // Maps to Organiser
-  place?: string;             // Maps to City
-  address?: string;           // Maps to StreetName
+  name?: string; // Maps to Title
+  organiserName?: string; // Maps to Organiser
+  place?: string; // Maps to City
+  address?: string; // Maps to StreetName
   gpsCoordinates?: string;
   description?: string;
   subcategoryCodes?: number[];
-  filterCodes?: number[];     // Tag codes (1001-1006)
-  readMoreUrl?: string;       // Maps to EventUrl
+  filterCodes?: number[]; // Tag codes (1001-1006)
+  readMoreUrl?: string; // Maps to EventUrl
 };
 
 export type CreateEventDto = {

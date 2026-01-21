@@ -89,7 +89,10 @@ export const defaultFormValues: CreateEventFormData = {
 };
 
 // Helper to combine date and time into ISO string
-const combineDateAndTime = (date: Date | undefined, time: string | undefined): string | undefined => {
+const combineDateAndTime = (
+  date: Date | undefined,
+  time: string | undefined
+): string | undefined => {
   if (!date) return undefined;
   const d = new Date(date);
   if (time) {

@@ -4,7 +4,16 @@ import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Info, MapPin, Clock, CheckCircleIcon, Sparkles, ArrowLeft } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Info,
+  MapPin,
+  Clock,
+  CheckCircleIcon,
+  Sparkles,
+  ArrowLeft,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Navbar } from "@/components/global/Navbar";

@@ -58,9 +58,7 @@ export default function MyEventsPage() {
   }, [router]);
 
   const { data, isLoading, error, refetch } = useEvents(
-    userId
-      ? { createdById: userId, isActive: true, pageNumber, pageSize: 10 }
-      : undefined
+    userId ? { createdById: userId, isActive: true, pageNumber, pageSize: 10 } : undefined
   );
 
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
@@ -154,9 +152,7 @@ export default function MyEventsPage() {
           <Card className="bg-white">
             <CardContent className="py-12 text-center">
               <p className="text-lg text-gray-600 mb-4">No events yet</p>
-              <Button onClick={() => router.push("/create-event")}>
-                Create your first event
-              </Button>
+              <Button onClick={() => router.push("/create-event")}>Create your first event</Button>
             </CardContent>
           </Card>
         )}
@@ -170,16 +166,10 @@ export default function MyEventsPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <CardTitle className="text-xl">{event.title}</CardTitle>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {event.organiser}
-                        </p>
+                        <p className="text-sm text-gray-500 mt-1">{event.organiser}</p>
                       </div>
                       <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditClick(event)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleEditClick(event)}>
                           <Pencil className="w-4 h-4" />
                         </Button>
                         <Button
@@ -224,11 +214,8 @@ export default function MyEventsPage() {
                         <div>
                           {event.scheduleStartTime || event.startDate ? (
                             <p>
-                              {formatTime(event.scheduleStartTime) ||
-                                formatTime(event.startDate)}{" "}
-                              -{" "}
-                              {formatTime(event.scheduleEndTime) ||
-                                formatTime(event.endDate)}
+                              {formatTime(event.scheduleStartTime) || formatTime(event.startDate)} -{" "}
+                              {formatTime(event.scheduleEndTime) || formatTime(event.endDate)}
                             </p>
                           ) : (
                             <p>-</p>
@@ -287,19 +274,15 @@ export default function MyEventsPage() {
           <DialogHeader>
             <DialogTitle>Delete Event</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deletingEvent?.title}&quot;? This
-              action cannot be undone.
+              Are you sure you want to delete &quot;{deletingEvent?.title}&quot;? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeletingEvent(null)}>
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteConfirm}
-              disabled={isDeleting}
-            >
+            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isDeleting}>
               {isDeleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Delete
             </Button>

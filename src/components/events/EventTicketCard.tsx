@@ -48,7 +48,9 @@ export function EventTicketCard({ eventData, onCreateAnother }: EventTicketCardP
           </div>
         </div>
         <h2 className="text-2xl font-bold">Tack för ditt bidrag!</h2>
-        <p className="text-gray-700">Eventet har skickats in och kommer snart att synas på Go.Do.</p>
+        <p className="text-gray-700">
+          Eventet har skickats in och kommer snart att synas på Go.Do.
+        </p>
       </div>
 
       {/* Ticket Card */}
@@ -88,7 +90,9 @@ export function EventTicketCard({ eventData, onCreateAnother }: EventTicketCardP
 
         <CardContent className="pt-4 space-y-4">
           {/* Event title */}
-          <h3 className="text-xl font-bold text-black truncate">{eventData.title || "Untitled Event"}</h3>
+          <h3 className="text-xl font-bold text-black truncate">
+            {eventData.title || "Untitled Event"}
+          </h3>
 
           {/* Event details */}
           <div className="space-y-2 text-sm">
@@ -98,7 +102,9 @@ export function EventTicketCard({ eventData, onCreateAnother }: EventTicketCardP
                 <Calendar className="w-4 h-4 text-gray-500" />
                 <span>
                   {formattedStartDate}
-                  {formattedEndDate && formattedEndDate !== formattedStartDate && ` - ${formattedEndDate}`}
+                  {formattedEndDate &&
+                    formattedEndDate !== formattedStartDate &&
+                    ` - ${formattedEndDate}`}
                 </span>
               </div>
             )}

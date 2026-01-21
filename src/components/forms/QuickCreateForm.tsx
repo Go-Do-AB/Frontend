@@ -5,9 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardContent } from "@/components/ui/card";
-import { Zap, MapPin, FileText, Tag, Link2, Building2 } from "lucide-react";
+import { Zap, MapPin, FileText, Tag, Building2 } from "lucide-react";
 import { QuickCreateFormData } from "@/lib/validation/quick-create-schema";
 import { subcategoriesMap, categoryOptions, filterOptions } from "@/lib/content/contentText";
 
@@ -41,17 +40,13 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
 
   const handleSubcategoryToggle = (code: number) => {
     const current = selectedSubcategories;
-    const updated = current.includes(code)
-      ? current.filter((c) => c !== code)
-      : [...current, code];
+    const updated = current.includes(code) ? current.filter((c) => c !== code) : [...current, code];
     setValue("subcategoryCodes", updated);
   };
 
   const handleFilterToggle = (code: number) => {
     const current = selectedFilters;
-    const updated = current.includes(code)
-      ? current.filter((c) => c !== code)
-      : [...current, code];
+    const updated = current.includes(code) ? current.filter((c) => c !== code) : [...current, code];
     setValue("filterCodes", updated);
   };
 

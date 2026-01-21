@@ -19,10 +19,13 @@ export function useEvents(filter?: EventFilterDto) {
       if (filter?.fromDate) params.append("fromDate", filter.fromDate);
       if (filter?.toDate) params.append("toDate", filter.toDate);
       if (filter?.city) params.append("city", filter.city);
-      if (filter?.organisationNumber) params.append("organisationNumber", filter.organisationNumber);
+      if (filter?.organisationNumber)
+        params.append("organisationNumber", filter.organisationNumber);
       if (filter?.createdById) params.append("createdById", filter.createdById);
-      if (filter?.categoryCodes?.length) params.append("categoryCodes", filter.categoryCodes.join(","));
-      if (filter?.subcategoryCodes?.length) params.append("subcategoryCodes", filter.subcategoryCodes.join(","));
+      if (filter?.categoryCodes?.length)
+        params.append("categoryCodes", filter.categoryCodes.join(","));
+      if (filter?.subcategoryCodes?.length)
+        params.append("subcategoryCodes", filter.subcategoryCodes.join(","));
       if (filter?.tagCodes?.length) params.append("tagCodes", filter.tagCodes.join(","));
       if (filter?.pageNumber) params.append("pageNumber", String(filter.pageNumber));
       if (filter?.pageSize) params.append("pageSize", String(filter.pageSize));

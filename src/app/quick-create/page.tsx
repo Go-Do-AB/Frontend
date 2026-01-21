@@ -64,8 +64,10 @@ export default function QuickCreatePage() {
           </div>
         );
       },
-      onError: (error: any) => {
-        const message = error?.response?.data?.errors?.[0] || "Please check your input and try again.";
+      onError: (error: unknown) => {
+        const axiosError = error as { response?: { data?: { errors?: string[] } } };
+        const message =
+          axiosError?.response?.data?.errors?.[0] || "Please check your input and try again.";
         toast(
           <div className="flex items-start gap-3 text-black">
             <XCircle className="text-red-500 mt-1" />
@@ -95,9 +97,7 @@ export default function QuickCreatePage() {
         </div>
 
         {/* Admin badge */}
-        <div className="mb-6 bg-black text-white text-xs px-3 py-1 rounded-full">
-          Admin Only
-        </div>
+        <div className="mb-6 bg-black text-white text-xs px-3 py-1 rounded-full">Admin Only</div>
 
         <div className="w-full max-w-2xl">
           {formSubmitted && submittedData ? (
@@ -142,7 +142,9 @@ export default function QuickCreatePage() {
                     {submittedData.description && (
                       <div>
                         <p className="text-xs text-gray-500 uppercase tracking-wide">Description</p>
-                        <p className="text-sm text-gray-700 line-clamp-3">{submittedData.description}</p>
+                        <p className="text-sm text-gray-700 line-clamp-3">
+                          {submittedData.description}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -152,11 +154,12 @@ export default function QuickCreatePage() {
                     <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
                       Always Open
                     </span>
-                    {submittedData.subcategoryCodes && submittedData.subcategoryCodes.length > 0 && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                        {submittedData.subcategoryCodes.length} categories
-                      </span>
-                    )}
+                    {submittedData.subcategoryCodes &&
+                      submittedData.subcategoryCodes.length > 0 && (
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                          {submittedData.subcategoryCodes.length} categories
+                        </span>
+                      )}
                     {submittedData.filterCodes && submittedData.filterCodes.length > 0 && (
                       <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
                         {submittedData.filterCodes.length} filters
