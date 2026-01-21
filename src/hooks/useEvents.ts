@@ -77,7 +77,7 @@ export function usePatchEvent() {
   });
 }
 
-// Delete an event
+// Delete an event (soft delete - sets IsActive = false)
 export function useDeleteEvent() {
   const queryClient = useQueryClient();
 
@@ -89,5 +89,6 @@ export function useDeleteEvent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
     },
+    retry: false, // Disable retry to prevent double-delete attempts
   });
 }

@@ -62,7 +62,7 @@ export default function MyEventsPage() {
 
   const { data, isLoading, error, refetch } = useEvents(
     userId
-      ? { createdById: userId, pageNumber, pageSize: 10 }
+      ? { createdById: userId, isActive: true, pageNumber, pageSize: 10 }
       : undefined
   );
 
