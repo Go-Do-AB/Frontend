@@ -199,7 +199,6 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                 const isSelected = (field.value ?? []).includes(code);
 
                 const toggle = () => {
-                  const current = field.value ?? [];
                   const newVal = isSelected
                     ? (field.value ?? []).filter((f: number) => f !== code)
                     : [...(field.value ?? []), code];
