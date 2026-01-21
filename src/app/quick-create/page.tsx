@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Zap, LogOut, Plus, ArrowLeft } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Zap,
+  LogOut,
+  Plus,
+  ArrowLeft,
+  ShieldX,
+  Loader2,
+} from "lucide-react";
 
 import { Navbar } from "@/components/global/Navbar";
 import { QuickCreateForm } from "@/components/forms/QuickCreateForm";
@@ -23,6 +32,28 @@ export default function QuickCreatePage() {
   const router = useRouter();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<QuickCreateFormData | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // null = loading
+
+  // Check Admin role on mount
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setIsAdmin(false);
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const roles =
+        payload.role ||
+        payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
+        [];
+      const roleArray = Array.isArray(roles) ? roles : [roles];
+      setIsAdmin(roleArray.includes("Admin"));
+    } catch {
+      setIsAdmin(false);
+    }
+  }, []);
 
   const form = useForm<QuickCreateFormData>({
     resolver: zodResolver(quickCreateSchema),
@@ -80,6 +111,48 @@ export default function QuickCreatePage() {
       },
     });
   };
+
+  // Loading state
+  if (isAdmin === null) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-300 text-black flex flex-col">
+        <Navbar />
+        <section className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-8 h-8 animate-spin" />
+            <p>Checking permissions...</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  // Access denied for non-admins
+  if (!isAdmin) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-300 text-black flex flex-col">
+        <Navbar />
+        <section className="flex-1 flex items-center justify-center">
+          <Card className="max-w-md bg-white shadow-lg">
+            <CardContent className="pt-6 text-center space-y-4">
+              <ShieldX className="w-16 h-16 text-red-500 mx-auto" />
+              <h2 className="text-2xl font-bold">Access Denied</h2>
+              <p className="text-gray-600">
+                This page is only accessible to administrators.
+              </p>
+              <Button
+                onClick={() => router.push("/landing")}
+                className="w-full bg-black text-white hover:bg-black/90"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-300 text-black flex flex-col">
