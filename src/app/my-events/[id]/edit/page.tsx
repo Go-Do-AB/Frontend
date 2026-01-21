@@ -5,9 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Info, MapPin, Clock, CheckCircleIcon, Sparkles, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Info, MapPin, Clock, CheckCircleIcon, Sparkles, Loader2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 import { Navbar } from "@/components/global/Navbar";
+import { Button } from "@/components/ui/button";
 import { EventFormStepper } from "@/components/forms/EventFormStepper";
 import { useEvent, useUpdateEvent } from "@/hooks/useEvents";
 import type { CreateEventFormData } from "@/lib/validation/create-event-schema";
@@ -146,6 +148,14 @@ export default function EditEventPage() {
     <main className="min-h-screen bg-yellow-400 text-black flex flex-col">
       <Navbar />
       <section className="flex-1 flex flex-col items-center px-6 py-10">
+        <div className="w-full max-w-xl mb-4">
+          <Link href="/my-events">
+            <Button variant="ghost" size="sm" className="gap-2 hover:bg-black/10">
+              <ArrowLeft className="w-4 h-4" />
+              Back to My Events
+            </Button>
+          </Link>
+        </div>
         <h1 className="text-4xl font-bold mb-6">Edit Event</h1>
 
         <div className="w-full max-w-xl mb-6">

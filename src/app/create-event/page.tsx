@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Info, MapPin, Clock, CheckCircleIcon, Sparkles } from "lucide-react";
+import { CheckCircle, XCircle, Info, MapPin, Clock, CheckCircleIcon, Sparkles, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 import { Navbar } from "@/components/global/Navbar";
+import { Button } from "@/components/ui/button";
 import { EventFormStepper } from "@/components/forms/EventFormStepper";
 import { EventTicketCard } from "@/components/events/EventTicketCard";
 import { useCreateEvent } from "@/hooks/useCreateEvent";
@@ -103,6 +105,14 @@ export default function CreateEventPage() {
     <main className="min-h-screen bg-yellow-400 text-black flex flex-col">
       <Navbar />
       <section className="flex-1 flex flex-col items-center px-6 py-10">
+        <div className="w-full max-w-xl mb-4">
+          <Link href="/landing">
+            <Button variant="ghost" size="sm" className="gap-2 hover:bg-black/10">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
         <h1 className="text-4xl font-bold mb-6">Create an Event</h1>
 
         <div className="w-full max-w-xl mb-6">
