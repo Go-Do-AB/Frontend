@@ -180,3 +180,117 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
 };
 
 export type CreateEventFormData = z.infer<typeof createEventSchema>;
+
+// Weekday index to name mapping (for converting from BE to FE)
+const weekdayIndexToName: Record<number, CreateEventFormData["weekday"]> = {
+  0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+};
+
+// Convert EventDto from API to CreateEventFormData for editing
+export const eventDtoToFormData = (event: {
+  organiser: string;
+  organisationNumber: string;
+  title: string;
+  description?: string;
+  categories: { code: number; name: string }[];
+  subcategories: { code: number; name: string; categoryCode: number }[];
+  tags: { code: number; name: string }[];
+  eventUrl?: string;
+  bookingUrl?: string;
+  streetName: string;
+  streetName2?: string;
+  houseNumber?: number;
+  city: string;
+  postalCode: string;
+  gpsCoordinates?: string;
+  hasSingleDates?: boolean;
+  startDate?: string;
+  endDate?: string;
+  hasSchedule?: boolean;
+  weekday?: number;
+  scheduleStartTime?: string;
+  scheduleEndTime?: string;
+  recurrence?: string;
+  isAlwaysOpen?: boolean;
+  spotlight?: boolean;
+  spotlightStartDate?: string;
+  spotlightEndDate?: string;
+}): CreateEventFormData => {
+  // Extract time from ISO date string
+  const extractTime = (isoString?: string): string => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  // Parse TimeSpan string (HH:mm:ss or HH:mm) to HH:mm
+  const parseTimeSpan = (timeSpan?: string): string => {
+    if (!timeSpan) return "";
+    // Handle both "HH:mm:ss" and "HH:mm" formats
+    const parts = timeSpan.split(":");
+    if (parts.length >= 2) {
+      return `${parts[0].padStart(2, "0")}:${parts[1].padStart(2, "0")}`;
+    }
+    return "";
+  };
+
+  // Build subcategories map: { categoryCode: [subcategoryCodes] }
+  const subcategoriesMap: Record<number, number[]> = {};
+  for (const sub of event.subcategories || []) {
+    if (!subcategoriesMap[sub.categoryCode]) {
+      subcategoriesMap[sub.categoryCode] = [];
+    }
+    subcategoriesMap[sub.categoryCode].push(sub.code);
+  }
+
+  return {
+    organiser: event.organiser || "",
+    organisationNumber: event.organisationNumber || "",
+    title: event.title || "",
+    description: event.description || "",
+    categories: (event.categories || []).map((c) => c.code),
+    subcategories: subcategoriesMap,
+    filters: (event.tags || []).map((t) => t.code),
+
+    eventUrl: event.eventUrl || "",
+    bookingUrl: event.bookingUrl || "",
+
+    streetName: event.streetName || "",
+    streetName2: event.streetName2 || "",
+    houseNumber: event.houseNumber || 0,
+
+    city: event.city || "",
+    postalCode: event.postalCode || "",
+    gpsCoordinates: event.gpsCoordinates || "",
+
+    hasSingleDates: event.hasSingleDates || false,
+    startDate: event.startDate ? new Date(event.startDate) : (undefined as unknown as Date),
+    endDate: event.endDate ? new Date(event.endDate) : (undefined as unknown as Date),
+    startTime: extractTime(event.startDate),
+    endTime: extractTime(event.endDate),
+
+    hasSchedule: event.hasSchedule || false,
+    weekday: event.weekday !== undefined ? weekdayIndexToName[event.weekday] : undefined,
+    scheduleStartTime: parseTimeSpan(event.scheduleStartTime),
+    scheduleEndTime: parseTimeSpan(event.scheduleEndTime),
+
+    recurrence: event.recurrence || "",
+    isAlwaysOpen: event.isAlwaysOpen || false,
+
+    spotlight: event.spotlight || false,
+    spotlightStartDate: event.spotlightStartDate
+      ? new Date(event.spotlightStartDate)
+      : (undefined as unknown as Date),
+    spotlightEndDate: event.spotlightEndDate
+      ? new Date(event.spotlightEndDate)
+      : (undefined as unknown as Date),
+  };
+};

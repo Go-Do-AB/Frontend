@@ -26,12 +26,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
-import { useEvents, usePatchEvent, useDeleteEvent } from "@/hooks/useEvents";
-import type { EventDto, PatchEventDto } from "@/types/events";
+import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
+import type { EventDto } from "@/types/events";
 
 export default function MyEventsPage() {
   const router = useRouter();
@@ -66,12 +63,7 @@ export default function MyEventsPage() {
       : undefined
   );
 
-  const { mutate: patchEvent, isPending: isPatching } = usePatchEvent();
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
-
-  // Edit state
-  const [editingEvent, setEditingEvent] = useState<EventDto | null>(null);
-  const [editForm, setEditForm] = useState<PatchEventDto>({});
 
   // Delete state
   const [deletingEvent, setDeletingEvent] = useState<EventDto | null>(null);
@@ -81,36 +73,7 @@ export default function MyEventsPage() {
   const totalPages = Math.ceil(totalCount / 10);
 
   const handleEditClick = (event: EventDto) => {
-    setEditingEvent(event);
-    setEditForm({
-      title: event.title,
-      description: event.description || "",
-      streetName: event.streetName,
-      streetName2: event.streetName2 || "",
-      city: event.city,
-      postalCode: event.postalCode,
-      gpsCoordinates: event.gpsCoordinates || "",
-      eventUrl: event.eventUrl || "",
-      bookingUrl: event.bookingUrl || "",
-    });
-  };
-
-  const handleEditSave = () => {
-    if (!editingEvent) return;
-
-    patchEvent(
-      { id: editingEvent.id, data: editForm },
-      {
-        onSuccess: () => {
-          toast.success("Event updated successfully");
-          setEditingEvent(null);
-          refetch();
-        },
-        onError: () => {
-          toast.error("Failed to update event");
-        },
-      }
-    );
+    router.push(`/my-events/${event.id}/edit`);
   };
 
   const handleDeleteClick = (event: EventDto) => {
@@ -317,116 +280,6 @@ export default function MyEventsPage() {
           </>
         )}
       </section>
-
-      {/* Edit Dialog */}
-      <Dialog open={!!editingEvent} onOpenChange={() => setEditingEvent(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Event</DialogTitle>
-            <DialogDescription>
-              Update the event details below.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label>Title</Label>
-              <Input
-                value={editForm.title || ""}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, title: e.target.value }))
-                }
-              />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea
-                value={editForm.description || ""}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, description: e.target.value }))
-                }
-                rows={3}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Street Name</Label>
-                <Input
-                  value={editForm.streetName || ""}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, streetName: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label>Street Name 2</Label>
-                <Input
-                  value={editForm.streetName2 || ""}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, streetName2: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>City</Label>
-                <Input
-                  value={editForm.city || ""}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, city: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label>Postal Code</Label>
-                <Input
-                  value={editForm.postalCode || ""}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, postalCode: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-            <div>
-              <Label>GPS Coordinates</Label>
-              <Input
-                placeholder="e.g., 56.0465, 12.6945"
-                value={editForm.gpsCoordinates || ""}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, gpsCoordinates: e.target.value }))
-                }
-              />
-            </div>
-            <div>
-              <Label>Event URL</Label>
-              <Input
-                value={editForm.eventUrl || ""}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, eventUrl: e.target.value }))
-                }
-              />
-            </div>
-            <div>
-              <Label>Booking URL</Label>
-              <Input
-                value={editForm.bookingUrl || ""}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, bookingUrl: e.target.value }))
-                }
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingEvent(null)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditSave} disabled={isPatching}>
-              {isPatching && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!deletingEvent} onOpenChange={() => setDeletingEvent(null)}>
