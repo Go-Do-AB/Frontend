@@ -25,6 +25,7 @@ export const createEventSchema = z.object({
 
   city: z.string().min(1, "City is required"),
   postalCode: z.string().min(1, "Postal code is required"),
+  gpsCoordinates: z.string().max(50, "Max 50 characters").optional().or(z.literal("")),
 
   hasSingleDates: z.boolean().optional(),
   startDate: z.date().optional(),
@@ -66,6 +67,7 @@ export const defaultFormValues: CreateEventFormData = {
 
   city: "",
   postalCode: "",
+  gpsCoordinates: "",
 
   hasSingleDates: false,
   startDate: undefined as unknown as Date,
@@ -86,7 +88,44 @@ export const defaultFormValues: CreateEventFormData = {
   spotlightEndDate: undefined as unknown as Date,
 };
 
+// Helper to combine date and time into ISO string
+const combineDateAndTime = (date: Date | undefined, time: string | undefined): string | undefined => {
+  if (!date) return undefined;
+  const d = new Date(date);
+  if (time) {
+    const [hours, minutes] = time.split(":").map(Number);
+    d.setHours(hours, minutes, 0, 0);
+  }
+  return d.toISOString();
+};
+
+// Map abbreviated weekday to full name for .NET DayOfWeek enum
+const weekdayMap: Record<string, string> = {
+  sun: "Sunday",
+  mon: "Monday",
+  tue: "Tuesday",
+  wed: "Wednesday",
+  thu: "Thursday",
+  fri: "Friday",
+  sat: "Saturday",
+  // Also support full names directly
+  Sunday: "Sunday",
+  Monday: "Monday",
+  Tuesday: "Tuesday",
+  Wednesday: "Wednesday",
+  Thursday: "Thursday",
+  Friday: "Friday",
+  Saturday: "Saturday",
+};
+
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {
+  // Map weekday abbreviation to index
+  const weekdayIndex = data.weekday
+    ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(
+        weekdayMap[data.weekday] || data.weekday
+      )
+    : undefined;
+
   return {
     organiser: data.organiser,
     organisationNumber: data.organisationNumber,
@@ -112,22 +151,20 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
 
     city: data.city,
     postalCode: data.postalCode,
+    gpsCoordinates: data.gpsCoordinates || undefined,
 
     hasSingleDates: data.hasSingleDates,
-    startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
-    endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
+    // Combine date with time for single date events
+    startDate: combineDateAndTime(data.startDate, data.startTime),
+    endDate: combineDateAndTime(data.endDate, data.endTime),
 
     hasSchedule: data.hasSchedule,
-    // ✅ DayOfWeek enum is numeric in .NET
-    weekday: data.weekday
-      ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(
-          data.weekday
-        )
-      : undefined,
+    // Map weekday abbreviation to .NET DayOfWeek enum index
+    weekday: weekdayIndex !== undefined && weekdayIndex >= 0 ? weekdayIndex : undefined,
 
-    // ✅ ensure proper TimeSpan JSON
-    scheduleStartTime: data.scheduleStartTime ? `${data.scheduleStartTime}` : undefined,
-    scheduleEndTime: data.scheduleEndTime ? `${data.scheduleEndTime}` : undefined,
+    // Schedule times as HH:mm strings (BE expects TimeSpan format)
+    scheduleStartTime: data.scheduleStartTime || undefined,
+    scheduleEndTime: data.scheduleEndTime || undefined,
 
     recurrence: data.recurrence || undefined,
 
