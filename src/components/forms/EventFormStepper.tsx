@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { useFormContext, type UseFormWatch } from "react-hook-form";
-import { FormData } from "@/hooks/useEventForm";
 import type { CreateEventFormData } from "@/lib/validation/create-event-schema";
 import { StepEventDateTime } from "./steps/StepEventDateTime";
 import { StepEventDetails } from "./steps/StepEventDetails";
@@ -43,7 +42,6 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
     register,
     control,
     formState: { errors },
-    handleSubmit,
     getValues,
     watch,
     trigger,
@@ -57,8 +55,6 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
     const ok = await trigger(fields, { shouldFocus: true }); // focuses first invalid field
     if (ok) nextStep();
   };
-
-  const values = watch();
 
   const handleSubmitRaw = (e: React.FormEvent) => {
     e.preventDefault(); // stop page reload

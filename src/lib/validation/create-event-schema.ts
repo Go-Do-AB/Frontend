@@ -25,6 +25,7 @@ export const createEventSchema = z.object({
 
   city: z.string().min(1, "City is required"),
   postalCode: z.string().min(1, "Postal code is required"),
+  gpsCoordinates: z.string().max(50, "Max 50 characters").optional().or(z.literal("")),
 
   hasSingleDates: z.boolean().optional(),
   startDate: z.date().optional(),
@@ -66,6 +67,7 @@ export const defaultFormValues: CreateEventFormData = {
 
   city: "",
   postalCode: "",
+  gpsCoordinates: "",
 
   hasSingleDates: false,
   startDate: undefined as unknown as Date,
@@ -86,7 +88,47 @@ export const defaultFormValues: CreateEventFormData = {
   spotlightEndDate: undefined as unknown as Date,
 };
 
+// Helper to combine date and time into ISO string
+const combineDateAndTime = (
+  date: Date | undefined,
+  time: string | undefined
+): string | undefined => {
+  if (!date) return undefined;
+  const d = new Date(date);
+  if (time) {
+    const [hours, minutes] = time.split(":").map(Number);
+    d.setHours(hours, minutes, 0, 0);
+  }
+  return d.toISOString();
+};
+
+// Map abbreviated weekday to full name for .NET DayOfWeek enum
+const weekdayMap: Record<string, string> = {
+  sun: "Sunday",
+  mon: "Monday",
+  tue: "Tuesday",
+  wed: "Wednesday",
+  thu: "Thursday",
+  fri: "Friday",
+  sat: "Saturday",
+  // Also support full names directly
+  Sunday: "Sunday",
+  Monday: "Monday",
+  Tuesday: "Tuesday",
+  Wednesday: "Wednesday",
+  Thursday: "Thursday",
+  Friday: "Friday",
+  Saturday: "Saturday",
+};
+
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {
+  // Map weekday abbreviation to index
+  const weekdayIndex = data.weekday
+    ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(
+        weekdayMap[data.weekday] || data.weekday
+      )
+    : undefined;
+
   return {
     organiser: data.organiser,
     organisationNumber: data.organisationNumber,
@@ -112,22 +154,20 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
 
     city: data.city,
     postalCode: data.postalCode,
+    gpsCoordinates: data.gpsCoordinates || undefined,
 
     hasSingleDates: data.hasSingleDates,
-    startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
-    endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
+    // Combine date with time for single date events
+    startDate: combineDateAndTime(data.startDate, data.startTime),
+    endDate: combineDateAndTime(data.endDate, data.endTime),
 
     hasSchedule: data.hasSchedule,
-    // ✅ DayOfWeek enum is numeric in .NET
-    weekday: data.weekday
-      ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(
-          data.weekday
-        )
-      : undefined,
+    // Map weekday abbreviation to .NET DayOfWeek enum index
+    weekday: weekdayIndex !== undefined && weekdayIndex >= 0 ? weekdayIndex : undefined,
 
-    // ✅ ensure proper TimeSpan JSON
-    scheduleStartTime: data.scheduleStartTime ? `${data.scheduleStartTime}` : undefined,
-    scheduleEndTime: data.scheduleEndTime ? `${data.scheduleEndTime}` : undefined,
+    // Schedule times as HH:mm strings (BE expects TimeSpan format)
+    scheduleStartTime: data.scheduleStartTime || undefined,
+    scheduleEndTime: data.scheduleEndTime || undefined,
 
     recurrence: data.recurrence || undefined,
 
@@ -143,3 +183,117 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
 };
 
 export type CreateEventFormData = z.infer<typeof createEventSchema>;
+
+// Weekday index to name mapping (for converting from BE to FE)
+const weekdayIndexToName: Record<number, CreateEventFormData["weekday"]> = {
+  0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+};
+
+// Convert EventDto from API to CreateEventFormData for editing
+export const eventDtoToFormData = (event: {
+  organiser: string;
+  organisationNumber: string;
+  title: string;
+  description?: string;
+  categories: { code: number; name: string }[];
+  subcategories: { code: number; name: string; categoryCode: number }[];
+  tags: { code: number; name: string }[];
+  eventUrl?: string;
+  bookingUrl?: string;
+  streetName: string;
+  streetName2?: string;
+  houseNumber?: number;
+  city: string;
+  postalCode: string;
+  gpsCoordinates?: string;
+  hasSingleDates?: boolean;
+  startDate?: string;
+  endDate?: string;
+  hasSchedule?: boolean;
+  weekday?: number;
+  scheduleStartTime?: string;
+  scheduleEndTime?: string;
+  recurrence?: string;
+  isAlwaysOpen?: boolean;
+  spotlight?: boolean;
+  spotlightStartDate?: string;
+  spotlightEndDate?: string;
+}): CreateEventFormData => {
+  // Extract time from ISO date string
+  const extractTime = (isoString?: string): string => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  // Parse TimeSpan string (HH:mm:ss or HH:mm) to HH:mm
+  const parseTimeSpan = (timeSpan?: string): string => {
+    if (!timeSpan) return "";
+    // Handle both "HH:mm:ss" and "HH:mm" formats
+    const parts = timeSpan.split(":");
+    if (parts.length >= 2) {
+      return `${parts[0].padStart(2, "0")}:${parts[1].padStart(2, "0")}`;
+    }
+    return "";
+  };
+
+  // Build subcategories map: { categoryCode: [subcategoryCodes] }
+  const subcategoriesMap: Record<number, number[]> = {};
+  for (const sub of event.subcategories || []) {
+    if (!subcategoriesMap[sub.categoryCode]) {
+      subcategoriesMap[sub.categoryCode] = [];
+    }
+    subcategoriesMap[sub.categoryCode].push(sub.code);
+  }
+
+  return {
+    organiser: event.organiser || "",
+    organisationNumber: event.organisationNumber || "",
+    title: event.title || "",
+    description: event.description || "",
+    categories: (event.categories || []).map((c) => c.code),
+    subcategories: subcategoriesMap,
+    filters: (event.tags || []).map((t) => t.code),
+
+    eventUrl: event.eventUrl || "",
+    bookingUrl: event.bookingUrl || "",
+
+    streetName: event.streetName || "",
+    streetName2: event.streetName2 || "",
+    houseNumber: event.houseNumber || 0,
+
+    city: event.city || "",
+    postalCode: event.postalCode || "",
+    gpsCoordinates: event.gpsCoordinates || "",
+
+    hasSingleDates: event.hasSingleDates || false,
+    startDate: event.startDate ? new Date(event.startDate) : (undefined as unknown as Date),
+    endDate: event.endDate ? new Date(event.endDate) : (undefined as unknown as Date),
+    startTime: extractTime(event.startDate),
+    endTime: extractTime(event.endDate),
+
+    hasSchedule: event.hasSchedule || false,
+    weekday: event.weekday !== undefined ? weekdayIndexToName[event.weekday] : undefined,
+    scheduleStartTime: parseTimeSpan(event.scheduleStartTime),
+    scheduleEndTime: parseTimeSpan(event.scheduleEndTime),
+
+    recurrence: event.recurrence || "",
+    isAlwaysOpen: event.isAlwaysOpen || false,
+
+    spotlight: event.spotlight || false,
+    spotlightStartDate: event.spotlightStartDate
+      ? new Date(event.spotlightStartDate)
+      : (undefined as unknown as Date),
+    spotlightEndDate: event.spotlightEndDate
+      ? new Date(event.spotlightEndDate)
+      : (undefined as unknown as Date),
+  };
+};

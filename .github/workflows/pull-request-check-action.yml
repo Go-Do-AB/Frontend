@@ -12,14 +12,14 @@ jobs:
 
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v3
-        # 👉 This pulls the repo’s code into the GitHub Actions machine
+        uses: actions/checkout@v4
+        # 👉 This pulls the repo's code into the GitHub Actions machine
 
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-        # 👉 Makes sure Node.js v18 is installed so Next.js can run
+          node-version: 20
+        # 👉 Makes sure Node.js v20 is installed (required for Next.js 16+)
 
       - name: 📦 Install dependencies
         run: npm install

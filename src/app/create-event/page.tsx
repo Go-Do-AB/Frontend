@@ -4,10 +4,22 @@ import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { CheckCircle, XCircle } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Info,
+  MapPin,
+  Clock,
+  CheckCircleIcon,
+  Sparkles,
+  ArrowLeft,
+} from "lucide-react";
+import Link from "next/link";
 
 import { Navbar } from "@/components/global/Navbar";
+import { Button } from "@/components/ui/button";
 import { EventFormStepper } from "@/components/forms/EventFormStepper";
+import { EventTicketCard } from "@/components/events/EventTicketCard";
 import { useCreateEvent } from "@/hooks/useCreateEvent";
 import type { CreateEventFormData } from "@/lib/validation/create-event-schema";
 import { CreateEventDto } from "@/types/events";
@@ -16,7 +28,6 @@ import {
   createPayload,
   defaultFormValues,
 } from "@/lib/validation/create-event-schema";
-import { Info, MapPin, Clock, CheckCircleIcon, Sparkles } from "lucide-react"; // or your preferred icon set
 
 const steps = [
   { label: "Details", icon: <Info className="w-4 h-4 mr-1" /> },
@@ -29,6 +40,7 @@ const steps = [
 export default function CreateEventPage() {
   const [step, setStep] = useState(0);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<CreateEventFormData | null>(null);
 
   const form = useForm<CreateEventFormData>({
     resolver: zodResolver(createEventSchema),
@@ -39,6 +51,13 @@ export default function CreateEventPage() {
   });
 
   const { mutate } = useCreateEvent();
+
+  const handleCreateAnother = () => {
+    form.reset(defaultFormValues);
+    setStep(0);
+    setFormSubmitted(false);
+    setSubmittedData(null);
+  };
 
   const totalSteps = steps.length;
   const lastIndex = totalSteps - 1;
@@ -53,6 +72,7 @@ export default function CreateEventPage() {
 
       mutate(payload, {
         onSuccess: () => {
+          setSubmittedData(data);
           setFormSubmitted(true);
           toast(
             <div className="flex items-start gap-3 text-black">
@@ -94,6 +114,14 @@ export default function CreateEventPage() {
     <main className="min-h-screen bg-yellow-400 text-black flex flex-col">
       <Navbar />
       <section className="flex-1 flex flex-col items-center px-6 py-10">
+        <div className="w-full max-w-xl mb-4">
+          <Link href="/landing">
+            <Button variant="ghost" size="sm" className="gap-2 hover:bg-black/10">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
         <h1 className="text-4xl font-bold mb-6">Create an Event</h1>
 
         <div className="w-full max-w-xl mb-6">
@@ -116,11 +144,8 @@ export default function CreateEventPage() {
           </div>
         </div>
 
-        {formSubmitted ? (
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold">Tack för ditt bidrag!</h2>
-            <p>Eventet har skickats in och kommer snart att synas på Go.Do.</p>
-          </div>
+        {formSubmitted && submittedData ? (
+          <EventTicketCard eventData={submittedData} onCreateAnother={handleCreateAnother} />
         ) : (
           <FormProvider {...form}>
             <EventFormStepper

@@ -50,6 +50,17 @@ export function StepEventLocation({ register, errors }: StepEventLocationProps) 
         <Input placeholder="12345" {...register("postalCode")} />
         {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
       </div>
+
+      <div>
+        <Label className="py-2">GPS Coordinates</Label>
+        <Input placeholder="e.g., 56.0465, 12.6945" {...register("gpsCoordinates")} />
+        {errors.gpsCoordinates && (
+          <p className="text-red-500 text-sm">{errors.gpsCoordinates.message}</p>
+        )}
+        <p className="text-xs text-muted-foreground mt-1">
+          Optional - helps users find your event on a map
+        </p>
+      </div>
       <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );
