@@ -4,10 +4,10 @@ This file provides context about the GODO Frontend project for AI assistants lik
 
 ## Project Overview
 
-**GODO Frontend** is a Next.js 14 web application for the GODO event management platform. It provides event browsing, creation, and management features for both regular users and event organisers.
+**GODO Frontend** is a Next.js 16 web application for the GODO event management platform. It provides event browsing, creation, and management features for both regular users and event organisers.
 
 ### Tech Stack
-- **Next.js 14** (App Router)
+- **Next.js 16.1.4** (App Router with Turbopack)
 - **React 18** with TypeScript
 - **Tailwind CSS** for styling
 - **shadcn/ui** components
@@ -26,6 +26,7 @@ src/
 │   ├── login/              # Auth pages
 │   ├── my-events/          # Organiser's events list
 │   │   └── [id]/edit/      # Event edit page (same form as create)
+│   ├── quick-create/       # Admin-only quick event creation
 │   └── register/           # Registration pages
 ├── components/
 │   ├── events/             # Event-related components
@@ -47,10 +48,10 @@ src/
 
 ### 2. Event Creation (Multi-Step Form)
 - **Step 1: Details** - Title, description, organiser, categories/subcategories
-- **Step 2: Location** - Address, city, postal code
+- **Step 2: Location** - Address, city, postal code, GPS coordinates
 - **Step 3: Date & Time** - Start/end dates, schedule options
-- **Step 4: Spotlight** - Featured event settings
-- **Step 5: Confirm** - Review and submit
+- **Step 4: Spotlight** - Featured event promotion with pricing (99 SEK/day + 125 SEK VAT)
+- **Step 5: Review** - Summary with spotlight cost breakdown, submit
 
 ### 3. My Events (Organiser Dashboard)
 - Lists events created by the logged-in organiser
@@ -66,9 +67,15 @@ src/
 
 ### 5. Authentication
 - JWT-based authentication
-- Token stored in localStorage (`authToken`)
-- Role-based UI (Admin sees Quick Add button)
-- Organiser-specific features
+- Token stored in localStorage (`accessToken`)
+- Logout button in Navbar (clears token, redirects to /login)
+- Role-based UI (Admin sees Quick Create button on landing page)
+- Organiser-specific features (My Events page)
+
+### 6. Quick Create (Admin Only)
+- Simplified event creation at `/quick-create`
+- Only visible to Admin role users
+- Faster workflow for adding places/events
 
 ## Important Files
 
@@ -76,7 +83,8 @@ src/
 - `src/app/create-event/page.tsx` - Event creation with multi-step form
 - `src/app/my-events/page.tsx` - Organiser's event dashboard
 - `src/app/my-events/[id]/edit/page.tsx` - Event edit page
-- `src/app/landing/page.tsx` - Main landing page
+- `src/app/landing/page.tsx` - Main landing page with role-based buttons
+- `src/app/quick-create/page.tsx` - Admin-only quick event creation
 
 ### Hooks
 - `src/hooks/useEvents.ts` - Event CRUD operations (useEvents, useEvent, useCreateEvent, useUpdateEvent, useDeleteEvent)
@@ -90,7 +98,10 @@ src/
 
 ### Components
 - `src/components/forms/EventFormStepper.tsx` - Multi-step form component
+- `src/components/forms/steps/StepSpotlight.tsx` - Spotlight step with pricing calculator
+- `src/components/forms/steps/StepEventReview.tsx` - Review step with cost summary
 - `src/components/events/EventTicketCard.tsx` - Success card after creation
+- `src/components/global/Navbar.tsx` - Global navbar with search and logout
 
 ## API Integration
 
@@ -140,13 +151,17 @@ npm run type-check
 
 ### Authentication Token
 ```typescript
-// Get token from localStorage
-const token = localStorage.getItem("authToken");
+// Get token from localStorage (key may be "token" or "accessToken" depending on context)
+const token = localStorage.getItem("accessToken");
 
 // Decode JWT to get user info
 const decoded = JSON.parse(atob(token.split('.')[1]));
 const userId = decoded.nameid;  // User ID (for createdById filter)
-const roles = decoded.role;     // Roles array (check for "Admin")
+const roles = decoded.role ||
+  decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+// Roles can be string or array - normalize to array
+const roleArray = Array.isArray(roles) ? roles : [roles];
+const isAdmin = roleArray.includes("Admin");
 ```
 
 ### API Calls
@@ -185,3 +200,6 @@ toast(<div className="flex items-start gap-3 text-black">
 8. **Client Components** - Pages with state/effects need `"use client"` directive
 9. **Time Handling** - Form uses "HH:mm" format; backend uses TimeSpan
 10. **Subcategory Mapping** - Form stores `subcategoryCodes: Record<number, number[]>` keyed by category code
+11. **Spotlight Pricing** - 99 SEK/day + 125 SEK flat VAT; displayed in StepSpotlight and StepEventReview
+12. **Logout** - Navbar logout clears `token` from localStorage and `Authorization` header from axios
+13. **GPS Coordinates** - StepEventLocation supports latitude/longitude input
