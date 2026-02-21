@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { api } from "@/lib/axios";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +43,6 @@ type OrganiserAuthResponseDto = {
   };
 };
 
-const API_BASE_URL = "https://localhost:7030";
 const LANDING_PATH = "/landing";
 
 export default function OrganizerRegisterPage() {
@@ -69,44 +69,35 @@ export default function OrganizerRegisterPage() {
 
   const onSubmit = async (values: OrganizerRegisterForm) => {
     try {
-      const payload = {
-        username: values.username.trim(),
-        email: values.email.trim(),
-        password: values.password,
-        fullName: values.fullName.trim(),
-        phoneNumber: values.phoneNumber.trim(),
-        businessName: values.businessName.trim(),
-        organisationNumber: values.organisationNumber.trim(),
-        acceptTerms: values.acceptTerms === true,
-        termsVersion: "v1.0",
-      };
+      const res = await api.post<OperationResult<OrganiserAuthResponseDto>>(
+        "/organisers/auth/register",
+        {
+          username: values.username.trim(),
+          email: values.email.trim(),
+          password: values.password,
+          fullName: values.fullName.trim(),
+          phoneNumber: values.phoneNumber.trim(),
+          businessName: values.businessName.trim(),
+          organisationNumber: values.organisationNumber.trim(),
+          acceptTerms: values.acceptTerms === true,
+          termsVersion: "v1.0",
+        }
+      );
 
-      const res = await fetch(`${API_BASE_URL}/api/organisers/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
-
-      const text = await res.text();
-      const parsed: OperationResult<OrganiserAuthResponseDto> | undefined = text
-        ? (JSON.parse(text) as OperationResult<OrganiserAuthResponseDto>)
-        : undefined;
-
-      if (!res.ok) {
-        const msg = parsed?.message || parsed?.errors?.join(", ") || "Registration failed";
-        throw new Error(msg);
-      }
+      const parsed = res.data;
 
       // saving access-token
-      const token =
-        parsed?.data?.token ?? (parsed as unknown as OrganiserAuthResponseDto | undefined)?.token;
+      const token = parsed?.data?.token;
       if (token) localStorage.setItem("accessToken", token);
 
       toast.success("Organizer account created successfully!");
       router.replace(LANDING_PATH);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "Registration failed";
+    } catch (e: unknown) {
+      const axiosErr = e as { response?: { data?: OperationResult<unknown> } };
+      const message =
+        axiosErr?.response?.data?.message ||
+        axiosErr?.response?.data?.errors?.join(", ") ||
+        (e instanceof Error ? e.message : "Registration failed");
       setError("root", { message });
       toast.error(message);
     }
