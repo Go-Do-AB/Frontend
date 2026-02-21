@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { api } from "@/lib/axios";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,21 +28,16 @@ export default function LoginPage() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const res = await fetch("https://localhost:7030/api/organisers/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          username: values.username,
-          password: values.password,
-        }),
+      const res = await api.post("/organisers/auth/login", {
+        username: values.username,
+        password: values.password,
       });
 
-      const payload = await res.json();
+      const payload = res.data;
 
       // Backend wrapping in OperationResult<T>
-      if (!res.ok || payload?.isSuccess === false) {
-        throw new Error(payload?.message ?? `Login failed (${res.status})`);
+      if (payload?.isSuccess === false) {
+        throw new Error(payload?.message ?? "Login failed");
       }
 
       const token: string | undefined = payload?.data?.token;
@@ -51,8 +47,12 @@ export default function LoginPage() {
 
       toast.success("Logged in");
       router.replace(LANDING_PATH);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Login failed";
+    } catch (e: unknown) {
+      const axiosErr = e as { response?: { data?: { message?: string; errors?: string[] } } };
+      const msg =
+        axiosErr?.response?.data?.message ||
+        axiosErr?.response?.data?.errors?.join(", ") ||
+        (e instanceof Error ? e.message : "Login failed");
       toast.error(msg);
       console.error("Login error:", msg);
     }

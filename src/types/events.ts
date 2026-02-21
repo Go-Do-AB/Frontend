@@ -52,11 +52,13 @@ export type CreateEventDto = {
 export type CategoryDto = {
   code: number;
   name: string;
+  nameSv: string;
 };
 
 export type SubcategoryDto = {
   code: number;
   name: string;
+  nameSv: string;
   categoryCode: number;
 };
 
@@ -95,6 +97,7 @@ export type EventDto = {
   createdAt: string;
   updatedAt?: string;
   createdById?: string;
+  sourceProvider?: string;
   categories: CategoryDto[];
   subcategories: SubcategoryDto[];
   tags: EventTagDto[];
