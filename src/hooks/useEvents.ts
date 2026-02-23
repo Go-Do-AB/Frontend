@@ -3,6 +3,7 @@ import { api } from "@/lib/axios";
 import {
   EventDto,
   EventFilterDto,
+  AggregatedFilterDto,
   UpdateEventDto,
   PatchEventDto,
   PagedResult,
@@ -44,6 +45,46 @@ export function useEvent(id: string | null) {
     queryKey: ["event", id],
     queryFn: async () => {
       const response = await api.get<OperationResult<EventDto>>(`/events/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+}
+
+// Fetch aggregated events (internal + external providers)
+export function useAggregatedEvents(filter?: AggregatedFilterDto) {
+  return useQuery({
+    queryKey: ["aggregated-events", filter],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (filter?.isActive !== undefined) params.append("isActive", String(filter.isActive));
+      if (filter?.fromDate) params.append("fromDate", filter.fromDate);
+      if (filter?.toDate) params.append("toDate", filter.toDate);
+      if (filter?.city) params.append("city", filter.city);
+      if (filter?.categoryCodes?.length)
+        params.append("categoryCodes", filter.categoryCodes.join(","));
+      if (filter?.subcategoryCodes?.length)
+        params.append("subcategoryCodes", filter.subcategoryCodes.join(","));
+      if (filter?.tagCodes?.length) params.append("tagCodes", filter.tagCodes.join(","));
+      if (filter?.providerIds?.length)
+        params.append("providerIds", filter.providerIds.join(","));
+      if (filter?.pageNumber) params.append("pageNumber", String(filter.pageNumber));
+      if (filter?.pageSize) params.append("pageSize", String(filter.pageSize));
+
+      const response = await api.get<OperationResult<PagedResult<EventDto>>>(
+        `/events/aggregated?${params.toString()}`
+      );
+      return response.data;
+    },
+  });
+}
+
+// Fetch a single aggregated event by ID
+export function useAggregatedEvent(id: string | null) {
+  return useQuery({
+    queryKey: ["aggregated-event", id],
+    queryFn: async () => {
+      const response = await api.get<OperationResult<EventDto>>(`/events/aggregated/${id}`);
       return response.data;
     },
     enabled: !!id,
