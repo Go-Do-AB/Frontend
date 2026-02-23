@@ -124,6 +124,20 @@ export type EventFilterDto = {
   pageSize?: number;
 };
 
+// Filter DTO for GET /api/events/aggregated
+export type AggregatedFilterDto = {
+  categoryCodes?: number[];
+  subcategoryCodes?: number[];
+  tagCodes?: number[];
+  city?: string;
+  fromDate?: string;
+  toDate?: string;
+  providerIds?: string[];
+  isActive?: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+};
+
 // Paged result wrapper
 export type PagedResult<T> = {
   items: T[];

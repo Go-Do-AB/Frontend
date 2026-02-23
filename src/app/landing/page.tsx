@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Navbar } from "@/components/global/Navbar";
 import { Button } from "@/components/ui/button";
-import { CalendarPlus, Zap, List } from "lucide-react";
+import { CalendarPlus, Zap, List, Smartphone } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -89,6 +89,15 @@ export default function Home() {
               </Link>
             )}
           </div>
+          <Link href="/preview">
+              <Button
+                variant="outline"
+                className="w-52 h-10 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg border-black/30 bg-white/50 hover:bg-white"
+              >
+                <Smartphone className="mr-2 h-4 w-4" />
+                Try the App
+              </Button>
+            </Link>
           {!isLoggedIn && (
             <p className="text-xs text-gray-600">
               <Link href="/login" className="underline">

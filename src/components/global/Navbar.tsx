@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 import { useRouter } from "next/navigation";
@@ -11,17 +11,24 @@ import { api } from "@/lib/axios";
 
 export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("accessToken"));
+  }, []);
 
   // logout
   const onLogout = () => {
     try {
+      localStorage.removeItem("accessToken");
       localStorage.removeItem("token");
     } catch {}
     try {
       const common = api.defaults.headers.common as Record<string, string | undefined>;
       delete common.Authorization;
     } catch {}
+    setIsLoggedIn(false);
     router.replace("/login");
   };
 
@@ -58,10 +65,12 @@ export function Navbar() {
             />
           )}
 
-          {/* logout button */}
-          <Button variant="outline" size="sm" onClick={onLogout}>
-            Log out
-          </Button>
+          {/* logout button — only when logged in */}
+          {isLoggedIn && (
+            <Button variant="outline" size="sm" onClick={onLogout}>
+              Log out
+            </Button>
+          )}
         </div>
       </div>
     </header>
