@@ -24,7 +24,7 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
         {/* Screen area */}
         <div
           className="relative w-full h-full rounded-[38px] overflow-hidden flex flex-col"
-          style={{ backgroundColor: BRAND.background }}
+          style={{ backgroundColor: BRAND.yellow }}
         >
           {/* Status bar */}
           <div className="flex-shrink-0 flex items-center justify-between px-6 pt-8 pb-2 text-[11px] font-semibold text-gray-800">

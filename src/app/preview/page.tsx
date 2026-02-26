@@ -12,7 +12,7 @@ import Image from "next/image";
 
 export default function PreviewPage() {
   return (
-    <main className="min-h-screen flex flex-col text-black" style={{ backgroundColor: "#F3C10E" }}>
+    <main className="min-h-screen flex flex-col bg-yellow-400 text-black">
       <Navbar />
 
       <section className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 px-6 sm:px-10 py-10 lg:py-6">
