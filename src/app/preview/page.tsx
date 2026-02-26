@@ -24,6 +24,8 @@ export default function PreviewPage() {
               alt="Go.Do. logo"
               width={56}
               height={56}
+              className="rounded-lg"
+              style={{ border: "1px solid #000" }}
             />
             <span className="text-3xl font-extrabold tracking-tight">
               Go.Do.

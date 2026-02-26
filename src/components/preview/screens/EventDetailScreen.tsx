@@ -28,7 +28,7 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
   if (!event) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-2">
-        <p className="text-[13px] text-gray-400">Evenemanget hittades inte</p>
+        <p className="text-[13px]" style={{ color: BRAND.textSecondary }}>Evenemanget hittades inte</p>
         <button
           onClick={onBack}
           className="text-[13px] font-medium"
@@ -90,7 +90,10 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
       </div>
 
       {/* Content */}
-      <div className="px-4 pt-3 pb-4">
+      <div
+        className="mx-2 -mt-1 px-3 pt-3 pb-4 rounded-2xl"
+        style={{ backgroundColor: BRAND.surface, border: `1px solid ${BRAND.border}` }}
+      >
         {/* Tag pills */}
         {(event.categories?.length > 0 ||
           event.subcategories?.length > 0 ||

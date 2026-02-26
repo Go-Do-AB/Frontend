@@ -56,7 +56,7 @@ export function ResultsScreen({
   return (
     <div>
       {/* Header */}
-      <div className="px-4 pt-1 pb-3" style={{ backgroundColor: tint }}>
+      <div className="px-4 pt-1 pb-3" style={{ backgroundColor: tint, borderBottom: `1px solid ${color}25` }}>
         <button
           onClick={onBack}
           className="flex items-center gap-1 text-[13px] font-medium mb-2 active:opacity-70"
@@ -124,9 +124,9 @@ export function ResultsScreen({
               onClick={() => toggleTag(tag.code)}
               className="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors"
               style={{
-                backgroundColor: active ? BRAND.yellow : BRAND.surface,
-                color: active ? BRAND.textPrimary : BRAND.textSecondary,
-                border: `1px solid ${active ? BRAND.yellow : BRAND.border}`,
+                backgroundColor: active ? BRAND.textPrimary : BRAND.surface,
+                color: active ? "#FFFFFF" : BRAND.textSecondary,
+                border: `1px solid ${active ? BRAND.textPrimary : BRAND.border}`,
               }}
             >
               {tag.label}
@@ -150,7 +150,7 @@ export function ResultsScreen({
         </div>
 
         {events.length === 0 && (
-          <p className="text-center text-[12px] text-gray-400 py-8">
+          <p className="text-center text-[12px] py-8" style={{ color: BRAND.textSecondary }}>
             Inga evenemang i denna kategori
           </p>
         )}

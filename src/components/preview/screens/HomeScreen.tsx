@@ -62,7 +62,7 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
                 key={cat.code}
                 onClick={() => onSelectCategory(cat.code)}
                 className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl p-2.5 w-[76px] h-[76px] transition-transform active:scale-95"
-                style={{ backgroundColor: tint }}
+                style={{ backgroundColor: tint, border: `1px solid ${color}20` }}
               >
                 <Icon size={20} color={color} strokeWidth={2} />
                 <span
@@ -87,9 +87,9 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
               onClick={() => toggleTag(tag.code)}
               className="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors"
               style={{
-                backgroundColor: active ? BRAND.yellow : BRAND.surface,
-                color: active ? BRAND.textPrimary : BRAND.textSecondary,
-                border: `1px solid ${active ? BRAND.yellow : BRAND.border}`,
+                backgroundColor: active ? BRAND.textPrimary : BRAND.surface,
+                color: active ? "#FFFFFF" : BRAND.textSecondary,
+                border: `1px solid ${active ? BRAND.textPrimary : BRAND.border}`,
               }}
             >
               {tag.label}
@@ -125,7 +125,7 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
       </div>
 
       {events.length === 0 && (
-        <p className="text-center text-[12px] text-gray-400 py-6">
+        <p className="text-center text-[12px] py-6" style={{ color: BRAND.textSecondary }}>
           Inga evenemang hittades
         </p>
       )}

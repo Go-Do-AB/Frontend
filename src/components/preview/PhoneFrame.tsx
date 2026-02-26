@@ -51,7 +51,7 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
 
           {/* Home indicator */}
           <div className="flex-shrink-0 flex justify-center pb-2 pt-1">
-            <div className="w-[120px] h-[4px] bg-gray-400 rounded-full" />
+            <div className="w-[120px] h-[4px] rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.25)" }} />
           </div>
         </div>
       </div>
