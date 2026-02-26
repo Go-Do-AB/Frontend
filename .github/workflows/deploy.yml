@@ -98,11 +98,13 @@ jobs:
           username: ${{ secrets.GLESYS_USER }}
           key: ${{ secrets.GLESYS_SSH_KEY }}
           script: |
+            IMAGE="ghcr.io/go-do-ab/frontend:latest"
+
             # Login to GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
 
             # Pull latest frontend image
-            docker pull ghcr.io/${{ github.repository }}:latest
+            docker pull $IMAGE
 
             # Stop and remove old container
             docker stop godo-frontend 2>/dev/null || true
@@ -113,13 +115,13 @@ jobs:
               --name godo-frontend \
               --restart unless-stopped \
               -p 3000:3000 \
-              ghcr.io/${{ github.repository }}:latest
+              $IMAGE
 
             # Clean up old images
             docker image prune -f
 
       - name: Wait for startup
-        run: sleep 15
+        run: sleep 10
 
       - name: Health check
         run: |
