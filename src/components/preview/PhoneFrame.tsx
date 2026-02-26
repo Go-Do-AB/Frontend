@@ -24,10 +24,13 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
         {/* Screen area */}
         <div
           className="relative w-full h-full rounded-[38px] overflow-hidden flex flex-col"
-          style={{ backgroundColor: BRAND.yellow }}
+          style={{ backgroundColor: BRAND.background }}
         >
           {/* Status bar */}
-          <div className="flex-shrink-0 flex items-center justify-between px-6 pt-8 pb-2 text-[11px] font-semibold text-gray-800">
+          <div
+            className="flex-shrink-0 flex items-center justify-between px-6 pt-8 pb-1 text-[11px] font-semibold"
+            style={{ color: BRAND.textBody }}
+          >
             <span>9:41</span>
             <div className="flex items-center gap-1">
               <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor">
@@ -51,7 +54,7 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
 
           {/* Home indicator */}
           <div className="flex-shrink-0 flex justify-center pb-2 pt-1">
-            <div className="w-[120px] h-[4px] rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.25)" }} />
+            <div className="w-[120px] h-[4px] rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.15)" }} />
           </div>
         </div>
       </div>
