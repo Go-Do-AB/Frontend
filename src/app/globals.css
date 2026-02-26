@@ -129,3 +129,10 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* RGB shift animation for featured card border in preview */
+@keyframes rgbShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

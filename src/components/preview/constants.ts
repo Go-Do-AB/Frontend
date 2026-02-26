@@ -1,16 +1,23 @@
-// Mobile app design tokens — matches the Go.Do Expo app visual identity
+// Mobile app design tokens — matches the Go.Do Expo app accessibility-redesign
 
+// ── Brand palette ─────────────────────────────────────────────────
 export const BRAND = {
   yellow: "#F3C10E",
-  yellowLight: "#FFF8DC",
+  yellowLight: "#FFF9D6",
+  yellowDark: "#D4A80C",
+  onPrimary: "#2A2000",
   background: "#FAF8F3",
-  surface: "#FFFFFF",
-  textPrimary: "#1A1A1A",
-  textSecondary: "#6B7280",
-  border: "#E5E7EB",
+  surface: "#FFFEFA",
+  textPrimary: "#1C1C1E",
+  textBody: "#3C3C43",
+  textSecondary: "#8E8E93",
+  border: "#E8E5DD",
+  neutral100: "#F5F2EB",
+  neutral200: "#E8E5DD",
+  neutral300: "#D1CEC6",
 } as const;
 
-// Category colors — strong, used for icons and accents
+// ── Category dark colors (AAA contrast on white) ─────────────────
 export const CATEGORY_COLORS: Record<number, string> = {
   1: "#991B1B", // Events — red
   2: "#581C87", // Sports — purple
@@ -21,29 +28,29 @@ export const CATEGORY_COLORS: Record<number, string> = {
   7: "#9D174D", // Health — pink
 };
 
-// Category tints — pastel backgrounds for tiles
+// ── Category tints (soft pastels for tile backgrounds) ────────────
 export const CATEGORY_TINTS: Record<number, string> = {
-  1: "#FEE2E2", // red-100
-  2: "#F3E8FF", // purple-100
-  3: "#DBEAFE", // blue-100 (navy tint)
-  4: "#DBEAFE", // blue-100
-  5: "#F3F4F6", // gray-100
-  6: "#FFEDD5", // orange-100
-  7: "#FCE7F3", // pink-100
+  1: "#FEF2F2",
+  2: "#F5F3FF",
+  3: "#EFF6FF",
+  4: "#F0F9FF",
+  5: "#F5F5F4",
+  6: "#FFF7ED",
+  7: "#FDF2F8",
 };
 
-// Gradient pairs for hero sections in detail screen
+// ── Gradient pairs for hero sections ──────────────────────────────
 export const CATEGORY_GRADIENTS: Record<number, [string, string]> = {
-  1: ["#991B1B", "#DC2626"],
-  2: ["#581C87", "#7C3AED"],
-  3: ["#1E3A5F", "#3B82F6"],
-  4: ["#1E3A8A", "#60A5FA"],
-  5: ["#374151", "#6B7280"],
-  6: ["#7C2D12", "#EA580C"],
-  7: ["#9D174D", "#EC4899"],
+  1: ["#FCA5A5", "#F87171"],
+  2: ["#C4B5FD", "#A78BFA"],
+  3: ["#93C5FD", "#60A5FA"],
+  4: ["#7DD3FC", "#38BDF8"],
+  5: ["#A8A29E", "#78716C"],
+  6: ["#FDBA74", "#FB923C"],
+  7: ["#F9A8D4", "#F472B6"],
 };
 
-// Short labels for category tiles (mobile-friendly, Swedish)
+// ── Short labels (Swedish) ────────────────────────────────────────
 export const CATEGORY_SHORT_LABELS: Record<number, string> = {
   1: "Evenemang",
   2: "Idrott",
@@ -52,4 +59,23 @@ export const CATEGORY_SHORT_LABELS: Record<number, string> = {
   5: "Upplevelser",
   6: "Utforska",
   7: "Hälsa",
+};
+
+// ── Category icons for the map pins ───────────────────────────────
+export const CATEGORY_EMOJIS: Record<number, string> = {
+  1: "🎉",
+  2: "⚽",
+  3: "🎭",
+  4: "🏛️",
+  5: "🏔️",
+  6: "📚",
+  7: "🧘",
+};
+
+// ── GPS coordinates for mock events (Helsingborg area) ────────────
+export const HELSINGBORG_CENTER = { lat: 56.0465, lng: 12.6945 };
+export const MOCK_LOCATIONS: Record<string, { lat: number; lng: number }> = {
+  Helsingborg: { lat: 56.0465, lng: 12.6945 },
+  "Malmö": { lat: 55.6050, lng: 13.0038 },
+  Lund: { lat: 55.7047, lng: 13.1910 },
 };
