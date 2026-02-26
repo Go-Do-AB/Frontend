@@ -124,7 +124,7 @@ jobs:
       - name: Health check
         run: |
           for i in 1 2 3 4 5; do
-            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.DEPLOY_URL }}" || true)
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "${{ vars.DEPLOY_URL }}" || true)
             if [ "$HTTP_STATUS" = "200" ]; then
               echo "Health check passed (HTTP $HTTP_STATUS)"
               exit 0
