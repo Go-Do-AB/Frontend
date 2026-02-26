@@ -12,7 +12,7 @@ import Image from "next/image";
 
 export default function PreviewPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-yellow-400 text-black">
+    <main className="min-h-screen flex flex-col text-black" style={{ backgroundColor: "#F3C10E" }}>
       <Navbar />
 
       <section className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 px-6 sm:px-10 py-10 lg:py-6">
@@ -31,34 +31,34 @@ export default function PreviewPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-4">
-            Experience the app
+            Upplev appen
           </h1>
           <p className="text-lg mb-8 leading-relaxed">
-            Browse real events happening near you. Try the interactive preview
-            — the same experience you&apos;ll get in the mobile app.
+            Utforska riktiga evenemang nära dig. Testa den interaktiva
+            förhandsgranskningen — samma upplevelse som i mobilappen.
           </p>
 
           {/* Feature highlights */}
           <div className="grid grid-cols-2 gap-4 mb-8">
             <Feature
               icon={<Layers size={20} />}
-              title="7 Categories"
-              desc="From sports to culture"
+              title="7 Kategorier"
+              desc="Från sport till kultur"
             />
             <Feature
               icon={<CalendarDays size={20} />}
-              title="Live Events"
-              desc="Real-time data from API"
+              title="Live-evenemang"
+              desc="Realtidsdata från API"
             />
             <Feature
               icon={<Zap size={20} />}
-              title="Instant Filters"
-              desc="Find what you love"
+              title="Snabbfilter"
+              desc="Hitta det du gillar"
             />
             <Feature
               icon={<Smartphone size={20} />}
-              title="Native Feel"
-              desc="Just like the real app"
+              title="Appkänsla"
+              desc="Precis som riktiga appen"
             />
           </div>
 
@@ -70,7 +70,7 @@ export default function PreviewPage() {
                 <path d="M13.46 5.63c.63-.76 1.05-1.82.93-2.88-.9.04-1.99.6-2.64 1.35-.58.67-1.08 1.74-.95 2.77 1.01.08 2.03-.51 2.66-1.24z" />
               </svg>
               <div className="text-left">
-                <div className="text-[10px] leading-none opacity-80">Coming soon on</div>
+                <div className="text-[10px] leading-none opacity-80">Kommer snart på</div>
                 <div className="text-[16px] font-semibold leading-tight">App Store</div>
               </div>
             </div>
@@ -82,7 +82,7 @@ export default function PreviewPage() {
                 <path d="M16.16 8.52l-2.84-1.59-2.72 2.99 2.72 2.72 2.84-1.59c0.8-0.45 0.8-1.18 0-1.53z" />
               </svg>
               <div className="text-left">
-                <div className="text-[10px] leading-none opacity-80">Coming soon on</div>
+                <div className="text-[10px] leading-none opacity-80">Kommer snart på</div>
                 <div className="text-[16px] font-semibold leading-tight">Google Play</div>
               </div>
             </div>

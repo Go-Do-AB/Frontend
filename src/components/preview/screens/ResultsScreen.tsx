@@ -12,6 +12,7 @@ import {
 import { filterMockEvents } from "../mockEvents";
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 interface ResultsScreenProps {
   categoryCode: number;
@@ -62,7 +63,7 @@ export function ResultsScreen({
           style={{ color }}
         >
           <ArrowLeft size={16} />
-          Back
+          Tillbaka
         </button>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -74,7 +75,7 @@ export function ResultsScreen({
             </h1>
           </div>
           <span className="text-[11px] font-medium" style={{ color: BRAND.textSecondary }}>
-            {totalCount} event{totalCount !== 1 ? "s" : ""}
+            {totalCount} evenemang
           </span>
         </div>
       </div>
@@ -91,7 +92,7 @@ export function ResultsScreen({
               border: `1px solid ${selectedSub === null ? color : BRAND.border}`,
             }}
           >
-            All
+            Alla
           </button>
           {subcategories.map((sub) => {
             const active = selectedSub === sub.code;
@@ -150,7 +151,7 @@ export function ResultsScreen({
 
         {events.length === 0 && (
           <p className="text-center text-[12px] text-gray-400 py-8">
-            No events in this category
+            Inga evenemang i denna kategori
           </p>
         )}
       </div>
@@ -170,10 +171,10 @@ function ResultCard({
   onClick: () => void;
 }) {
   const dateLabel = event.startDate
-    ? format(new Date(event.startDate), "MMM d, yyyy")
+    ? format(new Date(event.startDate), "d MMM yyyy", { locale: sv })
     : event.isAlwaysOpen
-      ? "Always open"
-      : "Date TBD";
+      ? "Alltid öppet"
+      : "Datum saknas";
 
   return (
     <button

@@ -43,13 +43,13 @@ export const CATEGORY_GRADIENTS: Record<number, [string, string]> = {
   7: ["#9D174D", "#EC4899"],
 };
 
-// Short labels for category tiles (mobile-friendly)
+// Short labels for category tiles (mobile-friendly, Swedish)
 export const CATEGORY_SHORT_LABELS: Record<number, string> = {
-  1: "Events",
-  2: "Sports",
-  3: "Entertainment",
-  4: "Culture",
-  5: "Adventure",
-  6: "Learn",
-  7: "Health",
+  1: "Evenemang",
+  2: "Idrott",
+  3: "Underhållning",
+  4: "Kultur",
+  5: "Upplevelser",
+  6: "Utforska",
+  7: "Hälsa",
 };
