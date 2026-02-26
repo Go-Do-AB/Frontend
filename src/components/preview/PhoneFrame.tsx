@@ -24,7 +24,7 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
         {/* Screen area */}
         <div
           className="relative w-full h-full rounded-[38px] overflow-hidden flex flex-col"
-          style={{ backgroundColor: BRAND.background }}
+          style={{ backgroundColor: BRAND.yellow }}
         >
           {/* Status bar */}
           <div className="flex-shrink-0 flex items-center justify-between px-6 pt-8 pb-2 text-[11px] font-semibold text-gray-800">
@@ -51,7 +51,7 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
 
           {/* Home indicator */}
           <div className="flex-shrink-0 flex justify-center pb-2 pt-1">
-            <div className="w-[120px] h-[4px] bg-gray-400 rounded-full" />
+            <div className="w-[120px] h-[4px] rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.25)" }} />
           </div>
         </div>
       </div>

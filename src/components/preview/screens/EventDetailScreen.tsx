@@ -15,6 +15,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 interface EventDetailScreenProps {
   eventId: string;
@@ -27,13 +28,13 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
   if (!event) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-2">
-        <p className="text-[13px] text-gray-400">Event not found</p>
+        <p className="text-[13px]" style={{ color: BRAND.textSecondary }}>Evenemanget hittades inte</p>
         <button
           onClick={onBack}
           className="text-[13px] font-medium"
           style={{ color: BRAND.yellow }}
         >
-          Go back
+          Gå tillbaka
         </button>
       </div>
     );
@@ -45,9 +46,9 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
   const tint = CATEGORY_TINTS[categoryCode] ?? CATEGORY_TINTS[1];
 
   const dateLabel = event.startDate
-    ? format(new Date(event.startDate), "EEEE, MMMM d, yyyy")
+    ? format(new Date(event.startDate), "EEEE d MMMM yyyy", { locale: sv })
     : event.isAlwaysOpen
-      ? "Always open"
+      ? "Alltid öppet"
       : null;
 
   const timeLabel = event.startDate
@@ -74,7 +75,7 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           className="flex items-center gap-1 text-[13px] font-medium text-white/80 mb-3 active:opacity-70"
         >
           <ArrowLeft size={16} />
-          Back
+          Tillbaka
         </button>
 
         <h1 className="text-[18px] font-bold text-white leading-snug break-words">
@@ -83,13 +84,16 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
 
         {event.organiser && (
           <p className="text-[11px] text-white/70 mt-1">
-            by {event.organiser}
+            av {event.organiser}
           </p>
         )}
       </div>
 
       {/* Content */}
-      <div className="px-4 pt-3 pb-4">
+      <div
+        className="mx-2 -mt-1 px-3 pt-3 pb-4 rounded-2xl"
+        style={{ backgroundColor: BRAND.surface, border: `1px solid ${BRAND.border}` }}
+      >
         {/* Tag pills */}
         {(event.categories?.length > 0 ||
           event.subcategories?.length > 0 ||
@@ -171,7 +175,7 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
               className="text-[13px] font-bold mb-1"
               style={{ color: BRAND.textPrimary }}
             >
-              About
+              Om evenemanget
             </h2>
             <p
               className="text-[12px] leading-relaxed break-words"
@@ -193,7 +197,7 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
               style={{ backgroundColor: color }}
             >
               <ExternalLink size={14} />
-              Visit Website
+              Besök webbplats
             </a>
           )}
           {event.bookingUrl && (
@@ -204,7 +208,7 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
               className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-semibold border transition-opacity active:opacity-80"
               style={{ borderColor: color, color }}
             >
-              Book Now
+              Boka nu
             </a>
           )}
         </div>

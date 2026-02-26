@@ -12,6 +12,7 @@ import {
 import { filterMockEvents } from "../mockEvents";
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 interface ResultsScreenProps {
   categoryCode: number;
@@ -55,14 +56,14 @@ export function ResultsScreen({
   return (
     <div>
       {/* Header */}
-      <div className="px-4 pt-1 pb-3" style={{ backgroundColor: tint }}>
+      <div className="px-4 pt-1 pb-3" style={{ backgroundColor: tint, borderBottom: `1px solid ${color}25` }}>
         <button
           onClick={onBack}
           className="flex items-center gap-1 text-[13px] font-medium mb-2 active:opacity-70"
           style={{ color }}
         >
           <ArrowLeft size={16} />
-          Back
+          Tillbaka
         </button>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -74,7 +75,7 @@ export function ResultsScreen({
             </h1>
           </div>
           <span className="text-[11px] font-medium" style={{ color: BRAND.textSecondary }}>
-            {totalCount} event{totalCount !== 1 ? "s" : ""}
+            {totalCount} evenemang
           </span>
         </div>
       </div>
@@ -91,7 +92,7 @@ export function ResultsScreen({
               border: `1px solid ${selectedSub === null ? color : BRAND.border}`,
             }}
           >
-            All
+            Alla
           </button>
           {subcategories.map((sub) => {
             const active = selectedSub === sub.code;
@@ -123,9 +124,9 @@ export function ResultsScreen({
               onClick={() => toggleTag(tag.code)}
               className="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors"
               style={{
-                backgroundColor: active ? BRAND.yellow : BRAND.surface,
-                color: active ? BRAND.textPrimary : BRAND.textSecondary,
-                border: `1px solid ${active ? BRAND.yellow : BRAND.border}`,
+                backgroundColor: active ? BRAND.textPrimary : BRAND.surface,
+                color: active ? "#FFFFFF" : BRAND.textSecondary,
+                border: `1px solid ${active ? BRAND.textPrimary : BRAND.border}`,
               }}
             >
               {tag.label}
@@ -149,8 +150,8 @@ export function ResultsScreen({
         </div>
 
         {events.length === 0 && (
-          <p className="text-center text-[12px] text-gray-400 py-8">
-            No events in this category
+          <p className="text-center text-[12px] py-8" style={{ color: BRAND.textSecondary }}>
+            Inga evenemang i denna kategori
           </p>
         )}
       </div>
@@ -170,10 +171,10 @@ function ResultCard({
   onClick: () => void;
 }) {
   const dateLabel = event.startDate
-    ? format(new Date(event.startDate), "MMM d, yyyy")
+    ? format(new Date(event.startDate), "d MMM yyyy", { locale: sv })
     : event.isAlwaysOpen
-      ? "Always open"
-      : "Date TBD";
+      ? "Alltid öppet"
+      : "Datum saknas";
 
   return (
     <button

@@ -12,6 +12,7 @@ import {
 import { filterMockEvents } from "../mockEvents";
 import { MapPin, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 interface HomeScreenProps {
   tagCodes: number[];
@@ -42,10 +43,10 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
       {/* Header */}
       <div className="pt-2 pb-3">
         <h1 className="text-[18px] font-bold text-gray-900 leading-tight">
-          Hello!
+          Hej!
         </h1>
         <p className="text-[13px] text-gray-500 mt-0.5">
-          What are you looking for today?
+          Vad letar du efter idag?
         </p>
       </div>
 
@@ -61,7 +62,7 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
                 key={cat.code}
                 onClick={() => onSelectCategory(cat.code)}
                 className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl p-2.5 w-[76px] h-[76px] transition-transform active:scale-95"
-                style={{ backgroundColor: tint }}
+                style={{ backgroundColor: tint, border: `1px solid ${color}20` }}
               >
                 <Icon size={20} color={color} strokeWidth={2} />
                 <span
@@ -86,9 +87,9 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
               onClick={() => toggleTag(tag.code)}
               className="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors"
               style={{
-                backgroundColor: active ? BRAND.yellow : BRAND.surface,
-                color: active ? BRAND.textPrimary : BRAND.textSecondary,
-                border: `1px solid ${active ? BRAND.yellow : BRAND.border}`,
+                backgroundColor: active ? BRAND.textPrimary : BRAND.surface,
+                color: active ? "#FFFFFF" : BRAND.textSecondary,
+                border: `1px solid ${active ? BRAND.textPrimary : BRAND.border}`,
               }}
             >
               {tag.label}
@@ -103,10 +104,10 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
           className="text-[14px] font-bold"
           style={{ color: BRAND.textPrimary }}
         >
-          Upcoming Events
+          Kommande evenemang
         </h2>
         <span className="text-[11px] font-medium" style={{ color: BRAND.textSecondary }}>
-          {totalCount} total
+          {totalCount} totalt
         </span>
       </div>
 
@@ -124,8 +125,8 @@ export function HomeScreen({ tagCodes, onTagsChange, onSelectCategory, onSelectE
       </div>
 
       {events.length === 0 && (
-        <p className="text-center text-[12px] text-gray-400 py-6">
-          No events found
+        <p className="text-center text-[12px] py-6" style={{ color: BRAND.textSecondary }}>
+          Inga evenemang hittades
         </p>
       )}
     </div>
@@ -144,10 +145,10 @@ function EventCard({
   const tint = CATEGORY_TINTS[categoryCode] ?? CATEGORY_TINTS[1];
 
   const dateLabel = event.startDate
-    ? format(new Date(event.startDate), "MMM d, yyyy")
+    ? format(new Date(event.startDate), "d MMM yyyy", { locale: sv })
     : event.isAlwaysOpen
-      ? "Always open"
-      : "Date TBD";
+      ? "Alltid öppet"
+      : "Datum saknas";
 
   return (
     <button
