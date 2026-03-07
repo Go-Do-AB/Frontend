@@ -12,6 +12,7 @@ These guides are written for developers who are **new to the project** or need a
 | [Project Walkthrough](PROJECT-WALKTHROUGH.md) | Visual tour of every folder and key file | 20 min |
 | [Form Guide](FORM-GUIDE.md) | How the multi-step event form works | 20 min |
 | [Development Workflow](DEVELOPMENT-WORKFLOW.md) | Branching, linting, CI/CD, PR checklist | 15 min |
+| [Claude Code Guide](CLAUDE-CODE-GUIDE.md) | AI commands, planning, orchestration, workflows | 15 min |
 
 ## Recommended Reading Order
 

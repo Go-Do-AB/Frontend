@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(gh pr create --title \"Update CLAUDE.md with recent features\" --body \"$\\(cat <<''EOF''\n## Summary\n- Update Next.js version to 16.1.4 with Turbopack\n- Add Spotlight pricing details \\(99 SEK/day + 125 SEK VAT\\)\n- Document logout functionality in Navbar\n- Add Quick Create page \\(Admin only\\)\n- Add GPS coordinates support in location step\n- Update authentication token handling docs\n\n## Test plan\n- [x] Documentation only, no code changes\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\nEOF\n\\)\")",
+      "Bash(where gh:*)"
+    ]
+  }
+}

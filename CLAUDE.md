@@ -1,225 +1,262 @@
-# CLAUDE.md - Frontend Project Context for AI Assistants
+# CLAUDE.md — GODO Platform
 
-This file provides context about the GODO Frontend project for AI assistants like Claude.
+> AI assistant instructions for the GODO platform.
 
-## Project Overview
+## Platform Identity
 
-**GODO Frontend** is a Next.js 16 web application for the GODO event management platform. It provides an organiser-facing form for event creation and management. The backend is a .NET 8 API at `C:\InFiNetCode\Projects\GODO\BACKEND\Backend`.
+GODO is a **multi-city event management platform**. Currently live with Helsingborg as the first integrated municipality, with architecture built to onboard additional cities, scale across Scandinavia, and eventually serve all of Europe.
 
-### Tech Stack
-- **Next.js 16.1.4** (App Router with Turbopack)
-- **React 19** with TypeScript
-- **Tailwind CSS** for styling
-- **shadcn/ui** components
-- **React Hook Form** + **Zod** for form handling and validation
-- **TanStack Query (React Query) 5** for server state management
-- **Axios** for HTTP requests (shared instance with JWT interceptor)
-- **Sonner** for toast notifications
-- **Lucide React** for icons
+| Repo | Tech | Purpose | URL |
+|------|------|---------|-----|
+| [Backend](https://github.com/Go-Do-AB/Backend) | .NET 10 | API + DB | api.godo-dev.nu |
+| [Frontend](https://github.com/Go-Do-AB/Frontend) | Next.js 16 | Organiser website | godo-dev.nu |
+| [MobileApp](https://github.com/Go-Do-AB/MobileApp) | Expo SDK 54 | User mobile app | App stores (upcoming) |
 
-## Project Structure
+**GitHub Org:** Go-Do-AB | **Project Board:** GoDoProject (#3) | **Brand:** Go.Do Yellow `#F3C10E`
+
+## Session Persistence (MANDATORY)
+
+**At the START of every session:**
+1. Read `.claude/current-work.md` silently
+2. Only mention it if there is unfinished work
+
+**On every COMMIT and PUSH:**
+1. Update `.claude/current-work.md` with: what was accomplished, what's next, decisions made
+2. Include `.claude/current-work.md` in the commit
+
+## Context Tracking (MANDATORY)
+
+At the END of every response, append a context usage line:
+
+- Under 50%: 📊 Context: ~X% used
+- 50-70%: 📊 Context: ~X% used ⚠️
+- Above 70%: 📊 Context: ~X% used 🔴 (suggest /compact)
+
+Estimate based on conversation length. Start at ~5%, increment ~2-5% per exchange.
+
+## Project Board Integration
+
+**After every PR merge or PR opened:**
+1. Check GitHub Project Board: `gh project item-list 3 --owner Go-Do-AB --format json`
+2. Move related issues to match current status:
+   - PR opened → move issue to "In Review"
+   - PR merged (issue fully resolved) → move to "Done"
+   - PR merged (more work needed) → keep "In Progress"
+
+**Project Board statuses:** Features | Tasks | Ready for Sprint | In Progress | In Review | Done
+
+## Cross-Repo Awareness
+
+- **API contract**: Backend defines → Frontend and MobileApp consume
+- **Category codes**: 1-8 (categories), 101-803 (subcategories), 1001-1006 (tags)
+- **Subcategory pattern**: `categoryCode * 100 + index` (e.g., Sports=2 → 201, 202, 203)
+- **Response format**: All endpoints return `OperationResult<T>` wrapper
+- **Auth**: JWT (5-min) + refresh token rotation. Roles: User, Organiser, Admin
+- When changing API contract (endpoints, DTOs, response shape), flag that other repos may need updates
+
+## Orchestrator
+
+All 3 repos live on the same machine. You can work cross-repo:
+
+| Repo | Local Path |
+|------|-----------|
+| Backend | `C:/InFiNetCode/Projects/GODO/BACKEND/Backend` |
+| Frontend | `C:/InFiNetCode/Projects/GODO/FORM/Frontend` |
+| MobileApp | `C:/InFiNetCode/Projects/GODO/APP/MobileApp` |
+
+When a task spans multiple repos, use the Agent tool to delegate work to the correct repo directory with its patterns and conventions.
+
+## Shared Conventions
+
+### Git
+- Branch from `main` → PR back to `main`
+- Names: `feature/`, `fix/`, `docs/`, `refactor/`, `test/`
+- Never force-push to `main`
+
+### Commits
+- Format: `<type>: <description>` (e.g., `feat: add city filtering`)
+- Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`
+- Under 72 chars first line
+- End with: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+
+### Docs
+- Keep `docs/` and `forDevelopers/` current with significant changes
+- Mermaid diagrams for architecture/flows
+- Target junior developers — be explicit, use examples
+
+### Security
+- Never hardcode secrets, API keys, connection strings
+- Use environment variables or user secrets
+- Flag security concerns immediately
+
+## Reference Files
+
+Detailed reference lives in `.claude/reference/` — loaded on demand, not at startup.
+Use `/scope <area>` to load the right context for your task.
+
+---
+
+# This Repo: Frontend Website (Next.js 16)
+
+## Architecture
+
+Next.js 16 App Router with React 19, TypeScript, Tailwind CSS 4, and shadcn/ui components.
 
 ```
 src/
-├── app/                    # Next.js App Router pages
-│   ├── (auth)/
-│   │   ├── login/          # Organiser login
-│   │   ├── register/       # Organiser registration
-│   │   └── forgot-password/
-│   ├── create-event/       # Event creation page (multi-step form)
-│   ├── landing/            # Main landing page (role-based)
-│   ├── my-events/          # Organiser's events list
-│   │   └── [id]/edit/      # Event edit page (same form as create)
-│   └── quick-create/       # Admin-only quick event creation
-├── components/
-│   ├── events/             # Event-related components (EventTicketCard)
-│   ├── forms/              # Form components
-│   │   ├── EventFormStepper.tsx   # Multi-step form orchestrator
-│   │   ├── QuickCreateForm.tsx    # Admin quick-create form
-│   │   └── steps/                 # Individual form steps (5 steps)
-│   ├── global/             # Global components (Navbar)
-│   └── ui/                 # shadcn/ui components
-├── hooks/                  # Custom React hooks
-│   ├── useEvents.ts        # CRUD hooks (useEvents, useEvent, useUpdateEvent, etc.)
-│   ├── useCreateEvent.ts   # Legacy create event hook
-│   ├── useEventForm.ts     # Form hook with Zod resolver
-│   └── useQuickCreateEvent.ts
-├── lib/
-│   ├── axios.ts            # Axios instance with JWT interceptor
-│   ├── utils.ts            # Utility functions (org nr validation, etc.)
-│   ├── content/
-│   │   └── contentText.tsx # Categories, subcategories, filter tags (hardcoded)
-│   └── validation/
-│       ├── create-event-schema.ts  # Zod schema + payload creators
-│       └── quick-create-schema.ts  # Quick-create schema
+├── app/           → Pages and routes (App Router)
+│   ├── (auth)/    → Login, registration
+│   ├── create-event/ → Multi-step event creation form
+│   ├── my-events/ → Organiser's event list + edit
+│   ├── preview/   → Mobile app preview mockup
+│   ├── quick-create/ → Admin quick-create
+│   └── landing/   → Landing page
+├── components/    → Reusable UI components
+│   ├── forms/     → Multi-step form components (5 steps)
+│   │   ├── EventFormStepper.tsx → Form orchestrator
+│   │   ├── QuickCreateForm.tsx  → Admin quick-create
+│   │   └── steps/               → Individual steps
+│   ├── events/    → Event display (EventTicketCard)
+│   ├── global/    → Layout, header (Navbar)
+│   ├── preview/   → Mobile app preview
+│   └── ui/        → shadcn/ui base components
+├── hooks/         → Custom React hooks
+│   ├── useEvents.ts      → CRUD hooks (useEvents, useEvent, useUpdateEvent, etc.)
+│   ├── useCreateEvent.ts → Create mutation
+│   └── useEventForm.ts   → Form hook with Zod resolver
+├── lib/           → Utilities, API client, validation
+│   ├── axios.ts           → Axios instance (JWT interceptor)
+│   ├── utils.ts           → Utility functions
+│   ├── content/contentText.tsx → Categories, subcategories, tags (hardcoded)
+│   └── validation/        → Zod schemas + payload creators
+├── providers/     → React context providers
 └── types/
-    └── events.ts           # TypeScript interfaces (EventDto, CreateEventDto, etc.)
+    └── events.ts  → TypeScript interfaces matching backend DTOs
 ```
 
-## Category System (Aligned with Backend)
+### Tech Stack
+| Technology | Purpose |
+|------------|---------|
+| Next.js 16 | Framework (App Router, Turbopack) |
+| React 19 | UI library |
+| TypeScript 5 | Type safety |
+| Tailwind CSS 4 | Styling |
+| shadcn/ui + Radix | Component library |
+| React Hook Form + Zod | Form handling + validation |
+| TanStack Query 5 | Server state management |
+| Axios | HTTP client |
+| Sonner | Toast notifications |
+| Lucide React | Icons |
 
-7 main categories with 21 subcategories (3 per category). Defined in `src/lib/content/contentText.tsx`.
+### Key Patterns
+- **Multi-step form**: 5-step event creation (details → location → datetime → spotlight → review)
+- **React Hook Form + Zod**: Form state + schema validation
+- **TanStack Query**: API data fetching with caching
+- **Server/Client components**: Server by default, `"use client"` only when needed
+- **JWT via Axios interceptor**: Token from localStorage, auto-attached to requests
 
-| Code | Name | Subcategories |
-|------|------|---------------|
-| 1 | Events | 101: Festivals & fun, 102: Leisure & lifestyle, 103: Fairs & markets |
-| 2 | Sports & sporting activities | 201: Sports to do, 202: Sports to watch, 203: Sports to try |
-| 3 | Entertainment | 301: Cinema & film, 302: Music & concerts, 303: Theater & shows |
-| 4 | Culture & sights | 401: Guided tours, 402: Art & galleries, 403: Museums & sights |
-| 5 | Adventure & activities | 501: Parks & trails, 502: Food & drink activities, 503: Trips & adventures |
-| 6 | Learn & explore | 601: Talks & lectures, 602: Learn to..., 603: Gatherings & meetings |
-| 7 | Health & wellbeing | 701: Spas & pools, 702: Support & interaction, 703: Activities of faith |
+## Essential Context
 
-### Filter Tags (1001-1006)
-| Code | Name |
-|------|------|
-| 1001 | Free |
-| 1002 | Family-friendly |
-| 1003 | Indoor |
-| 1004 | Outdoor |
-| 1005 | Senior focus |
-| 1006 | Wheelchair accessible |
+### Multi-Step Event Form (core feature)
+The form at `/create-event` is the main feature — 5 steps:
+1. **Details** — Title, organiser, org nr, categories, subcategories, tags, description, URLs
+2. **Location** — Street, city, postal code, GPS (optional)
+3. **Date & Time** — Single dates or schedule, always-open toggle
+4. **Spotlight** — Featured event promotion (99 SEK/day + 125 SEK VAT)
+5. **Review** — Summary with cost breakdown, submit
 
-### Codes vs IDs
-- Frontend sends **codes** (int) for categories/subcategories/tags
-- Backend resolves codes to GUIDs via CodebookService
-- Subcategory code pattern: `categoryCode * 100 + index` (e.g., Sports=2 → 201, 202, 203)
+Data flows: `FormProvider` → step components → `createPayload()` → `POST /api/events`
+Edit mode: `eventDtoToFormData()` converts backend EventDto → form format
 
-## Key Features
+### Category System
+7 categories (codes 1-7) with 21 subcategories defined in `src/lib/content/contentText.tsx`.
+**Note**: Backend has 8 categories (code 8: "Fun for kids" is missing from FE — needs alignment).
+Codes must match backend `DataSeeder`.
 
-### 1. Event Creation (Multi-Step Form)
-- **Step 1: Details** - Title, organiser, org number, categories/subcategories, filters, description, URLs
-- **Step 2: Location** - Street, city, postal code, GPS coordinates (optional)
-- **Step 3: Date & Time** - Single dates or schedule, always-open toggle
-- **Step 4: Spotlight** - Featured event promotion (99 SEK/day + 125 SEK VAT)
-- **Step 5: Review** - Summary with spotlight cost breakdown, submit
+### Auth
+- Organiser login/register via `/api/organisers/auth/login` and `/register`
+- Token stored: `localStorage.getItem("accessToken")`
+- Axios interceptor adds `Authorization: Bearer {token}`
+- Admin detected from JWT `role` claim → shows Quick Create on landing
+- User ID from JWT `nameid` claim → used for "My Events" filter
 
-### 2. My Events (Organiser Dashboard)
-- Lists events created by the logged-in organiser
-- Filters by `createdById` from JWT
-- Only shows active events (`isActive: true`)
-- Edit and delete functionality
-
-### 3. Event Editing
-- Full edit page at `/my-events/[id]/edit`
-- Uses same multi-step form as create
-- Converts EventDto to form data via `eventDtoToFormData()`
-
-### 4. Authentication
-- JWT-based via organiser endpoints (`/api/organisers/auth/login` and `/register`)
-- All auth calls use shared axios instance (respects `NEXT_PUBLIC_API_URL`)
-- Token stored in localStorage as `accessToken`
-- Axios interceptor adds `Authorization: Bearer {token}` to all requests
-- Role-based UI: Admin sees Quick Create button on landing page
-
-### 5. Quick Create (Admin Only)
-- Simplified event creation at `/quick-create`
-- Admin role check via JWT decode
-- Sends to `POST /api/events/quick`
-
-## API Integration
-
-### Base URL Configuration
-```typescript
-// src/lib/axios.ts
-baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5198/api"
-```
-Set `NEXT_PUBLIC_API_URL` in `.env.local` for different environments.
-
-### Endpoints Used
-```
-POST   /api/organisers/auth/login      # Organiser login
-POST   /api/organisers/auth/register   # Organiser registration
-GET    /api/events                      # List events with filters
-GET    /api/events/{id}                 # Get single event
-POST   /api/events                      # Create event (Organiser/Admin)
-PUT    /api/events/{id}                 # Full update event
-PATCH  /api/events/{id}                 # Partial update event
-DELETE /api/events/{id}                 # Soft delete event
-POST   /api/events/quick                # Quick-create (Admin only)
-```
-
-### Query Parameters for GET /api/events
-- `categoryCodes` - Comma-separated category codes (e.g., "1,3")
-- `subcategoryCodes` - Comma-separated subcategory codes
-- `tagCodes` - Comma-separated tag codes
-- `createdById` - Filter by creator's user ID (for "My Events")
-- `isActive` - Filter active/deleted events (default: true)
-- `city` - Filter by city name
-- `fromDate`, `toDate` - Date range (ISO format)
-- `pageNumber`, `pageSize` - Pagination
-
-### Response Format
-All API responses use `OperationResult<T>`:
-```json
-{ "isSuccess": true, "data": { ... }, "errors": [] }
-```
-
-## Important Files
-
-### Content & Configuration
-- `src/lib/content/contentText.tsx` - **Categories, subcategories, filter tags** (must match backend DataSeeder)
-- `src/lib/axios.ts` - Axios instance with JWT interceptor
-- `src/types/events.ts` - All TypeScript interfaces matching backend DTOs
-
-### Form System
-- `src/lib/validation/create-event-schema.ts` - Zod schema, `createPayload()`, `eventDtoToFormData()`
-- `src/lib/validation/quick-create-schema.ts` - Quick-create Zod schema
-- `src/hooks/useEventForm.ts` - Form hook with Zod resolver
-- `src/components/forms/EventFormStepper.tsx` - Multi-step form orchestrator
-- `src/components/forms/steps/` - Individual steps (Details, Location, DateTime, Spotlight, Review)
-
-### Hooks
-- `src/hooks/useEvents.ts` - `useEvents`, `useEvent`, `useUpdateEvent`, `usePatchEvent`, `useDeleteEvent`
-- `src/hooks/useCreateEvent.ts` - `useCreateEvent` mutation
-- `src/hooks/useQuickCreateEvent.ts` - `useQuickCreateEvent` mutation
-
-## Common Tasks
-
-### Run Development Server
+### Quick Reference
 ```bash
-npm run dev
+npm run dev        # Dev server with Turbopack
+npm run build      # Production build
+npm run lint       # ESLint
+npm run format     # Prettier
+npx tsc --noEmit   # Type check
 ```
 
-### Build for Production
+### Environment
 ```bash
-npm run build
+# .env.local
+NEXT_PUBLIC_API_URL=https://api.godo-dev.nu/api  # or http://localhost:5198/api
 ```
 
-### Type Check
-```bash
-npx tsc --noEmit
-```
+### Production
+- **Local**: `http://localhost:3000`
+- **Production**: `https://godo-dev.nu` (GleSYS VPS, Docker + Caddy)
+- **CI/CD**: GitHub Actions → Docker → GHCR → GleSYS deploy
 
-## Conventions
+## Notes for AI
 
-### Form Data Flow
-1. User fills multi-step form (`CreateEventFormData`)
-2. `createPayload()` converts to `CreateEventDto` (dates+times combined, weekday mapped to 0-6)
-3. API call via axios sends payload to backend
-4. For edits: `eventDtoToFormData()` converts EventDto back to form format
+1. Use App Router conventions (not Pages Router)
+2. Default to Server Components — add `"use client"` only when needed
+3. Form components in `src/components/forms/` — follow existing step pattern
+4. API types must match backend DTOs — check `src/types/events.ts`
+5. Use shadcn/ui from `src/components/ui/` — don't add new UI libraries
+6. Zod schemas in `src/lib/validation/` — `createPayload()` and `eventDtoToFormData()` live there
+7. All API calls via shared Axios instance — never use raw `fetch()` with hardcoded URLs
+8. Categories in `contentText.tsx` must match backend DataSeeder
+9. Soft delete: always filter with `isActive: true`
+10. Time format: form uses "HH:mm", backend uses TimeSpan
+11. GPS coordinates: optional "lat,lon" string — backend auto-geocodes if missing
+12. Run `npm run lint && npx tsc --noEmit && npm run build` before committing
 
-### Authentication Token
-```typescript
-const token = localStorage.getItem("accessToken");
-const decoded = JSON.parse(atob(token.split('.')[1]));
-const userId = decoded.nameid || decoded.sub || decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-const roles = decoded.role || decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-const roleArray = Array.isArray(roles) ? roles : [roles];
-const isAdmin = roleArray.includes("Admin");
-```
+## Commands
 
-## Notes for AI Assistants
+### Planning Lifecycle (shared across all repos)
+| Command | Purpose |
+|---------|---------|
+| `/plan <feature>` | Create feature plan with phases and roadmap |
+| `/execute` | Execute current phase from .planning/STATE.md |
+| `/progress` | Show project state + route to next action |
+| `/verify` | Run all checks (build, test, lint, types) |
+| `/pause` | Save state for session continuity |
+| `/resume` | Resume from saved state with briefing |
 
-1. **Categories must match backend** - `contentText.tsx` has 7 categories (codes 1-7) with 3 subcategories each (code pattern: catCode*100 + index). These MUST match the backend DataSeeder
-2. **All API calls use axios** - Login, register, and all event operations use the shared `api` instance from `src/lib/axios.ts`. Never use raw `fetch()` with hardcoded URLs
-3. **Bilingual DTOs** - Backend returns `nameSv` (Swedish) alongside `name` (English) on categories and subcategories
-4. **Soft Delete** - Always filter with `isActive: true` to hide deleted events
-5. **Ownership** - Use `createdById` filter with user ID from JWT for "My Events"
-6. **Edit Form** - Converts EventDto → CreateEventFormData via `eventDtoToFormData()`
-7. **Time Handling** - Form uses "HH:mm" format; backend uses TimeSpan
-8. **Subcategory Mapping** - Form stores `subcategories: Record<number, number[]>` keyed by category code; sent as `subcategoryCodesByCategory` to backend
-9. **Spotlight Pricing** - 99 SEK/day + 125 SEK flat VAT; displayed in StepSpotlight and StepEventReview
-10. **GPS Coordinates** - Optional string field "lat,lon"; backend can auto-geocode if missing
-11. **Source Provider** - EventDto includes `sourceProvider` field (null for internal events, "helsingborg" for external)
-12. **Backend runs on** `http://localhost:5198` (not 7030) — use `NEXT_PUBLIC_API_URL` env var to configure
+### Team & Project (shared)
+| Command | Purpose |
+|---------|---------|
+| `/team-status` | Team dashboard — PRs, branches, project board |
+| `/project-sync` | Sync PR status with GitHub Project Board |
+| `/pr` | Create PR with GODO conventions |
+| `/review` | Review changes before commit |
+
+### Utilities (shared)
+| Command | Purpose |
+|---------|---------|
+| `/status` | Quick overview — current work + git |
+| `/scope <area>` | Load reference files on demand |
+| `/cross-repo` | Check consistency across repos |
+| `/orchestrate <task>` | Delegate work across repos |
+| `/security` | Run security audit |
+
+### Frontend-Specific
+| Command | Purpose |
+|---------|---------|
+| `/build-check` | Quick lint + type check + build |
+
+## Reference (on demand via /scope)
+
+| File | Content |
+|------|---------|
+| `.claude/reference/form-architecture.md` | Multi-step form deep-dive |
+| `.claude/reference/key-files.md` | All important file paths |
+| `.claude/reference/api-integration.md` | API client setup and patterns |
+| `.claude/reference/components.md` | Component inventory |
+| `.claude/patterns/page-template.md` | New page scaffold |
+| `.claude/patterns/form-step-template.md` | New form step scaffold |
+| `.claude/patterns/component-template.md` | New component scaffold |
