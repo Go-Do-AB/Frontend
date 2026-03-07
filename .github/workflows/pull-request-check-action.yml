@@ -1,36 +1,43 @@
-name: Pull Request Action Check
+name: PR Checks (Frontend)
 
-# 📌 This workflow runs automatically when someone opens a Pull Request to "development"
 on:
   pull_request:
     branches: [main]
 
 jobs:
   build-and-check:
-    name: Pull Request Action Check
-    runs-on: ubuntu-latest # 🖥️ Use the latest Ubuntu runner provided by GitHub
+    name: Build, Lint & Type Check
+    runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-        # 👉 This pulls the repo's code into the GitHub Actions machine
 
-      - name: 🟢 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-        # 👉 Makes sure Node.js v20 is installed (required for Next.js 16+)
 
-      - name: 📦 Install dependencies
-        run: npm install
-        # 👉 Installs everything from package.json
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
-      - name: 🏗️ Build Next.js app
-        run: npm run build
-        # 👉 Runs the Next.js build (fails PR if it doesn’t compile)
+      - name: Install dependencies
+        run: npm ci
 
-      - name: ✨ Lint code
+      - name: Lint code
         run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Security audit
+        run: npm audit --audit-level=high
         continue-on-error: true
-        # 👉 Optional: checks code style with ESLint
-        # "continue-on-error: true" means it won’t fail the PR, just warn

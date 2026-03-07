@@ -8,6 +8,7 @@
 |----------|----------------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design — tech stack, data flow, deployment, form architecture |
 | [ONBOARDING.md](ONBOARDING.md) | 15-minute orientation for new team members |
+| [CI/CD & Deployment](https://github.com/Go-Do-AB/Backend/blob/main/docs/CI-CD-DEPLOYMENT.md) | Visual CI/CD pipeline & deploy flow (both BE + FE) — lives in Backend repo |
 
 ## Developer Guides
 
