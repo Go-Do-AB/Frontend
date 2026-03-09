@@ -44,7 +44,7 @@ export default function PreviewPage() {
           <div className="grid grid-cols-2 gap-4 mb-8">
             <Feature
               icon={<Layers size={20} />}
-              title="7 Kategorier"
+              title="8 Kategorier"
               desc="Från sport till kultur"
             />
             <Feature

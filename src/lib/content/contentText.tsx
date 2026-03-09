@@ -12,7 +12,7 @@ import {
   BookOpen,
   GraduationCap,
   HeartPulse,
-  Dumbbell,
+  Smile,
   Home,
   Accessibility,
   Glasses,
@@ -24,47 +24,54 @@ import {
   UtensilsCrossed,
   Compass,
   MessageCircle,
-  Lightbulb,
   UsersRound,
   Waves,
   HandHeart,
   Church,
+  Baby,
+  PersonStanding,
 } from "lucide-react";
 import { JSX } from "react";
 
 // ────────────────────────────────────────────────────────────────
-// 7 Categories / 21 Subcategories — aligned with backend DataSeeder
+// 8 Categories / 24 Subcategories — aligned with backend DataSeeder
 // Pattern: subcategory code = categoryCode * 100 + index
+// Display order: family-friendly first, then broad → niche
 // ────────────────────────────────────────────────────────────────
 
 export const subcategoriesMap: Record<
   number,
   { code: number; label: string; icon: React.ElementType }[]
 > = {
+  8: [
+    { code: 801, label: "0–4 år", icon: Baby },
+    { code: 802, label: "5–10 år", icon: Smile },
+    { code: 803, label: "11–15 år", icon: PersonStanding },
+  ],
   1: [
     { code: 101, label: "Festivaler & nöjen", icon: Sparkles },
     { code: 102, label: "Fritid & livsstil", icon: Users },
     { code: 103, label: "Mässor & marknader", icon: CalendarDays },
-  ],
-  2: [
-    { code: 201, label: "Sport att utöva", icon: Dribbble },
-    { code: 202, label: "Sport att titta på", icon: Eye },
-    { code: 203, label: "Sport att prova", icon: Mountain },
   ],
   3: [
     { code: 301, label: "Bio & film", icon: Film },
     { code: 302, label: "Musik & konserter", icon: Music },
     { code: 303, label: "Teater & shower", icon: Theater },
   ],
-  4: [
-    { code: 401, label: "Guidade turer", icon: Map },
-    { code: 402, label: "Konst & gallerier", icon: Paintbrush2 },
-    { code: 403, label: "Museer & sevärdheter", icon: Landmark },
+  2: [
+    { code: 201, label: "Sport att utöva", icon: Dribbble },
+    { code: 202, label: "Sport att titta på", icon: Eye },
+    { code: 203, label: "Sport att prova", icon: Mountain },
   ],
   5: [
     { code: 501, label: "Parker & leder", icon: TreeDeciduous },
     { code: 502, label: "Mat & dryck", icon: UtensilsCrossed },
     { code: 503, label: "Utflykter & äventyr", icon: Compass },
+  ],
+  4: [
+    { code: 401, label: "Guidade turer", icon: Map },
+    { code: 402, label: "Konst & gallerier", icon: Paintbrush2 },
+    { code: 403, label: "Museer & sevärdheter", icon: Landmark },
   ],
   6: [
     { code: 601, label: "Föreläsningar", icon: MessageCircle },
@@ -78,12 +85,14 @@ export const subcategoriesMap: Record<
   ],
 };
 
+// Display order: family-friendly first, then broad → niche
 export const categoryOptions: { code: number; label: string; icon: React.ElementType }[] = [
+  { code: 8, label: "Kul för barn", icon: Smile },
   { code: 1, label: "Evenemang", icon: CalendarDays },
-  { code: 2, label: "Idrott & sport", icon: Dribbble },
   { code: 3, label: "Underhållning", icon: Film },
-  { code: 4, label: "Kultur & sevärdheter", icon: Landmark },
+  { code: 2, label: "Idrott & sport", icon: Dribbble },
   { code: 5, label: "Upplevelser & äventyr", icon: Mountain },
+  { code: 4, label: "Kultur & sevärdheter", icon: Landmark },
   { code: 6, label: "Lära & utforska", icon: BookOpen },
   { code: 7, label: "Hälsa & välmående", icon: HeartPulse },
 ];

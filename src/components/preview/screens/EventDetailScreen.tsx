@@ -4,15 +4,22 @@ import {
   BRAND,
   CATEGORY_COLORS,
   CATEGORY_GRADIENTS,
-  CATEGORY_TINTS,
   CATEGORY_SHORT_LABELS,
+  FontFamily,
+  Typography,
+  Spacing,
+  Radii,
+  Shadows,
+  Neutral,
+  GodoYellow,
+  Surface,
 } from "../constants";
 import { MOCK_EVENTS } from "../mockEvents";
 import {
   ArrowLeft,
   Share2,
+  Heart,
   MapPin,
-  CalendarDays,
   Clock,
   ExternalLink,
   User,
@@ -31,20 +38,26 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
 
   if (!event) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
+      <div className="flex flex-col items-center justify-center py-20 gap-3" style={{ fontFamily: FontFamily.body }}>
         <div
-          className="w-[48px] h-[48px] rounded-full flex items-center justify-center"
-          style={{ backgroundColor: BRAND.neutral100 }}
+          className="flex items-center justify-center rounded-full"
+          style={{ width: 48, height: 48, backgroundColor: Neutral[100] }}
         >
-          <MapPin size={20} style={{ color: BRAND.textSecondary }} />
+          <MapPin size={20} style={{ color: Neutral[500] }} />
         </div>
-        <p className="text-[13px]" style={{ color: BRAND.textSecondary }}>
+        <p style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
           Evenemanget hittades inte
         </p>
         <button
           onClick={onBack}
-          className="text-[13px] font-semibold px-4 py-2 rounded-full"
-          style={{ backgroundColor: BRAND.yellow, color: BRAND.onPrimary }}
+          className="px-4 py-2"
+          style={{
+            fontSize: Typography.meta.size,
+            fontWeight: 600,
+            borderRadius: Radii.pill,
+            backgroundColor: GodoYellow[500],
+            color: Surface.onPrimary,
+          }}
         >
           Gå tillbaka
         </button>
@@ -54,8 +67,6 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
 
   const categoryCode = event.categories?.[0]?.code ?? 1;
   const gradient = CATEGORY_GRADIENTS[categoryCode] ?? CATEGORY_GRADIENTS[1];
-  const color = CATEGORY_COLORS[categoryCode] ?? CATEGORY_COLORS[1];
-  const tint = CATEGORY_TINTS[categoryCode] ?? CATEGORY_TINTS[1];
 
   const dateLabel = event.startDate
     ? format(new Date(event.startDate), "EEEE d MMMM yyyy", { locale: sv })
@@ -83,145 +94,105 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
         : "";
 
   return (
-    <div className="relative flex flex-col" style={{ backgroundColor: BRAND.yellow, minHeight: "100%" }}>
-      {/* Hero section — 300dp with category gradient */}
-      <div className="relative" style={{ height: "260px" }}>
-        {/* Category gradient background */}
+    <div className="relative flex flex-col" style={{ minHeight: "100%", fontFamily: FontFamily.body }}>
+      {/* Hero section — 300px with category gradient */}
+      <div className="relative" style={{ height: 300 }}>
         <div
           className="absolute inset-0"
-          style={{
-            background: `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`,
-          }}
+          style={{ background: `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})` }}
         />
-        {/* Dark scrim overlay — bottom vignette */}
         <div
           className="absolute inset-0"
-          style={{
-            background: "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.55))",
-          }}
+          style={{ background: "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.55))" }}
         />
 
-        {/* Floating back & share buttons */}
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 pt-2 z-10">
+        {/* Floating back, save & share buttons */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between pt-2 z-10" style={{ paddingLeft: Spacing.screenPadding, paddingRight: Spacing.screenPadding }}>
           <button
             onClick={onBack}
-            className="w-[40px] h-[40px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.9)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-            }}
+            className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
+            style={{ width: 40, height: 40, backgroundColor: "rgba(255,255,255,0.9)", boxShadow: Shadows.sm }}
           >
-            <ArrowLeft size={22} style={{ color: BRAND.textPrimary }} />
+            <ArrowLeft size={22} style={{ color: Neutral[800] }} />
           </button>
-          <button
-            className="w-[40px] h-[40px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.9)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-            }}
-          >
-            <Share2 size={20} style={{ color: BRAND.textPrimary }} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
+              style={{ width: 40, height: 40, backgroundColor: "rgba(255,255,255,0.9)", boxShadow: Shadows.sm }}
+            >
+              <Heart size={20} style={{ color: Neutral[800] }} />
+            </button>
+            <button
+              className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
+              style={{ width: 40, height: 40, backgroundColor: "rgba(255,255,255,0.9)", boxShadow: Shadows.sm }}
+            >
+              <Share2 size={20} style={{ color: Neutral[800] }} />
+            </button>
+          </div>
         </div>
 
-        {/* Hero tag pills — positioned at bottom-left of hero */}
-        {event.tags && event.tags.length > 0 && (
-          <div className="absolute bottom-8 left-5 flex flex-wrap gap-1.5 z-10">
-            {event.tags.map((tag) => (
-              <span
-                key={tag.code}
-                className="px-2.5 py-1 rounded-full text-[12px] font-semibold"
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.85)",
-                  color: BRAND.textPrimary,
-                }}
-              >
-                {tag.name}
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Category labels at bottom-left of hero */}
+        <div className="absolute bottom-8 left-5 flex flex-wrap gap-1.5 z-10">
+          {event.categories?.map((cat) => (
+            <span
+              key={cat.code}
+              style={{ fontSize: Typography.meta.size, fontWeight: 600, color: "#FFFFFF", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}
+            >
+              {cat.name}
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* Content sheet — overlaps hero by -20px, rounded yellow corners */}
+      {/* Content sheet — overlaps hero, rounded top (Radii.sheet = 24) */}
       <div
         className="relative flex-1"
         style={{
-          backgroundColor: BRAND.surface,
-          borderTopLeftRadius: "24px",
-          borderTopRightRadius: "24px",
-          marginTop: "-20px",
-          paddingBottom: hasCta ? "80px" : "20px",
+          backgroundColor: Surface.surface,
+          borderTopLeftRadius: Radii.sheet,
+          borderTopRightRadius: Radii.sheet,
+          marginTop: -20,
+          paddingBottom: hasCta ? 80 : 20,
         }}
       >
-        <div className="px-5 pt-6">
+        <div style={{ paddingLeft: Spacing.screenPadding, paddingRight: Spacing.screenPadding, paddingTop: Spacing.lg }}>
           {/* Title */}
           <h1
-            className="text-[24px] font-bold leading-snug break-words mb-1"
-            style={{ color: BRAND.textPrimary }}
+            className="break-words mb-1"
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              lineHeight: "30px",
+              color: Neutral[800],
+            }}
           >
             {event.title}
           </h1>
 
           {/* Category meta */}
-          <p className="text-[13px] mb-1" style={{ color: BRAND.textSecondary }}>
+          <p className="mb-1" style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
             {CATEGORY_SHORT_LABELS[categoryCode]}
             {event.subcategories?.[0] && ` · ${event.subcategories[0].name}`}
           </p>
 
           {/* Date */}
           {dateLabel && (
-            <p
-              className="text-[16px] font-semibold mb-6"
-              style={{ color: BRAND.textPrimary }}
-            >
+            <p className="mb-6" style={{ fontSize: Typography.cardTitle.size, fontWeight: 600, color: Neutral[800] }}>
               {dateLabel}
               {timeLabel && (
-                <span style={{ color: BRAND.textSecondary, fontWeight: 400 }}>
-                  {" "}
-                  kl. {timeLabel}
-                </span>
+                <span style={{ color: Neutral[500], fontWeight: 400 }}> kl. {timeLabel}</span>
               )}
             </p>
           )}
 
-          {/* Category & subcategory pills */}
-          {(event.categories?.length > 0 || event.subcategories?.length > 0) && (
-            <div className="flex flex-wrap gap-1.5 mb-6">
-              {event.categories?.map((cat) => (
-                <span
-                  key={cat.code}
-                  className="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
-                  style={{ backgroundColor: tint, color }}
-                >
-                  {cat.name}
-                </span>
-              ))}
-              {event.subcategories?.map((sub) => (
-                <span
-                  key={sub.code}
-                  className="text-[10px] font-medium px-2.5 py-1 rounded-full border"
-                  style={{ borderColor: BRAND.border, color: BRAND.textSecondary }}
-                >
-                  {sub.name}
-                </span>
-              ))}
-            </div>
-          )}
 
           {/* About section */}
           {event.description && (
             <div className="mb-6">
-              <h2
-                className="text-[20px] font-semibold mb-2"
-                style={{ color: BRAND.textPrimary }}
-              >
+              <h2 className="mb-2" style={{ fontSize: Typography.sectionTitle.size, fontWeight: Typography.sectionTitle.weight, color: Neutral[800] }}>
                 Om evenemanget
               </h2>
-              <p
-                className="text-[15px] leading-relaxed break-words"
-                style={{ color: BRAND.textBody }}
-              >
+              <p className="break-words" style={{ fontSize: Typography.body.size, lineHeight: `${Typography.body.lineHeight}px`, color: Neutral[700] }}>
                 {event.description}
               </p>
             </div>
@@ -230,22 +201,17 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           {/* Organiser section */}
           {event.organiser && (
             <div className="mb-6">
-              <p
-                className="text-[11px] font-bold uppercase tracking-wider mb-1"
-                style={{ color: BRAND.textSecondary }}
-              >
+              <p className="uppercase tracking-wider mb-1" style={{ fontSize: 11, fontWeight: 700, color: Neutral[500] }}>
                 Arrangör
               </p>
               <div className="flex items-center gap-2">
                 <div
-                  className="w-[28px] h-[28px] rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: BRAND.neutral100 }}
+                  className="flex items-center justify-center rounded-full"
+                  style={{ width: 28, height: 28, backgroundColor: Neutral[100] }}
                 >
-                  <User size={14} style={{ color: BRAND.textSecondary }} />
+                  <User size={14} style={{ color: Neutral[500] }} />
                 </div>
-                <p className="text-[15px]" style={{ color: BRAND.textBody }}>
-                  {event.organiser}
-                </p>
+                <p style={{ fontSize: Typography.body.size, color: Neutral[700] }}>{event.organiser}</p>
               </div>
             </div>
           )}
@@ -253,22 +219,17 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           {/* Location section */}
           {fullAddress && (
             <div className="mb-6">
-              <p
-                className="text-[11px] font-bold uppercase tracking-wider mb-1"
-                style={{ color: BRAND.textSecondary }}
-              >
+              <p className="uppercase tracking-wider mb-1" style={{ fontSize: 11, fontWeight: 700, color: Neutral[500] }}>
                 Plats
               </p>
               <div className="flex items-center gap-2">
                 <div
-                  className="w-[28px] h-[28px] rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: BRAND.neutral100 }}
+                  className="flex items-center justify-center rounded-full"
+                  style={{ width: 28, height: 28, backgroundColor: Neutral[100] }}
                 >
-                  <MapPin size={14} style={{ color: BRAND.textSecondary }} />
+                  <MapPin size={14} style={{ color: Neutral[500] }} />
                 </div>
-                <p className="text-[15px] break-words" style={{ color: BRAND.textBody }}>
-                  {fullAddress}
-                </p>
+                <p className="break-words" style={{ fontSize: Typography.body.size, color: Neutral[700] }}>{fullAddress}</p>
               </div>
             </div>
           )}
@@ -276,24 +237,21 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           {/* Schedule section */}
           {event.hasSchedule && event.scheduleStartTime && (
             <div className="mb-6">
-              <p
-                className="text-[11px] font-bold uppercase tracking-wider mb-1"
-                style={{ color: BRAND.textSecondary }}
-              >
+              <p className="uppercase tracking-wider mb-1" style={{ fontSize: 11, fontWeight: 700, color: Neutral[500] }}>
                 Tider
               </p>
               <div className="flex items-center gap-2">
                 <div
-                  className="w-[28px] h-[28px] rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: BRAND.neutral100 }}
+                  className="flex items-center justify-center rounded-full"
+                  style={{ width: 28, height: 28, backgroundColor: Neutral[100] }}
                 >
-                  <Clock size={14} style={{ color: BRAND.textSecondary }} />
+                  <Clock size={14} style={{ color: Neutral[500] }} />
                 </div>
-                <p className="text-[15px]" style={{ color: BRAND.textBody }}>
+                <p style={{ fontSize: Typography.body.size, color: Neutral[700] }}>
                   {event.scheduleStartTime.substring(0, 5)}
                   {event.scheduleEndTime && ` – ${event.scheduleEndTime.substring(0, 5)}`}
                   {event.recurrence && (
-                    <span style={{ color: BRAND.textSecondary }}> ({event.recurrence})</span>
+                    <span style={{ color: Neutral[500] }}> ({event.recurrence})</span>
                   )}
                 </p>
               </div>
@@ -301,35 +259,38 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           )}
 
           {/* Source attribution */}
-          <div
-            className="pt-3 mt-2"
-            style={{ borderTop: `1px solid ${BRAND.neutral200}` }}
-          >
-            <p className="text-[13px]" style={{ color: BRAND.textSecondary }}>
+          <div className="pt-3 mt-2" style={{ borderTop: `1px solid ${Neutral[200]}` }}>
+            <p style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
               Källa:{" "}
-              {event.sourceProvider === "helsingborg"
-                ? "Helsingborg Events API"
-                : "Go.Do"}
+              {event.sourceProvider === "helsingborg" ? "Helsingborg Events API" : "Go.Do"}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Sticky CTA bar */}
+      {/* Sticky CTA bar — matches GodoButton primary */}
       {hasCta && (
         <div
-          className="absolute bottom-0 left-0 right-0 px-5 py-3 pb-5 z-20"
+          className="absolute bottom-0 left-0 right-0 z-20"
           style={{
-            backgroundColor: BRAND.surface,
+            paddingLeft: Spacing.screenPadding,
+            paddingRight: Spacing.screenPadding,
+            paddingTop: 12,
+            paddingBottom: Spacing.screenPadding,
+            backgroundColor: Surface.surface,
             boxShadow: "0 -4px 16px rgba(0,0,0,0.08)",
           }}
         >
           <button
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-[26px] text-[16px] font-semibold transition-all active:scale-[0.98] active:opacity-85"
+            className="w-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-85"
             style={{
-              backgroundColor: BRAND.yellow,
-              color: BRAND.onPrimary,
-              minHeight: "48px",
+              minHeight: 48,
+              borderRadius: Radii.button,
+              backgroundColor: GodoYellow[500],
+              color: Surface.onPrimary,
+              fontSize: Typography.button.size,
+              fontWeight: Typography.button.weight,
+              fontFamily: FontFamily.body,
             }}
           >
             {event.bookingUrl && <ExternalLink size={16} />}
