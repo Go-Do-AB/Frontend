@@ -282,6 +282,18 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           }}
         >
           <button
+            onClick={() => {
+              const url = event.bookingUrl || event.eventUrl;
+              if (url) {
+                window.open(url, "_blank", "noopener,noreferrer");
+              } else if (fullAddress) {
+                window.open(
+                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }
+            }}
             className="w-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-85"
             style={{
               minHeight: 48,
@@ -291,6 +303,7 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
               fontSize: Typography.button.size,
               fontWeight: Typography.button.weight,
               fontFamily: FontFamily.body,
+              cursor: "pointer",
             }}
           >
             {event.bookingUrl && <ExternalLink size={16} />}
