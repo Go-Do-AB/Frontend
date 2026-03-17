@@ -13,6 +13,7 @@ These guides are written for developers who are **new to the project** or need a
 | [Form Guide](FORM-GUIDE.md) | How the multi-step event form works | 20 min |
 | [Development Workflow](DEVELOPMENT-WORKFLOW.md) | Branching, linting, CI/CD, PR checklist | 15 min |
 | [Claude Code Guide](CLAUDE-CODE-GUIDE.md) | AI commands, planning, orchestration, workflows | 15 min |
+| [Claude Code Infrastructure](claude-code/) | In-depth guides: first session, commands, planning, cross-repo | 60 min |
 
 ## Recommended Reading Order
 
