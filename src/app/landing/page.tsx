@@ -1,43 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Navbar } from "@/components/global/Navbar";
 import { Button } from "@/components/ui/button";
 import { CalendarPlus, Zap, List, Smartphone } from "lucide-react";
 import Link from "next/link";
 
+function getInitialAuthState() {
+  if (typeof window === "undefined") return { isLoggedIn: false, isAdmin: false };
+  const token = localStorage.getItem("accessToken");
+  if (!token) return { isLoggedIn: false, isAdmin: false };
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const roles =
+      payload.role ||
+      payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
+      [];
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+    return { isLoggedIn: true, isAdmin: roleArray.includes("Admin") };
+  } catch {
+    return { isLoggedIn: false, isAdmin: false };
+  }
+}
+
 export default function Home() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setIsLoggedIn(false);
-      setIsAdmin(false);
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setIsLoggedIn(true);
-
-      // Check for Admin role in JWT claims
-      // .NET puts roles in "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-      // or just "role" depending on configuration
-      const roles =
-        payload.role ||
-        payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
-        [];
-
-      // Roles can be a string (single role) or array (multiple roles)
-      const roleArray = Array.isArray(roles) ? roles : [roles];
-      setIsAdmin(roleArray.includes("Admin"));
-    } catch {
-      setIsLoggedIn(false);
-      setIsAdmin(false);
-    }
-  }, []);
+  const [{ isAdmin, isLoggedIn }] = useState(getInitialAuthState);
 
   return (
     <main className="min-h-screen flex flex-col">
