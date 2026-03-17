@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -32,15 +32,10 @@ export default function QuickCreatePage() {
   const router = useRouter();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<QuickCreateFormData | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // null = loading
-
-  // Check Admin role on mount
-  useEffect(() => {
+  const [isAdmin] = useState<boolean | null>(() => {
+    if (typeof window === "undefined") return null;
     const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setIsAdmin(false);
-      return;
-    }
+    if (!token) return false;
 
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -49,11 +44,11 @@ export default function QuickCreatePage() {
         payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
         [];
       const roleArray = Array.isArray(roles) ? roles : [roles];
-      setIsAdmin(roleArray.includes("Admin"));
+      return roleArray.includes("Admin");
     } catch {
-      setIsAdmin(false);
+      return false;
     }
-  }, []);
+  });
 
   const form = useForm<QuickCreateFormData>({
     resolver: zodResolver(quickCreateSchema),

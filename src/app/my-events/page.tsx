@@ -30,32 +30,35 @@ import {
 import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import type { EventDto } from "@/types/events";
 
+function getUserIdFromToken(): string | null {
+  if (typeof window === "undefined") return null;
+  const token = localStorage.getItem("accessToken");
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return (
+      payload.sub ||
+      payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ||
+      payload.nameid ||
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
 export default function MyEventsPage() {
   const router = useRouter();
   const [pageNumber, setPageNumber] = useState(1);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId] = useState(getUserIdFromToken);
 
-  // Get user ID from JWT token (NameIdentifier claim)
+  // Redirect to login if no valid token
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      // Look for user ID claim (NameIdentifier in .NET JWT)
-      const id =
-        payload.sub ||
-        payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ||
-        payload.nameid;
-      setUserId(id || null);
-    } catch {
-      // If token parsing fails, redirect to login
+    if (!userId) {
       router.push("/login");
     }
-  }, [router]);
+  }, [userId, router]);
 
   const { data, isLoading, error, refetch } = useEvents(
     userId ? { createdById: userId, isActive: true, pageNumber, pageSize: 10 } : undefined
