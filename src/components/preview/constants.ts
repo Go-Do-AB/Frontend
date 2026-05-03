@@ -42,6 +42,14 @@ export const Surface = {
   onPrimary: "#2A2000",   // Dark brown text on yellow
 } as const;
 
+// ── Semantic colors (matches Semantic in theme.ts) ──────────────────
+export const Semantic = {
+  success: { light: "#D1FAE5", main: "#10B981", dark: "#14532D" },
+  error:   { light: "#FEE2E2", main: "#EF4444", dark: "#991B1B" },
+  warning: { light: "#FEF3C7", main: "#F59E0B", dark: "#7C2D12" },
+  info:    { light: "#DBEAFE", main: "#3B82F6", dark: "#1E3A8A" },
+} as const;
+
 // ── Typography (matches Typography in theme.ts) ─────────────────────
 export const Typography = {
   hero:         { size: 28, weight: 700, lineHeight: 34 },
@@ -54,10 +62,12 @@ export const Typography = {
 } as const;
 
 // ── Font families ───────────────────────────────────────────────────
-// Expo app uses Calibri-Bold for Go.Do branding, system font elsewhere
+// MobileApp uses Calibri-Bold for Go.Do branding. On web we load Carlito
+// (open-source metric-compatible clone) via next/font as --font-brand,
+// then prefer Calibri for users who have it (Windows/Office), then fall back.
 export const FontFamily = {
-  brand: "'Calibri', 'Carlito', sans-serif",   // Go.Do logo + branded buttons
-  body: "system-ui, -apple-system, sans-serif", // All body text
+  brand: "var(--font-brand), 'Calibri', system-ui, sans-serif",
+  body: "system-ui, -apple-system, sans-serif",
 } as const;
 
 // ── Spacing: 8pt grid (matches Spacing in theme.ts) ─────────────────

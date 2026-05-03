@@ -3,10 +3,34 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-02-26
+Last updated: 2026-05-03
 
 ## Active Task
-**Preview Redesign Complete** — Phone mockup fully redesigned to match Expo accessibility-redesign branch with realistic Swedish data.
+**Preview Redesign — MobileApp Parity** (Issue #58, branch `feature/preview-mobileapp-parity`) — Bringing the `/preview` phone mockup up to parity with the *current* MobileApp design (3D carousel + every shipped screen). 9-phase plan tracked in `.planning/STATE.md`. Phase 1 (foundation) complete; Phase 2 (3D carousel) up next.
+
+### Phase 1 done (2026-05-03):
+- `framer-motion` installed for gesture-driven 3D carousel + spring physics
+- Carlito brand font wired via `next/font/google` → `--font-brand`
+- `constants.ts` extended with `Semantic` colors; `FontFamily.brand` now uses CSS var
+- New primitives in `src/components/preview/ui/`: GodoButton, GodoCard, GodoChip, RGBBorderCard
+
+### Phase 2 done (2026-05-03):
+- New `src/components/preview/components/CategoryCarousel3D.tsx` — full Reanimated→framer-motion port (gesture-driven drag, ring-modulus index, ±35° rotateY, perspective 800, opacity falloff, spring snap damping 18 / stiffness 150 / mass 0.8)
+- `src/components/preview/categories.ts` — 8 Swedish categories + 24 subcategories matching MobileApp
+- Animated subcategory dropdown (height + opacity + marginTop, spring damping 20 / stiffness 200)
+- `prefers-reduced-motion` fallback: flat scroll-snap horizontal carousel
+- Visual verification page at `/preview/carousel-demo` (temporary — will be removed in Phase 9)
+
+### Phase 3 done (2026-05-03):
+- Full rewrite of `src/components/preview/screens/HomeScreen.tsx` around the new carousel
+- Layout (top→bottom): Header → Greeting → Search → 3D Carousel → Clear All (when dirty) → City + Near Me row → Date pill → Big Go.Do! button
+- Language toggle (🇸🇪/🇬🇧) actually flips the on-screen Swedish/English copy
+- Calendar bottom-sheet modal: Swedish month/day labels, range selection, "Go.Set." confirm
+- City modal preserved with search, multi-select, count badge, "Alla städer" reset
+- Near Me pill is yellow with Lock icon (premium-locked placeholder — wired in Phase 8)
+- Live at `/preview` — `npm run dev` to view
+
+### Earlier history (preserved for reference):
 
 ### What was done (2026-02-26):
 
