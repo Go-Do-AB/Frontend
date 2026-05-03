@@ -3,10 +3,85 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-02-26
+Last updated: 2026-05-03
 
 ## Active Task
-**Preview Redesign Complete** — Phone mockup fully redesigned to match Expo accessibility-redesign branch with realistic Swedish data.
+**Preview Redesign — MobileApp Parity** (Issue #58, branch `feature/preview-mobileapp-parity`) — ✅ **COMPLETE** as of 2026-05-04. All 9 phases shipped. Phase 9 polish merged the temporary carousel-demo removal and final verification gates. PR opened to `main`. Awaiting Nemo Sensei's manual smoke + merge approval.
+
+### Phase 1 done (2026-05-03):
+- `framer-motion` installed for gesture-driven 3D carousel + spring physics
+- Carlito brand font wired via `next/font/google` → `--font-brand`
+- `constants.ts` extended with `Semantic` colors; `FontFamily.brand` now uses CSS var
+- New primitives in `src/components/preview/ui/`: GodoButton, GodoCard, GodoChip, RGBBorderCard
+
+### Phase 2 done (2026-05-03):
+- New `src/components/preview/components/CategoryCarousel3D.tsx` — full Reanimated→framer-motion port (gesture-driven drag, ring-modulus index, ±35° rotateY, perspective 800, opacity falloff, spring snap damping 18 / stiffness 150 / mass 0.8)
+- `src/components/preview/categories.ts` — 8 Swedish categories + 24 subcategories matching MobileApp
+- Animated subcategory dropdown (height + opacity + marginTop, spring damping 20 / stiffness 200)
+- `prefers-reduced-motion` fallback: flat scroll-snap horizontal carousel
+- Visual verification page at `/preview/carousel-demo` (temporary — will be removed in Phase 9)
+
+### Phase 3 done (2026-05-03):
+- Full rewrite of `src/components/preview/screens/HomeScreen.tsx` around the new carousel
+- Layout (top→bottom): Header → Greeting → Search → 3D Carousel → Clear All (when dirty) → City + Near Me row → Date pill → Big Go.Do! button
+- Language toggle (SV/GB) actually flips the on-screen Swedish/English copy
+- Inline SVG flags (FlagSE, FlagGB) — Windows lacks colour emoji for regional flag codepoints
+- Calendar bottom-sheet modal: Swedish month/day labels, range selection, "Go.Set." confirm
+- City modal preserved with search, multi-select, count badge, "Alla städer" reset
+- Near Me pill is yellow with Lock icon (premium-locked placeholder — wired in Phase 8)
+- Live at `/preview` — `npm run dev` to view
+
+### Phase 4 done (2026-05-03):
+- New `components/SpotlightCarousel.tsx` — 160dp, 4s auto-rotate, framer-motion crossfade, yellow glow border, Spotlight badge, color stripe, pause/play
+- `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
+- Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
+
+### Phase 9 done (2026-05-04):
+- Removed `/preview/carousel-demo` (Phase 2 visual-verification harness)
+- Clean rebuild — route count down from 13 to 12
+- Reduce-motion confirmed on the two animation-heavy surfaces (3D carousel flat fallback, RGB border static colour)
+- All gates green: `tsc --noEmit`, `npm run lint`, `npm run build`
+- PR opened to `main`
+
+### Phase 8 done (2026-05-03):
+- ProfileScreen rewritten: signed-in card with yellow-circle avatar (initial), email, four nav rows (Sparade evenemang / Mina listor / Nära mig / Prenumeration with plan pill), red-bordered logout. Logged-out fallback preserved.
+- FavoritesScreen rewritten: signed-in event list grouped into Kommande + Tidigare, framer-motion swipe-to-remove (snap-back if not committed, animate off-screen + remove past −60dp), empty state, logged-out fallback preserved
+- New ListsScreen + ListDetailScreen + CreateListModal: list cards with yellow-tint icon + count + chevron + trash, premium-gated empty state, list detail reuses Favorites visual, bottom-sheet create modal with text input
+- New NearMeScreen + NearMePremiumPromptModal: 5–50km radius slider, distance-sorted event list with yellow km badges, list/map toggle, fake map placeholder with concentric radius rings + center pin + counter overlay
+- New SubscriptionScreen: header + plan-badge card + features-list card (yellow-circle checks) + conditional upgrade area or manage button
+- AppPreview state machine extended: `profileRoute` axis (lists / list-detail / near-me / subscription), mock account state (signedIn, favoriteIds, lists, isPremium), tab switch dismisses any active route, logout clears profileRoute and downgrades to Free
+- Discovery: ProfileScreen has 4 rows (added "Nära mig"); MobileApp profile has 3 (NearMe entry is a Home pill not yet wired in preview). Lean entry point for marketing demo.
+
+### Phase 7 done (2026-05-03):
+- New `screens/LoginScreen.tsx` — Calibri-Bold "Logga in" title, email + password inputs (Neutral[900] border), dark primary button (disabled until both fields filled), "Har du inget konto? Skapa konto" switch link
+- New `screens/RegisterScreen.tsx` — title + Swedish subtitle, email/password/confirm inputs, inline mismatch error (red), "Har du redan ett konto? Logga in" switch link
+- New `components/SocialLoginButtons.tsx` — port of MobileApp `SocialLoginButtons.tsx`. Two stacked Neutral[900] pill buttons with brand SVG marks (Google four-color G + Apple silhouette) and "eller" divider
+- AppPreview gets `authRoute` axis (login/register) layered above tabs; tab bar stays visible to mirror MobileApp `(tabs)/login.tsx` re-export pattern
+- `LoginPromptModal` and `ProfileScreen` CTAs now route to login / register
+- Tab switch dismisses any active auth route automatically
+- Login ↔ Register switch in-place (no dismiss)
+
+### Phase 6 done (2026-05-03):
+- AppPreview state machine refactored: `activeTab` (home/favorites/profile) + per-tab screen stack + modal stack
+- New `components/TabBar.tsx`: 3 tabs (Hem/Sparat/Profil), lucide icons, GodoYellow[500] active tint, framer-motion press scale, top divider
+- `PhoneFrame.tsx` accepts `bottomBar` + `overlay` slots (modals sit absolutely above content + bottomBar)
+- Tab bar hidden on event detail screen for immersive parity with MobileApp
+- New `components/LoginPromptModal.tsx`: bottom-sheet, framer-motion slide-up spring + fade backdrop, heart icon, primary "Logga in" + secondary "Skapa konto" — port of MobileApp `LoginPromptModal`
+- Placeholder `screens/FavoritesScreen.tsx` + `screens/ProfileScreen.tsx`: logged-out empty states with CTAs that drive the modal stack end-to-end (full versions in Phase 8)
+- Tapping Hem tab while already on it pops back to home root (mirrors MobileApp)
+
+### Phase 5 done (2026-05-03):
+- Full rewrite of `screens/EventDetailScreen.tsx` as faithful port of MobileApp `app/event/[id].tsx`
+- 300dp yellow brand-gradient hero (`GodoYellow[500]CC → GodoYellow[500]`), floating top-row buttons (back left; heart/calendar/share right) — 40dp white pills with framer-motion `whileTap` press-spring (damping 18 / stiffness 320)
+- Subcategory label on hero bottom-left
+- Rounded content sheet (-20 overlap), title 24/700, date+time 16/600, tag chips Neutral[100]/700
+- About / Arrangör / Plats / När sections with small uppercase labels
+- Inline action button row (NOT sticky — parity with MobileApp): Boka (Neutral[800] + Ticket), Besök webbplats (yellow + ExternalLink), Vägbeskrivning (transparent + Neutral[300] border + Navigate)
+- Heart button toggles favourited state (red fill when active)
+- Web Share API with clipboard fallback
+- New `components/CalendarConfirmModal.tsx` — bottom-sheet with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, drag handle, GodoYellow[100] icon circle, Neutral[50] details box, yellow confirm + ghost cancel
+
+### Earlier history (preserved for reference):
 
 ### What was done (2026-02-26):
 
