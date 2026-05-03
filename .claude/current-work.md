@@ -36,6 +36,15 @@ Last updated: 2026-05-03
 - `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
 - Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
 
+### Phase 6 done (2026-05-03):
+- AppPreview state machine refactored: `activeTab` (home/favorites/profile) + per-tab screen stack + modal stack
+- New `components/TabBar.tsx`: 3 tabs (Hem/Sparat/Profil), lucide icons, GodoYellow[500] active tint, framer-motion press scale, top divider
+- `PhoneFrame.tsx` accepts `bottomBar` + `overlay` slots (modals sit absolutely above content + bottomBar)
+- Tab bar hidden on event detail screen for immersive parity with MobileApp
+- New `components/LoginPromptModal.tsx`: bottom-sheet, framer-motion slide-up spring + fade backdrop, heart icon, primary "Logga in" + secondary "Skapa konto" — port of MobileApp `LoginPromptModal`
+- Placeholder `screens/FavoritesScreen.tsx` + `screens/ProfileScreen.tsx`: logged-out empty states with CTAs that drive the modal stack end-to-end (full versions in Phase 8)
+- Tapping Hem tab while already on it pops back to home root (mirrors MobileApp)
+
 ### Phase 5 done (2026-05-03):
 - Full rewrite of `screens/EventDetailScreen.tsx` as faithful port of MobileApp `app/event/[id].tsx`
 - 300dp yellow brand-gradient hero (`GodoYellow[500]CC → GodoYellow[500]`), floating top-row buttons (back left; heart/calendar/share right) — 40dp white pills with framer-motion `whileTap` press-spring (damping 18 / stiffness 320)

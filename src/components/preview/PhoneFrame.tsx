@@ -4,9 +4,12 @@ import { BRAND } from "./constants";
 
 interface PhoneFrameProps {
   children: React.ReactNode;
+  bottomBar?: React.ReactNode;
+  /** Absolutely-positioned overlay (e.g. modal stack) above content + bottomBar */
+  overlay?: React.ReactNode;
 }
 
-export function PhoneFrame({ children }: PhoneFrameProps) {
+export function PhoneFrame({ children, bottomBar, overlay }: PhoneFrameProps) {
   return (
     <div className="flex items-center justify-center">
       {/* Outer bezel */}
@@ -52,10 +55,16 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
             {children}
           </div>
 
+          {/* Bottom tab bar slot (optional) */}
+          {bottomBar && <div className="flex-shrink-0">{bottomBar}</div>}
+
           {/* Home indicator */}
           <div className="flex-shrink-0 flex justify-center pb-2 pt-1">
             <div className="w-[120px] h-[4px] rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.15)" }} />
           </div>
+
+          {/* Overlay (modal stack — sits above content + bottomBar) */}
+          {overlay}
         </div>
       </div>
     </div>

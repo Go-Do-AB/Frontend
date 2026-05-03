@@ -72,11 +72,15 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 - [x] Removed sticky bottom CTA (MobileApp doesn't use one — actions are inline at bottom of sheet)
 - [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
-### Phase 6: Tab-bar navigation model — medium
-- [ ] Extend `AppPreview.tsx` state machine: add `tab` axis (`home` / `favorites` / `profile`) layered above current screen state
-- [ ] Add bottom tab bar to `PhoneFrame.tsx` (or a new `TabBar.tsx`)
-- [ ] Wire screen transitions through tabs
-- [ ] Modal stack support (login prompt, premium prompt, payment, calendar confirm)
+### Phase 6: Tab-bar navigation model — medium (COMPLETE)
+- [x] Extended `AppPreview.tsx` state machine: `activeTab` (home / favorites / profile) layered above per-tab screen state. Home tab keeps the home → results → detail substack; switching tabs preserves it. Tapping the Hem tab while already on it pops back to the home root (mirrors MobileApp behaviour).
+- [x] New `components/TabBar.tsx` — 3 tabs (Hem / Sparat / Profil) with lucide icons, active GodoYellow[500] tint + inactive Neutral[500], framer-motion press scale 0.92, top-divider line, 60dp tall, FavoritesCount badge prop ready
+- [x] `PhoneFrame.tsx` accepts optional `bottomBar` slot (rendered between scroll area and home indicator) and `overlay` slot (for modal stack — sits absolutely above content + bottomBar)
+- [x] Tab bar hidden on event detail screen for immersive feel (matches MobileApp where event detail pushes above the tabs)
+- [x] Modal stack: `ModalState = null | { type: "loginPrompt" }` (extensible for premium/payment in their owning phases). Single overlay renderer in `PhoneFrame`.
+- [x] New `components/LoginPromptModal.tsx` — port of MobileApp `LoginPromptModal.tsx`. Bottom-sheet with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, heart icon, primary "Logga in" (Neutral[800]) + secondary "Skapa konto" (yellow), close X.
+- [x] Placeholder `screens/FavoritesScreen.tsx` and `screens/ProfileScreen.tsx` — logged-out empty states with CTAs that drive the modal-stack end-to-end. Full versions (auth-aware) come in Phase 8.
+- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
 ### Phase 7: Auth screens — medium
 - [ ] `screens/LoginScreen.tsx` — email + password, social login buttons (Apple/Google placeholders)
@@ -102,14 +106,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 ## Current Position
 
 ```
-Phase: 6 of 9
-Task:  0 of 4
-Status: Phase 5 complete — ready to execute Phase 6 (Tab-bar navigation model)
+Phase: 7 of 9
+Task:  0 of 3
+Status: Phase 6 complete — ready to execute Phase 7 (Auth screens)
 ```
 
 ## Progress
 
-[██████████░░░░░░░░░░] 5/9 phases
+[████████████░░░░░░░░] 6/9 phases
 
 ## Affected Repos
 
@@ -141,3 +145,4 @@ Status: Phase 5 complete — ready to execute Phase 6 (Tab-bar navigation model)
 | 2026-05-03 | Hotfix | Inline SVG flags (FlagSE, FlagGB) replace emoji 🇸🇪🇬🇧 — Windows lacks colour emoji for regional flags. Committed as `6dd857c3`. |
 | 2026-05-03 | Phase 4 | SpotlightCarousel ported (auto-rotate, crossfade, glow border, spotlight badge, color stripe). Wired to ResultsScreen (top-3 events). Provider chip ("Helsingborgs stad" / "Go.Do") on event cards. |
 | 2026-05-03 | Phase 5 | EventDetailScreen rewritten as MobileApp port: 300dp yellow brand-gradient hero, floating top-row buttons (back/heart/calendar/share with framer-motion press-spring), subcategory label, rounded sheet, inline action row (Boka/Besök/Vägbeskrivning). New CalendarConfirmModal (bottom-sheet, slide-up spring, fade backdrop). Sticky bottom CTA removed for MobileApp parity. |
+| 2026-05-03 | Phase 6 | Tab-bar navigation model. AppPreview state machine refactored: activeTab + per-tab stack + modal stack. New TabBar (Hem/Sparat/Profil) and LoginPromptModal. PhoneFrame gets bottomBar + overlay slots. Tab bar hidden on event detail. Placeholder Favorites + Profile screens drive the modal stack end-to-end. |
