@@ -55,7 +55,7 @@ type ProfileRoute =
   | { type: "near-me" }
   | { type: "subscription" };
 
-const MOCK_USER = { initials: "N", email: "nemo@godo.nu" } as const;
+const MOCK_USER = { initials: "A", email: "anna@godo.nu" } as const;
 
 const INITIAL_FAVORITE_IDS = [
   "mock-005",
