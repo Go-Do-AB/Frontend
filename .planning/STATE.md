@@ -91,12 +91,15 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 - [x] Login ↔ Register switch links navigate within the auth route without dismissing it
 - [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
-### Phase 8: Account & feature screens — large
-- [ ] `screens/ProfileScreen.tsx` — avatar (initials), saved count, lists link, language toggle, logout
-- [ ] `screens/FavoritesScreen.tsx` — swipeable event cards, empty state
-- [ ] `screens/ListsScreen.tsx` + `ListDetailScreen.tsx` — list cards, create-list modal
-- [ ] `screens/NearMeScreen.tsx` — radius slider (10–50km), map/list toggle, distance badges, premium prompt
-- [ ] `SubscriptionModal` — plan badge, features list, upgrade CTA
+### Phase 8: Account & feature screens — large (COMPLETE)
+- [x] `screens/ProfileScreen.tsx` rewritten with full signed-in fidelity: yellow-circle avatar with initial, email, four nav rows (Sparade evenemang / Mina listor / Nära mig / Prenumeration), red-bordered logout button. Logged-out fallback preserved.
+- [x] `screens/FavoritesScreen.tsx` rewritten: signed-in event list grouped into Kommande + Tidigare sections, swipe-to-remove via framer-motion drag (snap-back if not committed, animate off-screen + remove if past −60dp threshold), empty state when no saved events, logged-out empty state with CTA preserved.
+- [x] `screens/ListsScreen.tsx` + `screens/ListDetailScreen.tsx` + `components/CreateListModal.tsx`: list cards (yellow-tint icon, count, chevron, trash), create-list bottom-sheet with text input + submit, premium-gated empty state, list detail with event-card list reusing the Favorites visual.
+- [x] `screens/NearMeScreen.tsx` + `components/NearMePremiumPromptModal.tsx`: radius slider (5–50km, snaps in 5s), distance-sorted event list with km badges (yellow pill), map/list toggle button, fake map placeholder with concentric radius rings + center pin + counter overlay. Premium prompt modal with yellow lock icon, copy, primary upgrade CTA, dark cancel.
+- [x] `screens/SubscriptionScreen.tsx`: header (back + title + bottom border), current-plan card with PlanBadge (yellow pill for Premium / neutral for Free), features-list card (yellow-circle checks), conditional upgrade area (Free) or "Hantera prenumeration" link (Premium). Upgrade button toggles `isPremium`.
+- [x] AppPreview state machine extended: added `profileRoute` axis (lists / list-detail / near-me / subscription) layered above tabs, mock account state (signedIn / favoriteIds / lists / isPremium), wiring for create-list + near-me-premium modals, login-prompt routing through Near Me when not signed in. Tab switch dismisses any active profileRoute. Logout clears profileRoute and downgrades to Free.
+- [x] **Discovery flagged**: ProfileScreen gained an extra "Nära mig" row (4 rows total). MobileApp's profile only has 3 rows (Saved / Lists / Subscription) and reaches Near Me from a yellow pill on Home. The Home pill isn't wired in the preview, so the profile-row is the lean entry point. Documented in commit message.
+- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
 ### Phase 9: Polish & verify — small
 - [ ] Reduce-motion test pass
@@ -110,14 +113,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 ## Current Position
 
 ```
-Phase: 8 of 9
-Task:  0 of 5
-Status: Phase 7 complete — ready to execute Phase 8 (Account & feature screens)
+Phase: 9 of 9
+Task:  0 of 7
+Status: Phase 8 complete — ready to execute Phase 9 (Polish & verify, then PR)
 ```
 
 ## Progress
 
-[██████████████░░░░░░] 7/9 phases
+[████████████████░░░░] 8/9 phases
 
 ## Affected Repos
 
@@ -151,3 +154,4 @@ Status: Phase 7 complete — ready to execute Phase 8 (Account & feature screens
 | 2026-05-03 | Phase 5 | EventDetailScreen rewritten as MobileApp port: 300dp yellow brand-gradient hero, floating top-row buttons (back/heart/calendar/share with framer-motion press-spring), subcategory label, rounded sheet, inline action row (Boka/Besök/Vägbeskrivning). New CalendarConfirmModal (bottom-sheet, slide-up spring, fade backdrop). Sticky bottom CTA removed for MobileApp parity. |
 | 2026-05-03 | Phase 6 | Tab-bar navigation model. AppPreview state machine refactored: activeTab + per-tab stack + modal stack. New TabBar (Hem/Sparat/Profil) and LoginPromptModal. PhoneFrame gets bottomBar + overlay slots. Tab bar hidden on event detail. Placeholder Favorites + Profile screens drive the modal stack end-to-end. |
 | 2026-05-03 | Phase 7 | Auth screens. New LoginScreen and RegisterScreen ported from MobileApp (auth) routes — Calibri-Bold titles, dark primary buttons, inline switch links, validation. New SocialLoginButtons with brand SVG marks for Google + Apple. AppPreview gets `authRoute` axis (login/register) layered above tabs but with tab bar still visible (mirrors MobileApp `(tabs)/login.tsx` re-export). LoginPromptModal CTAs and ProfileScreen CTAs now route to the auth screens. |
+| 2026-05-03 | Phase 8 | Account & feature screens. Profile + Favorites rewritten with full signed-in fidelity (avatar, nav rows, swipe-to-remove favourites). New Lists, ListDetail, NearMe, Subscription screens with CreateListModal + NearMePremiumPromptModal. AppPreview state machine extended with `profileRoute` axis and mock account state (signedIn, favoriteIds, lists, isPremium). |

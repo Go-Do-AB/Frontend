@@ -36,6 +36,15 @@ Last updated: 2026-05-03
 - `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
 - Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
 
+### Phase 8 done (2026-05-03):
+- ProfileScreen rewritten: signed-in card with yellow-circle avatar (initial), email, four nav rows (Sparade evenemang / Mina listor / Nära mig / Prenumeration with plan pill), red-bordered logout. Logged-out fallback preserved.
+- FavoritesScreen rewritten: signed-in event list grouped into Kommande + Tidigare, framer-motion swipe-to-remove (snap-back if not committed, animate off-screen + remove past −60dp), empty state, logged-out fallback preserved
+- New ListsScreen + ListDetailScreen + CreateListModal: list cards with yellow-tint icon + count + chevron + trash, premium-gated empty state, list detail reuses Favorites visual, bottom-sheet create modal with text input
+- New NearMeScreen + NearMePremiumPromptModal: 5–50km radius slider, distance-sorted event list with yellow km badges, list/map toggle, fake map placeholder with concentric radius rings + center pin + counter overlay
+- New SubscriptionScreen: header + plan-badge card + features-list card (yellow-circle checks) + conditional upgrade area or manage button
+- AppPreview state machine extended: `profileRoute` axis (lists / list-detail / near-me / subscription), mock account state (signedIn, favoriteIds, lists, isPremium), tab switch dismisses any active route, logout clears profileRoute and downgrades to Free
+- Discovery: ProfileScreen has 4 rows (added "Nära mig"); MobileApp profile has 3 (NearMe entry is a Home pill not yet wired in preview). Lean entry point for marketing demo.
+
 ### Phase 7 done (2026-05-03):
 - New `screens/LoginScreen.tsx` — Calibri-Bold "Logga in" title, email + password inputs (Neutral[900] border), dark primary button (disabled until both fields filled), "Har du inget konto? Skapa konto" switch link
 - New `screens/RegisterScreen.tsx` — title + Swedish subtitle, email/password/confirm inputs, inline mismatch error (red), "Har du redan ett konto? Logga in" switch link
