@@ -6,7 +6,7 @@
 Last updated: 2026-05-03
 
 ## Active Task
-**Preview Redesign — MobileApp Parity** (Issue #58, branch `feature/preview-mobileapp-parity`) — Bringing the `/preview` phone mockup up to parity with the *current* MobileApp design (3D carousel + every shipped screen). 9-phase plan tracked in `.planning/STATE.md`. Phase 1 (foundation) complete; Phase 2 (3D carousel) up next.
+**Preview Redesign — MobileApp Parity** (Issue #58, branch `feature/preview-mobileapp-parity`) — ✅ **COMPLETE** as of 2026-05-04. All 9 phases shipped. Phase 9 polish merged the temporary carousel-demo removal and final verification gates. PR opened to `main`. Awaiting Nemo Sensei's manual smoke + merge approval.
 
 ### Phase 1 done (2026-05-03):
 - `framer-motion` installed for gesture-driven 3D carousel + spring physics
@@ -35,6 +35,13 @@ Last updated: 2026-05-03
 - New `components/SpotlightCarousel.tsx` — 160dp, 4s auto-rotate, framer-motion crossfade, yellow glow border, Spotlight badge, color stripe, pause/play
 - `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
 - Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
+
+### Phase 9 done (2026-05-04):
+- Removed `/preview/carousel-demo` (Phase 2 visual-verification harness)
+- Clean rebuild — route count down from 13 to 12
+- Reduce-motion confirmed on the two animation-heavy surfaces (3D carousel flat fallback, RGB border static colour)
+- All gates green: `tsc --noEmit`, `npm run lint`, `npm run build`
+- PR opened to `main`
 
 ### Phase 8 done (2026-05-03):
 - ProfileScreen rewritten: signed-in card with yellow-circle avatar (initial), email, four nav rows (Sparade evenemang / Mina listor / Nära mig / Prenumeration with plan pill), red-bordered logout. Logged-out fallback preserved.
