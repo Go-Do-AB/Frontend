@@ -6,11 +6,13 @@
  * Layered state:
  *   activeTab: home | favorites | profile  (preserved across switches)
  *   homeStack: home → results → detail      (only on the home tab)
- *   modal:     login prompt, etc.           (sits above all tabs)
+ *   authRoute: login | register             (fullscreen above tabs)
+ *   modal:     login prompt, etc.           (sits above all tabs + auth)
  *
  * The bottom tab bar is hidden on the event-detail screen to give it the
  * immersive feel from MobileApp (where event detail is a modal-style route
- * pushed above the tabs).
+ * pushed above the tabs). Auth screens keep the tab bar visible to mirror
+ * MobileApp's `(tabs)/login.tsx` re-export pattern.
  */
 
 import { useState } from "react";
@@ -22,6 +24,8 @@ import { ResultsScreen } from "./screens/ResultsScreen";
 import { EventDetailScreen } from "./screens/EventDetailScreen";
 import { FavoritesScreen } from "./screens/FavoritesScreen";
 import { ProfileScreen } from "./screens/ProfileScreen";
+import { LoginScreen } from "./screens/LoginScreen";
+import { RegisterScreen } from "./screens/RegisterScreen";
 
 type HomeStack =
   | { type: "home"; tagCodes: number[]; selectedCategories: number[] }
@@ -29,6 +33,7 @@ type HomeStack =
   | { type: "detail"; eventId: string; fromCategory: number; tagCodes: number[] };
 
 type ModalState = null | { type: "loginPrompt" };
+type AuthRoute = null | "login" | "register";
 
 export function AppPreview() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -38,6 +43,7 @@ export function AppPreview() {
     selectedCategories: [],
   });
   const [modal, setModal] = useState<ModalState>(null);
+  const [authRoute, setAuthRoute] = useState<AuthRoute>(null);
 
   // Shared filter state (persists across screens like the Expo app's FilterContext)
   const [searchText, setSearchText] = useState("");
@@ -66,15 +72,27 @@ export function AppPreview() {
   // When switching tabs, return the home tab to the home stack root so
   // entering favorites/profile then coming back doesn't strand the user
   // mid-results. (MobileApp does the same — tab press resets the stack.)
+  // Any tab switch also dismisses an active auth route.
   const switchTab = (tab: Tab) => {
     if (tab === "home" && activeTab === "home") {
       setHomeStack({ type: "home", tagCodes: homeStack.tagCodes, selectedCategories: [] });
     }
+    if (authRoute !== null) setAuthRoute(null);
     setActiveTab(tab);
   };
 
   const showLoginPrompt = () => setModal({ type: "loginPrompt" });
   const closeModal = () => setModal(null);
+
+  const openLogin = () => {
+    setModal(null);
+    setAuthRoute("login");
+  };
+  const openRegister = () => {
+    setModal(null);
+    setAuthRoute("register");
+  };
+  const closeAuth = () => setAuthRoute(null);
 
   return (
     <PhoneFrame
@@ -85,12 +103,29 @@ export function AppPreview() {
         <LoginPromptModal
           visible={modal?.type === "loginPrompt"}
           onClose={closeModal}
-          onLogin={closeModal}
-          onRegister={closeModal}
+          onLogin={openLogin}
+          onRegister={openRegister}
         />
       }
     >
-      {activeTab === "home" && homeStack.type === "home" && (
+      {/* Auth route takes the whole content area when active */}
+      {authRoute === "login" && (
+        <LoginScreen
+          onBack={closeAuth}
+          onSwitchToRegister={() => setAuthRoute("register")}
+          onSuccess={closeAuth}
+        />
+      )}
+      {authRoute === "register" && (
+        <RegisterScreen
+          onBack={closeAuth}
+          onSwitchToLogin={() => setAuthRoute("login")}
+          onSuccess={closeAuth}
+        />
+      )}
+
+      {/* Tab content (only when not in an auth route) */}
+      {authRoute === null && activeTab === "home" && homeStack.type === "home" && (
         <HomeScreen
           tagCodes={homeStack.tagCodes}
           selectedCategories={homeStack.selectedCategories}
@@ -131,7 +166,7 @@ export function AppPreview() {
         />
       )}
 
-      {activeTab === "home" && homeStack.type === "results" && (
+      {authRoute === null && activeTab === "home" && homeStack.type === "results" && (
         <ResultsScreen
           categoryCode={homeStack.categoryCode}
           tagCodes={homeStack.tagCodes}
@@ -164,7 +199,7 @@ export function AppPreview() {
         />
       )}
 
-      {activeTab === "home" && homeStack.type === "detail" && (
+      {authRoute === null && activeTab === "home" && homeStack.type === "detail" && (
         <EventDetailScreen
           eventId={homeStack.eventId}
           onBack={() =>
@@ -178,12 +213,12 @@ export function AppPreview() {
         />
       )}
 
-      {activeTab === "favorites" && (
+      {authRoute === null && activeTab === "favorites" && (
         <FavoritesScreen onLoginPrompt={showLoginPrompt} />
       )}
 
-      {activeTab === "profile" && (
-        <ProfileScreen onLogin={showLoginPrompt} onRegister={showLoginPrompt} />
+      {authRoute === null && activeTab === "profile" && (
+        <ProfileScreen onLogin={openLogin} onRegister={openRegister} />
       )}
     </PhoneFrame>
   );

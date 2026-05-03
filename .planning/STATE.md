@@ -82,10 +82,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 - [x] Placeholder `screens/FavoritesScreen.tsx` and `screens/ProfileScreen.tsx` — logged-out empty states with CTAs that drive the modal-stack end-to-end. Full versions (auth-aware) come in Phase 8.
 - [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
-### Phase 7: Auth screens — medium
-- [ ] `screens/LoginScreen.tsx` — email + password, social login buttons (Apple/Google placeholders)
-- [ ] `screens/RegisterScreen.tsx` — same shell, register flow
-- [ ] `LoginPromptModal` reachable from Favorites/Near Me when "logged out"
+### Phase 7: Auth screens — medium (COMPLETE)
+- [x] New `screens/LoginScreen.tsx` — back arrow, Calibri-Bold "Logga in" title (28px), email + password inputs (Neutral[900] border, Radii.input, Surface.surface bg), dark Neutral[900] primary button (disabled at 0.5 opacity until both fields filled), inline "Har du inget konto? Skapa konto" switch link, SocialLoginButtons block with "eller" divider
+- [x] New `screens/RegisterScreen.tsx` — same shell + Swedish subtitle + confirm-password field with inline mismatch error (red) + "Har du redan ett konto? Logga in" switch link
+- [x] New `components/SocialLoginButtons.tsx` — port of MobileApp `SocialLoginButtons.tsx`. Two stacked Neutral[900] pill buttons (50dp), brand SVG marks (Google four-color G + Apple silhouette), "eller" divider above. framer-motion press scale 0.97 / opacity 0.85.
+- [x] `AppPreview.tsx` extended with `authRoute: null | "login" | "register"` axis. Auth screens render in place of tab content (above) but tab bar stays visible — mirrors MobileApp `(tabs)/login.tsx` re-export pattern. Tab switch automatically dismisses any active auth route.
+- [x] `LoginPromptModal` CTAs now route correctly: "Logga in" → `openLogin()`, "Skapa konto" → `openRegister()`. Profile screen CTAs use the same routes directly.
+- [x] Login ↔ Register switch links navigate within the auth route without dismissing it
+- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
 ### Phase 8: Account & feature screens — large
 - [ ] `screens/ProfileScreen.tsx` — avatar (initials), saved count, lists link, language toggle, logout
@@ -106,14 +110,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 ## Current Position
 
 ```
-Phase: 7 of 9
-Task:  0 of 3
-Status: Phase 6 complete — ready to execute Phase 7 (Auth screens)
+Phase: 8 of 9
+Task:  0 of 5
+Status: Phase 7 complete — ready to execute Phase 8 (Account & feature screens)
 ```
 
 ## Progress
 
-[████████████░░░░░░░░] 6/9 phases
+[██████████████░░░░░░] 7/9 phases
 
 ## Affected Repos
 
@@ -146,3 +150,4 @@ Status: Phase 6 complete — ready to execute Phase 7 (Auth screens)
 | 2026-05-03 | Phase 4 | SpotlightCarousel ported (auto-rotate, crossfade, glow border, spotlight badge, color stripe). Wired to ResultsScreen (top-3 events). Provider chip ("Helsingborgs stad" / "Go.Do") on event cards. |
 | 2026-05-03 | Phase 5 | EventDetailScreen rewritten as MobileApp port: 300dp yellow brand-gradient hero, floating top-row buttons (back/heart/calendar/share with framer-motion press-spring), subcategory label, rounded sheet, inline action row (Boka/Besök/Vägbeskrivning). New CalendarConfirmModal (bottom-sheet, slide-up spring, fade backdrop). Sticky bottom CTA removed for MobileApp parity. |
 | 2026-05-03 | Phase 6 | Tab-bar navigation model. AppPreview state machine refactored: activeTab + per-tab stack + modal stack. New TabBar (Hem/Sparat/Profil) and LoginPromptModal. PhoneFrame gets bottomBar + overlay slots. Tab bar hidden on event detail. Placeholder Favorites + Profile screens drive the modal stack end-to-end. |
+| 2026-05-03 | Phase 7 | Auth screens. New LoginScreen and RegisterScreen ported from MobileApp (auth) routes — Calibri-Bold titles, dark primary buttons, inline switch links, validation. New SocialLoginButtons with brand SVG marks for Google + Apple. AppPreview gets `authRoute` axis (login/register) layered above tabs but with tab bar still visible (mirrors MobileApp `(tabs)/login.tsx` re-export). LoginPromptModal CTAs and ProfileScreen CTAs now route to the auth screens. |

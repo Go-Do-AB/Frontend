@@ -36,6 +36,15 @@ Last updated: 2026-05-03
 - `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
 - Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
 
+### Phase 7 done (2026-05-03):
+- New `screens/LoginScreen.tsx` — Calibri-Bold "Logga in" title, email + password inputs (Neutral[900] border), dark primary button (disabled until both fields filled), "Har du inget konto? Skapa konto" switch link
+- New `screens/RegisterScreen.tsx` — title + Swedish subtitle, email/password/confirm inputs, inline mismatch error (red), "Har du redan ett konto? Logga in" switch link
+- New `components/SocialLoginButtons.tsx` — port of MobileApp `SocialLoginButtons.tsx`. Two stacked Neutral[900] pill buttons with brand SVG marks (Google four-color G + Apple silhouette) and "eller" divider
+- AppPreview gets `authRoute` axis (login/register) layered above tabs; tab bar stays visible to mirror MobileApp `(tabs)/login.tsx` re-export pattern
+- `LoginPromptModal` and `ProfileScreen` CTAs now route to login / register
+- Tab switch dismisses any active auth route automatically
+- Login ↔ Register switch in-place (no dismiss)
+
 ### Phase 6 done (2026-05-03):
 - AppPreview state machine refactored: `activeTab` (home/favorites/profile) + per-tab screen stack + modal stack
 - New `components/TabBar.tsx`: 3 tabs (Hem/Sparat/Profil), lucide icons, GodoYellow[500] active tint, framer-motion press scale, top divider
