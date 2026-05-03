@@ -63,10 +63,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 - [x] Hidden when on map view (spotlight is list-only)
 - [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
-### Phase 5: Event Detail screen — small
-- [ ] Rebuild `screens/EventDetailScreen.tsx`: hero image + gradient overlay, floating back/heart, content sheet with tag pills, sticky CTA
-- [ ] Action button row (Book / Calendar / Share / Directions)
-- [ ] Calendar-confirm modal
+### Phase 5: Event Detail screen — small (COMPLETE)
+- [x] Rebuilt `screens/EventDetailScreen.tsx` as faithful port of MobileApp `app/event/[id].tsx`: 300dp yellow brand gradient hero (`GodoYellow[500]CC → GodoYellow[500]`), floating top row (back + heart/calendar/share, 40dp white pills with framer-motion `whileTap` press-spring), subcategory label on hero bottom, rounded sheet (overlap -20), title 24/700, date 16/600, tag chips (Neutral[100]), About/Organiser/Location/När sections
+- [x] Inline action button row: Boka (primary Neutral[800] + Ticket), Besök webbplats (yellow + ExternalLink), Vägbeskrivning (transparent + Neutral[300] border + Navigate)
+- [x] Heart button toggles favourited state (red fill when active)
+- [x] Web Share API fallback to clipboard for share button
+- [x] New `components/CalendarConfirmModal.tsx` — bottom-sheet modal with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, drag handle, GodoYellow[100] icon circle, Neutral[50] details box, yellow confirm + ghost cancel
+- [x] Removed sticky bottom CTA (MobileApp doesn't use one — actions are inline at bottom of sheet)
+- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
 ### Phase 6: Tab-bar navigation model — medium
 - [ ] Extend `AppPreview.tsx` state machine: add `tab` axis (`home` / `favorites` / `profile`) layered above current screen state
@@ -98,14 +102,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 ## Current Position
 
 ```
-Phase: 5 of 9
-Task:  0 of 3
-Status: Phase 4 complete — ready to execute Phase 5 (Event Detail)
+Phase: 6 of 9
+Task:  0 of 4
+Status: Phase 5 complete — ready to execute Phase 6 (Tab-bar navigation model)
 ```
 
 ## Progress
 
-[████████░░░░░░░░░░░░] 4/9 phases
+[██████████░░░░░░░░░░] 5/9 phases
 
 ## Affected Repos
 
@@ -136,3 +140,4 @@ Status: Phase 4 complete — ready to execute Phase 5 (Event Detail)
 | 2026-05-03 | Phase 3 | Full rewrite of HomeScreen around the 3D carousel. Header (logo+flags+bell), greeting, search, carousel, Clear All, City+Near Me row, date pill, black Go.Do button, City modal, Calendar modal. Language toggle wired (sv/en). |
 | 2026-05-03 | Hotfix | Inline SVG flags (FlagSE, FlagGB) replace emoji 🇸🇪🇬🇧 — Windows lacks colour emoji for regional flags. Committed as `6dd857c3`. |
 | 2026-05-03 | Phase 4 | SpotlightCarousel ported (auto-rotate, crossfade, glow border, spotlight badge, color stripe). Wired to ResultsScreen (top-3 events). Provider chip ("Helsingborgs stad" / "Go.Do") on event cards. |
+| 2026-05-03 | Phase 5 | EventDetailScreen rewritten as MobileApp port: 300dp yellow brand-gradient hero, floating top-row buttons (back/heart/calendar/share with framer-motion press-spring), subcategory label, rounded sheet, inline action row (Boka/Besök/Vägbeskrivning). New CalendarConfirmModal (bottom-sheet, slide-up spring, fade backdrop). Sticky bottom CTA removed for MobileApp parity. |

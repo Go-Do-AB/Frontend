@@ -1,10 +1,33 @@
 "use client";
 
+/**
+ * EventDetailScreen — port of MobileApp/app/event/[id].tsx.
+ *
+ * Layout: yellow hero (300dp) → floating top-row buttons (back + heart, calendar,
+ * share) → subcategory label on hero bottom → rounded content sheet (overlaps hero
+ * by 20dp) → title, date, tag chips, About/Organiser/Location/When sections →
+ * inline action button row (Boka / Besök / Vägbeskrivning).
+ *
+ * NB: MobileApp does NOT use a sticky bottom CTA bar — actions live inline at the
+ * end of the content sheet. The earlier preview had a sticky CTA; that's removed
+ * here for parity with the current MobileApp design.
+ */
+
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
-  BRAND,
-  CATEGORY_COLORS,
-  CATEGORY_GRADIENTS,
-  CATEGORY_SHORT_LABELS,
+  ArrowLeft,
+  Heart,
+  CalendarPlus,
+  Share2,
+  Ticket,
+  Navigation,
+  ExternalLink,
+} from "lucide-react";
+import { format } from "date-fns";
+import { sv } from "date-fns/locale";
+
+import {
   FontFamily,
   Typography,
   Spacing,
@@ -15,36 +38,26 @@ import {
   Surface,
 } from "../constants";
 import { MOCK_EVENTS } from "../mockEvents";
-import {
-  ArrowLeft,
-  Share2,
-  Heart,
-  MapPin,
-  Clock,
-  ExternalLink,
-  User,
-  Navigation,
-} from "lucide-react";
-import { format } from "date-fns";
-import { sv } from "date-fns/locale";
+import { CalendarConfirmModal } from "../components/CalendarConfirmModal";
 
 interface EventDetailScreenProps {
   eventId: string;
   onBack: () => void;
 }
 
+const PRESS_SPRING = { type: "spring" as const, damping: 18, stiffness: 320 };
+
 export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
   const event = MOCK_EVENTS.find((e) => e.id === eventId);
+  const [favorited, setFavorited] = useState(false);
+  const [showCalendarConfirm, setShowCalendarConfirm] = useState(false);
 
   if (!event) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3" style={{ fontFamily: FontFamily.body }}>
-        <div
-          className="flex items-center justify-center rounded-full"
-          style={{ width: 48, height: 48, backgroundColor: Neutral[100] }}
-        >
-          <MapPin size={20} style={{ color: Neutral[500] }} />
-        </div>
+      <div
+        className="flex flex-col items-center justify-center py-20 gap-3"
+        style={{ fontFamily: FontFamily.body }}
+      >
         <p style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
           Evenemanget hittades inte
         </p>
@@ -57,6 +70,8 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
             borderRadius: Radii.pill,
             backgroundColor: GodoYellow[500],
             color: Surface.onPrimary,
+            border: "none",
+            cursor: "pointer",
           }}
         >
           Gå tillbaka
@@ -64,9 +79,6 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
       </div>
     );
   }
-
-  const categoryCode = event.categories?.[0]?.code ?? 1;
-  const gradient = CATEGORY_GRADIENTS[categoryCode] ?? CATEGORY_GRADIENTS[1];
 
   const dateLabel = event.startDate
     ? format(new Date(event.startDate), "EEEE d MMMM yyyy", { locale: sv })
@@ -84,67 +96,134 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
     .filter(Boolean)
     .join(", ");
 
-  const hasCta = event.bookingUrl || event.eventUrl || fullAddress;
-  const ctaLabel = event.bookingUrl
-    ? "Boka biljetter"
-    : event.eventUrl
-      ? "Besök webbplats"
-      : fullAddress
-        ? "Vägbeskrivning"
-        : "";
+  const tagNames = (event.tags ?? []).map((t) => t.name).filter(Boolean);
+
+  const subcategoryLabel = event.subcategories
+    ?.map((s) => s.name)
+    .filter(Boolean)
+    .join(" · ");
+
+  const dateAndTime = dateLabel
+    ? timeLabel
+      ? `${dateLabel} kl. ${timeLabel}`
+      : dateLabel
+    : "";
+
+  const handleBook = () => {
+    if (event.bookingUrl) {
+      window.open(event.bookingUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handleWebsite = () => {
+    if (event.eventUrl) {
+      window.open(event.eventUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handleDirections = () => {
+    if (fullAddress) {
+      window.open(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+  };
+
+  const handleShare = async () => {
+    if (typeof navigator === "undefined") return;
+    const shareUrl = `https://godo-dev.nu/event/${event.id}`;
+    try {
+      if (typeof navigator.share === "function") {
+        await navigator.share({ title: event.title, text: event.title, url: shareUrl });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+    } catch {
+      /* cancelled or denied */
+    }
+  };
 
   return (
-    <div className="relative flex flex-col" style={{ minHeight: "100%", fontFamily: FontFamily.body }}>
-      {/* Hero section — 300px with category gradient */}
+    <div
+      className="relative flex flex-col"
+      style={{
+        minHeight: "100%",
+        fontFamily: FontFamily.body,
+        backgroundColor: Surface.surface,
+      }}
+    >
+      {/* ── Hero (300dp, yellow brand gradient) ─────────────────────── */}
       <div className="relative" style={{ height: 300 }}>
         <div
           className="absolute inset-0"
-          style={{ background: `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})` }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.55))" }}
+          style={{
+            background: `linear-gradient(180deg, ${GodoYellow[500]}CC, ${GodoYellow[500]})`,
+          }}
         />
 
-        {/* Floating back, save & share buttons */}
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between pt-2 z-10" style={{ paddingLeft: Spacing.screenPadding, paddingRight: Spacing.screenPadding }}>
-          <button
-            onClick={onBack}
-            className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
-            style={{ width: 40, height: 40, backgroundColor: "rgba(255,255,255,0.9)", boxShadow: Shadows.sm }}
-          >
-            <ArrowLeft size={22} style={{ color: Neutral[800] }} />
-          </button>
+        {/* Floating top row */}
+        <div
+          className="absolute top-0 left-0 right-0 flex items-center justify-between z-10"
+          style={{
+            paddingLeft: Spacing.screenPadding,
+            paddingRight: Spacing.screenPadding,
+            paddingTop: Spacing.sm,
+          }}
+        >
+          <FloatingIconButton onClick={onBack} ariaLabel="Tillbaka">
+            <ArrowLeft size={22} color={Neutral[800]} />
+          </FloatingIconButton>
+
           <div className="flex items-center gap-2">
-            <button
-              className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
-              style={{ width: 40, height: 40, backgroundColor: "rgba(255,255,255,0.9)", boxShadow: Shadows.sm }}
+            <FloatingIconButton
+              onClick={() => setFavorited((v) => !v)}
+              ariaLabel={favorited ? "Ta bort favorit" : "Lägg till favorit"}
             >
-              <Heart size={20} style={{ color: Neutral[800] }} />
-            </button>
-            <button
-              className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
-              style={{ width: 40, height: 40, backgroundColor: "rgba(255,255,255,0.9)", boxShadow: Shadows.sm }}
+              <Heart
+                size={20}
+                color={favorited ? "#E53E3E" : Neutral[800]}
+                fill={favorited ? "#E53E3E" : "transparent"}
+              />
+            </FloatingIconButton>
+            <FloatingIconButton
+              onClick={() => setShowCalendarConfirm(true)}
+              ariaLabel="Lägg till i kalendern"
             >
-              <Share2 size={20} style={{ color: Neutral[800] }} />
-            </button>
+              <CalendarPlus size={20} color={Neutral[800]} />
+            </FloatingIconButton>
+            <FloatingIconButton onClick={handleShare} ariaLabel="Dela">
+              <Share2 size={20} color={Neutral[800]} />
+            </FloatingIconButton>
           </div>
         </div>
 
-        {/* Category labels at bottom-left of hero */}
-        <div className="absolute bottom-8 left-5 flex flex-wrap gap-1.5 z-10">
-          {event.categories?.map((cat) => (
+        {/* Subcategory label on hero bottom */}
+        {subcategoryLabel && (
+          <div
+            className="absolute z-10"
+            style={{
+              left: Spacing.screenPadding,
+              right: Spacing.screenPadding,
+              bottom: 28,
+            }}
+          >
             <span
-              key={cat.code}
-              style={{ fontSize: Typography.meta.size, fontWeight: 600, color: "#FFFFFF", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "#FFFFFF",
+                textShadow: "0 1px 4px rgba(0,0,0,0.3)",
+              }}
             >
-              {cat.name}
+              {subcategoryLabel}
             </span>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Content sheet — overlaps hero, rounded top (Radii.sheet = 24) */}
+      {/* ── Content sheet ───────────────────────────────────────────── */}
       <div
         className="relative flex-1"
         style={{
@@ -152,167 +231,299 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           borderTopLeftRadius: Radii.sheet,
           borderTopRightRadius: Radii.sheet,
           marginTop: -20,
-          paddingBottom: hasCta ? 80 : 20,
+          paddingLeft: Spacing.screenPadding,
+          paddingRight: Spacing.screenPadding,
+          paddingTop: Spacing.lg,
+          paddingBottom: Spacing.lg,
+          minHeight: 400,
         }}
       >
-        <div style={{ paddingLeft: Spacing.screenPadding, paddingRight: Spacing.screenPadding, paddingTop: Spacing.lg }}>
-          {/* Title */}
-          <h1
-            className="break-words mb-1"
+        {/* Title */}
+        <h1
+          className="break-words"
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            lineHeight: "30px",
+            color: Neutral[800],
+            marginBottom: 4,
+          }}
+        >
+          {event.title}
+        </h1>
+
+        {/* Date + time */}
+        {dateAndTime && (
+          <p
             style={{
-              fontSize: 24,
-              fontWeight: 700,
-              lineHeight: "30px",
+              fontSize: 16,
+              fontWeight: 600,
               color: Neutral[800],
+              marginBottom: Spacing.sm,
             }}
           >
-            {event.title}
-          </h1>
-
-          {/* Category meta */}
-          <p className="mb-1" style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
-            {CATEGORY_SHORT_LABELS[categoryCode]}
-            {event.subcategories?.[0] && ` · ${event.subcategories[0].name}`}
+            {dateAndTime}
           </p>
+        )}
 
-          {/* Date */}
-          {dateLabel && (
-            <p className="mb-6" style={{ fontSize: Typography.cardTitle.size, fontWeight: 600, color: Neutral[800] }}>
-              {dateLabel}
-              {timeLabel && (
-                <span style={{ color: Neutral[500], fontWeight: 400 }}> kl. {timeLabel}</span>
+        {/* Tag chips */}
+        {tagNames.length > 0 && (
+          <div className="flex flex-wrap" style={{ gap: 6, marginBottom: Spacing.lg }}>
+            {tagNames.map((name) => (
+              <span
+                key={`tag-${name}`}
+                style={{
+                  borderRadius: Radii.pill,
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 6,
+                  paddingBottom: 6,
+                  backgroundColor: Neutral[100],
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: Neutral[700],
+                }}
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* About */}
+        {event.description && (
+          <Section label="Om evenemanget" emphasized>
+            <p
+              className="break-words"
+              style={{
+                fontSize: 15,
+                lineHeight: "22px",
+                color: Neutral[700],
+              }}
+            >
+              {event.description}
+            </p>
+          </Section>
+        )}
+
+        {/* Organiser */}
+        {event.organiser && (
+          <Section label="ARRANGÖR">
+            <p style={{ fontSize: 15, lineHeight: "22px", color: Neutral[700] }}>
+              {event.organiser}
+            </p>
+          </Section>
+        )}
+
+        {/* Location */}
+        {fullAddress && (
+          <Section label="PLATS">
+            <p
+              className="break-words"
+              style={{ fontSize: 15, lineHeight: "22px", color: Neutral[700] }}
+            >
+              {fullAddress}
+            </p>
+          </Section>
+        )}
+
+        {/* When */}
+        {dateAndTime && (
+          <Section label="NÄR">
+            <p style={{ fontSize: 15, lineHeight: "22px", color: Neutral[700] }}>
+              {dateAndTime}
+              {event.recurrence && (
+                <span style={{ color: Neutral[500] }}> ({event.recurrence})</span>
               )}
             </p>
-          )}
+          </Section>
+        )}
 
-
-          {/* About section */}
-          {event.description && (
-            <div className="mb-6">
-              <h2 className="mb-2" style={{ fontSize: Typography.sectionTitle.size, fontWeight: Typography.sectionTitle.weight, color: Neutral[800] }}>
-                Om evenemanget
-              </h2>
-              <p className="break-words" style={{ fontSize: Typography.body.size, lineHeight: `${Typography.body.lineHeight}px`, color: Neutral[700] }}>
-                {event.description}
-              </p>
-            </div>
-          )}
-
-          {/* Organiser section */}
-          {event.organiser && (
-            <div className="mb-6">
-              <p className="uppercase tracking-wider mb-1" style={{ fontSize: 11, fontWeight: 700, color: Neutral[500] }}>
-                Arrangör
-              </p>
-              <div className="flex items-center gap-2">
-                <div
-                  className="flex items-center justify-center rounded-full"
-                  style={{ width: 28, height: 28, backgroundColor: Neutral[100] }}
-                >
-                  <User size={14} style={{ color: Neutral[500] }} />
-                </div>
-                <p style={{ fontSize: Typography.body.size, color: Neutral[700] }}>{event.organiser}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Location section */}
-          {fullAddress && (
-            <div className="mb-6">
-              <p className="uppercase tracking-wider mb-1" style={{ fontSize: 11, fontWeight: 700, color: Neutral[500] }}>
-                Plats
-              </p>
-              <div className="flex items-center gap-2">
-                <div
-                  className="flex items-center justify-center rounded-full"
-                  style={{ width: 28, height: 28, backgroundColor: Neutral[100] }}
-                >
-                  <MapPin size={14} style={{ color: Neutral[500] }} />
-                </div>
-                <p className="break-words" style={{ fontSize: Typography.body.size, color: Neutral[700] }}>{fullAddress}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Schedule section */}
-          {event.hasSchedule && event.scheduleStartTime && (
-            <div className="mb-6">
-              <p className="uppercase tracking-wider mb-1" style={{ fontSize: 11, fontWeight: 700, color: Neutral[500] }}>
-                Tider
-              </p>
-              <div className="flex items-center gap-2">
-                <div
-                  className="flex items-center justify-center rounded-full"
-                  style={{ width: 28, height: 28, backgroundColor: Neutral[100] }}
-                >
-                  <Clock size={14} style={{ color: Neutral[500] }} />
-                </div>
-                <p style={{ fontSize: Typography.body.size, color: Neutral[700] }}>
-                  {event.scheduleStartTime.substring(0, 5)}
-                  {event.scheduleEndTime && ` – ${event.scheduleEndTime.substring(0, 5)}`}
-                  {event.recurrence && (
-                    <span style={{ color: Neutral[500] }}> ({event.recurrence})</span>
-                  )}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Source attribution */}
-          <div className="pt-3 mt-2" style={{ borderTop: `1px solid ${Neutral[200]}` }}>
-            <p style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
-              Källa:{" "}
-              {event.sourceProvider === "helsingborg" ? "Helsingborg Events API" : "Go.Do"}
-            </p>
+        {/* Action button row */}
+        {(event.bookingUrl || event.eventUrl || fullAddress) && (
+          <div
+            className="flex"
+            style={{ gap: 12, marginBottom: Spacing.lg, marginTop: Spacing.sm }}
+          >
+            {event.bookingUrl && (
+              <ActionButton variant="primary" onClick={handleBook}>
+                <Ticket size={18} color="#FFFFFF" />
+                <span>Boka</span>
+              </ActionButton>
+            )}
+            {event.eventUrl && (
+              <ActionButton variant="yellow" onClick={handleWebsite}>
+                <ExternalLink size={16} color={Surface.onPrimary} />
+                <span>Besök webbplats</span>
+              </ActionButton>
+            )}
+            {fullAddress && (
+              <ActionButton variant="secondary" onClick={handleDirections}>
+                <Navigation size={18} color={Neutral[800]} />
+                <span>Vägbeskrivning</span>
+              </ActionButton>
+            )}
           </div>
+        )}
+
+        {/* Source attribution */}
+        <div
+          style={{
+            paddingTop: 12,
+            marginTop: Spacing.sm,
+            borderTop: `1px solid ${Neutral[200]}`,
+          }}
+        >
+          <p style={{ fontSize: Typography.meta.size, color: Neutral[500] }}>
+            Källa:{" "}
+            {event.sourceProvider === "helsingborg"
+              ? "Helsingborg Events API"
+              : "Go.Do"}
+          </p>
         </div>
       </div>
 
-      {/* Sticky CTA bar — matches GodoButton primary */}
-      {hasCta && (
-        <div
-          className="absolute bottom-0 left-0 right-0 z-20"
+      {/* ── Calendar confirm modal ──────────────────────────────────── */}
+      <CalendarConfirmModal
+        visible={showCalendarConfirm}
+        title={event.title}
+        date={dateAndTime}
+        location={fullAddress || undefined}
+        onClose={() => setShowCalendarConfirm(false)}
+        onConfirm={() => setShowCalendarConfirm(false)}
+      />
+    </div>
+  );
+}
+
+// ── Floating circular icon button (40×40) ──────────────────────────
+function FloatingIconButton({
+  onClick,
+  ariaLabel,
+  children,
+}: {
+  onClick: () => void;
+  ariaLabel: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      whileTap={{ scale: 0.92 }}
+      transition={PRESS_SPRING}
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "rgba(255,255,255,0.9)",
+        boxShadow: Shadows.sm,
+        border: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        padding: 0,
+      }}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+// ── Section with small label ───────────────────────────────────────
+function Section({
+  label,
+  emphasized,
+  children,
+}: {
+  label: string;
+  emphasized?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ marginBottom: Spacing.lg }}>
+      {emphasized ? (
+        <h2
           style={{
-            paddingLeft: Spacing.screenPadding,
-            paddingRight: Spacing.screenPadding,
-            paddingTop: 12,
-            paddingBottom: Spacing.screenPadding,
-            backgroundColor: Surface.surface,
-            boxShadow: "0 -4px 16px rgba(0,0,0,0.08)",
+            fontSize: 20,
+            fontWeight: 600,
+            color: Neutral[800],
+            marginBottom: 8,
           }}
         >
-          <button
-            onClick={() => {
-              const url = event.bookingUrl || event.eventUrl;
-              if (url) {
-                window.open(url, "_blank", "noopener,noreferrer");
-              } else if (fullAddress) {
-                window.open(
-                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
-              }
-            }}
-            className="w-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-85"
-            style={{
-              minHeight: 48,
-              borderRadius: Radii.button,
-              backgroundColor: GodoYellow[500],
-              color: Surface.onPrimary,
-              fontSize: Typography.button.size,
-              fontWeight: Typography.button.weight,
-              fontFamily: FontFamily.body,
-              cursor: "pointer",
-            }}
-          >
-            {event.bookingUrl && <ExternalLink size={16} />}
-            {!event.bookingUrl && event.eventUrl && <ExternalLink size={16} />}
-            {!event.bookingUrl && !event.eventUrl && fullAddress && <Navigation size={16} />}
-            {ctaLabel}
-          </button>
-        </div>
+          {label}
+        </h2>
+      ) : (
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: Neutral[500],
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            marginBottom: 4,
+          }}
+        >
+          {label}
+        </p>
       )}
+      {children}
     </div>
+  );
+}
+
+// ── Action buttons ─────────────────────────────────────────────────
+function ActionButton({
+  variant,
+  onClick,
+  children,
+}: {
+  variant: "primary" | "yellow" | "secondary";
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  const isPrimary = variant === "primary";
+  const isYellow = variant === "yellow";
+  const bg = isPrimary
+    ? Neutral[800]
+    : isYellow
+      ? GodoYellow[500]
+      : "transparent";
+  const color = isPrimary
+    ? "#FFFFFF"
+    : isYellow
+      ? Surface.onPrimary
+      : Neutral[800];
+  const border = !isPrimary && !isYellow ? `1.5px solid ${Neutral[300]}` : "none";
+
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileTap={{ scale: 0.97, opacity: 0.85 }}
+      transition={PRESS_SPRING}
+      style={{
+        flex: 1,
+        minHeight: 48,
+        borderRadius: Radii.card,
+        backgroundColor: bg,
+        color,
+        border,
+        paddingLeft: 16,
+        paddingRight: 16,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        fontSize: 14,
+        fontWeight: 600,
+        fontFamily: FontFamily.body,
+        cursor: "pointer",
+      }}
+    >
+      {children}
+    </motion.button>
   );
 }

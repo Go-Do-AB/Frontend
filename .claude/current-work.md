@@ -36,6 +36,17 @@ Last updated: 2026-05-03
 - `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
 - Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
 
+### Phase 5 done (2026-05-03):
+- Full rewrite of `screens/EventDetailScreen.tsx` as faithful port of MobileApp `app/event/[id].tsx`
+- 300dp yellow brand-gradient hero (`GodoYellow[500]CC → GodoYellow[500]`), floating top-row buttons (back left; heart/calendar/share right) — 40dp white pills with framer-motion `whileTap` press-spring (damping 18 / stiffness 320)
+- Subcategory label on hero bottom-left
+- Rounded content sheet (-20 overlap), title 24/700, date+time 16/600, tag chips Neutral[100]/700
+- About / Arrangör / Plats / När sections with small uppercase labels
+- Inline action button row (NOT sticky — parity with MobileApp): Boka (Neutral[800] + Ticket), Besök webbplats (yellow + ExternalLink), Vägbeskrivning (transparent + Neutral[300] border + Navigate)
+- Heart button toggles favourited state (red fill when active)
+- Web Share API with clipboard fallback
+- New `components/CalendarConfirmModal.tsx` — bottom-sheet with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, drag handle, GodoYellow[100] icon circle, Neutral[50] details box, yellow confirm + ghost cancel
+
 ### Earlier history (preserved for reference):
 
 ### What was done (2026-02-26):
