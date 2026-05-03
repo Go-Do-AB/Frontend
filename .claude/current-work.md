@@ -24,11 +24,17 @@ Last updated: 2026-05-03
 ### Phase 3 done (2026-05-03):
 - Full rewrite of `src/components/preview/screens/HomeScreen.tsx` around the new carousel
 - Layout (top→bottom): Header → Greeting → Search → 3D Carousel → Clear All (when dirty) → City + Near Me row → Date pill → Big Go.Do! button
-- Language toggle (🇸🇪/🇬🇧) actually flips the on-screen Swedish/English copy
+- Language toggle (SV/GB) actually flips the on-screen Swedish/English copy
+- Inline SVG flags (FlagSE, FlagGB) — Windows lacks colour emoji for regional flag codepoints
 - Calendar bottom-sheet modal: Swedish month/day labels, range selection, "Go.Set." confirm
 - City modal preserved with search, multi-select, count badge, "Alla städer" reset
 - Near Me pill is yellow with Lock icon (premium-locked placeholder — wired in Phase 8)
 - Live at `/preview` — `npm run dev` to view
+
+### Phase 4 done (2026-05-03):
+- New `components/SpotlightCarousel.tsx` — 160dp, 4s auto-rotate, framer-motion crossfade, yellow glow border, Spotlight badge, color stripe, pause/play
+- `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
+- Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
 
 ### Earlier history (preserved for reference):
 

@@ -56,10 +56,12 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 - [x] Carousel state local: `expandedCategory`, `selectedSubs`, `everything`, `showAll`
 - [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
-### Phase 4: Results screen + SpotlightCarousel — medium
-- [ ] Port `SpotlightCarousel.tsx`: 160dp height, 4s auto-rotate, pause/play button, yellow glow border, spotlight badge, left color stripe
-- [ ] Rebuild `screens/ResultsScreen.tsx` with `ResultsToolbar`, map/list toggle, `EventsList`, pagination
-- [ ] Provider info chip on each event card
+### Phase 4: Results screen + SpotlightCarousel — medium (COMPLETE)
+- [x] New `components/SpotlightCarousel.tsx`: 160dp, 4s auto-rotate (setInterval, pausable), framer-motion `AnimatePresence` crossfade, 2px `GodoYellow[400]` border + yellow glow shadow, top-left Spotlight badge with Star (filled), category gradient background, 5px left color stripe per category, white date pill, title with text-shadow, pause/play button bottom-right
+- [x] `ResultsScreen.tsx`: SpotlightCarousel wired at top (top-3 events), already had toolbar/sort/filter/map-toggle/subcategory chips/event cards/pagination
+- [x] Provider info chip on each event card — "Helsingborgs stad" (sky blue) for `sourceProvider === "helsingborg"`, "Go.Do" (yellow) for internal events
+- [x] Hidden when on map view (spotlight is list-only)
+- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
 
 ### Phase 5: Event Detail screen — small
 - [ ] Rebuild `screens/EventDetailScreen.tsx`: hero image + gradient overlay, floating back/heart, content sheet with tag pills, sticky CTA
@@ -96,14 +98,14 @@ Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's
 ## Current Position
 
 ```
-Phase: 4 of 9
-Task:  0 of 4
-Status: Phase 3 complete — ready to execute Phase 4 (Results + SpotlightCarousel)
+Phase: 5 of 9
+Task:  0 of 3
+Status: Phase 4 complete — ready to execute Phase 5 (Event Detail)
 ```
 
 ## Progress
 
-[██████░░░░░░░░░░░░░░] 3/9 phases
+[████████░░░░░░░░░░░░] 4/9 phases
 
 ## Affected Repos
 
@@ -131,4 +133,6 @@ Status: Phase 3 complete — ready to execute Phase 4 (Results + SpotlightCarous
 | 2026-05-03 | Planning | Investigated MobileApp current design (3D carousel, Spotlight, new screens), identified 9-phase roadmap, locked Approach A + Full scope + framer-motion |
 | 2026-05-03 | Phase 1 | Installed framer-motion, wired Carlito brand font via next/font/google, added Semantic colors to constants, built GodoButton/GodoCard/GodoChip/RGBBorderCard primitives. Issue #58 opened on Frontend repo. Branch `feature/preview-mobileapp-parity`. |
 | 2026-05-03 | Phase 2 | Built CategoryCarousel3D (framer-motion useMotionValue + onPan, ring-modulus index, useTransform-driven per-card transforms). Added preview/categories.ts with Swedish labels. Demo route at /preview/carousel-demo. |
-| 2026-05-03 | Phase 3 | Full rewrite of HomeScreen around the 3D carousel. Header (logo+flags+bell), greeting, search, carousel, Clear All, City+Near Me row, date pill, black Go.Do button, City modal, Calendar modal. Language toggle wired (sv/en). Approved by Nemo Sensei to proceed without commit. |
+| 2026-05-03 | Phase 3 | Full rewrite of HomeScreen around the 3D carousel. Header (logo+flags+bell), greeting, search, carousel, Clear All, City+Near Me row, date pill, black Go.Do button, City modal, Calendar modal. Language toggle wired (sv/en). |
+| 2026-05-03 | Hotfix | Inline SVG flags (FlagSE, FlagGB) replace emoji 🇸🇪🇬🇧 — Windows lacks colour emoji for regional flags. Committed as `6dd857c3`. |
+| 2026-05-03 | Phase 4 | SpotlightCarousel ported (auto-rotate, crossfade, glow border, spotlight badge, color stripe). Wired to ResultsScreen (top-3 events). Provider chip ("Helsingborgs stad" / "Go.Do") on event cards. |

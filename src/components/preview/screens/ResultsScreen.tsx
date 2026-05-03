@@ -21,6 +21,7 @@ import {
   CoolPastels,
 } from "../constants";
 import { filterMockEvents, SortMode } from "../mockEvents";
+import { SpotlightCarousel, type SpotlightItem } from "../components/SpotlightCarousel";
 import {
   ArrowLeft,
   MapPin,
@@ -31,6 +32,7 @@ import {
   List,
   Heart,
   Check,
+  Building2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -120,6 +122,22 @@ export function ResultsScreen({
     [categoryCode, selectedSub, tagCodes, searchText, cities, startDate, endDate, sortMode],
   );
 
+  // Top 3 events feed the SpotlightCarousel
+  const spotlightItems: SpotlightItem[] = useMemo(
+    () =>
+      events.slice(0, Math.min(3, events.length)).map((ev) => ({
+        id: ev.id,
+        title: ev.title,
+        date: ev.startDate
+          ? format(new Date(ev.startDate), "d MMM", { locale: sv })
+          : ev.isAlwaysOpen
+            ? "Alltid öppet"
+            : undefined,
+        categoryCode: ev.categories?.[0]?.code ?? categoryCode,
+      })),
+    [events, categoryCode],
+  );
+
   return (
     <div style={{ backgroundColor: Surface.surface, fontFamily: FontFamily.body }}>
       {/* Compact header */}
@@ -178,6 +196,13 @@ export function ResultsScreen({
           </span>
         </div>
       </div>
+
+      {/* Spotlight carousel — 3 featured events at top */}
+      {spotlightItems.length > 0 && !showMap && (
+        <div className="pt-3 pb-2">
+          <SpotlightCarousel events={spotlightItems} onEventPress={onSelectEvent} />
+        </div>
+      )}
 
       {/* Toolbar — 3 equal buttons: Sort, Filter, Map */}
       <div className="flex items-center py-2" style={{ paddingLeft: Spacing.md, paddingRight: Spacing.md, gap: 6, backgroundColor: Surface.surface }}>
@@ -477,6 +502,37 @@ function EventCard({ event, onClick }: { event: EventDto; onClick: () => void })
         <div className="flex items-center" style={{ gap: 4, fontSize: Typography.meta.size + 1, color: "#64748B", fontFamily: FontFamily.body }}>
           {event.city && <span>{event.city},</span>}
           <span>{dateLabel}</span>
+        </div>
+
+        {/* Provider chip — where the event came from (Go.Do internal vs municipal feed) */}
+        <div className="flex items-center" style={{ gap: 5 }}>
+          <span
+            className="inline-flex items-center"
+            style={{
+              gap: 4,
+              padding: "2px 8px",
+              borderRadius: Radii.pill,
+              fontSize: Typography.caption.size - 2,
+              fontWeight: 600,
+              backgroundColor:
+                event.sourceProvider === "helsingborg"
+                  ? "#F0F9FF"
+                  : GodoYellow[50],
+              color:
+                event.sourceProvider === "helsingborg"
+                  ? "#0369A1"
+                  : Surface.onPrimary,
+              border:
+                event.sourceProvider === "helsingborg"
+                  ? "1px solid #BAE6FD"
+                  : `1px solid ${GodoYellow[200]}`,
+            }}
+          >
+            <Building2 size={10} />
+            {event.sourceProvider === "helsingborg"
+              ? "Helsingborgs stad"
+              : "Go.Do"}
+          </span>
         </div>
 
         {/* Tags — dark badges matching Expo EventOne */}
