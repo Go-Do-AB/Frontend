@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Navbar } from "@/components/global/Navbar";
+import { Footer } from "@/components/global/Footer";
 import { Button } from "@/components/ui/button";
 import { CalendarPlus, Zap, List, Smartphone } from "lucide-react";
 import Link from "next/link";
@@ -96,6 +97,8 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <Footer />
     </main>
   );
 }

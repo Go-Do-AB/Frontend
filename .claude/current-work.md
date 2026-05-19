@@ -3,143 +3,89 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-05-03
+Last updated: 2026-05-19
 
 ## Active Task
-**Preview Redesign — MobileApp Parity** (Issue #58, branch `feature/preview-mobileapp-parity`) — ✅ **COMPLETE** as of 2026-05-04. All 9 phases shipped. Phase 9 polish merged the temporary carousel-demo removal and final verification gates. PR opened to `main`. Awaiting Nemo Sensei's manual smoke + merge approval.
+**Privacy Policy page (bilingual, DRAFT)** — public-facing legal page required
+for App Store + Google Play submission of the mobile app.
 
-### Phase 1 done (2026-05-03):
-- `framer-motion` installed for gesture-driven 3D carousel + spring physics
-- Carlito brand font wired via `next/font/google` → `--font-brand`
-- `constants.ts` extended with `Semantic` colors; `FontFamily.brand` now uses CSS var
-- New primitives in `src/components/preview/ui/`: GodoButton, GodoCard, GodoChip, RGBBorderCard
+### What was done (2026-05-19):
 
-### Phase 2 done (2026-05-03):
-- New `src/components/preview/components/CategoryCarousel3D.tsx` — full Reanimated→framer-motion port (gesture-driven drag, ring-modulus index, ±35° rotateY, perspective 800, opacity falloff, spring snap damping 18 / stiffness 150 / mass 0.8)
-- `src/components/preview/categories.ts` — 8 Swedish categories + 24 subcategories matching MobileApp
-- Animated subcategory dropdown (height + opacity + marginTop, spring damping 20 / stiffness 200)
-- `prefers-reduced-motion` fallback: flat scroll-snap horizontal carousel
-- Visual verification page at `/preview/carousel-demo` (temporary — will be removed in Phase 9)
+**Privacy Policy (branch `feature/privacy-policy`):**
 
-### Phase 3 done (2026-05-03):
-- Full rewrite of `src/components/preview/screens/HomeScreen.tsx` around the new carousel
-- Layout (top→bottom): Header → Greeting → Search → 3D Carousel → Clear All (when dirty) → City + Near Me row → Date pill → Big Go.Do! button
-- Language toggle (SV/GB) actually flips the on-screen Swedish/English copy
-- Inline SVG flags (FlagSE, FlagGB) — Windows lacks colour emoji for regional flag codepoints
-- Calendar bottom-sheet modal: Swedish month/day labels, range selection, "Go.Set." confirm
-- City modal preserved with search, multi-select, count badge, "Alla städer" reset
-- Near Me pill is yellow with Lock icon (premium-locked placeholder — wired in Phase 8)
-- Live at `/preview` — `npm run dev` to view
+1. **`src/components/legal/DraftBanner.tsx`** — yellow banner shown across the top
+   of legal pages while pending counsel review.
+2. **`src/components/legal/LegalLayout.tsx`** — shared chrome (banner + minimal
+   header + language switch + back-to-home link). Keeps the long-form content
+   components out of layout concerns.
+3. **`src/components/legal/PrivacyPolicyEn.tsx`** — full English privacy policy.
+   Sections: who we are, what we collect, how we use it, GDPR legal bases,
+   subprocessors (Apple, Google, GleSYS, Resend, Expo), international transfers,
+   retention, GDPR rights (Art. 15-22), account deletion (Profile -> Delete
+   Account), children, security, changes, contact. Ends with HTML-comment block
+   mapping data items to the Apple Privacy Nutrition Label and Google Play Data
+   Safety form (copy-paste for App Store Connect / Play Console).
+4. **`src/components/legal/PrivacyPolicySv.tsx`** — Swedish translation, "du"
+   form to match the rest of the site. Same structure as EN; refers back to
+   EN page for the (English-only) console mappings to avoid drift.
+5. **`src/app/privacy/page.tsx`** — `/privacy` route. Server component, metadata
+   incl. `alternates.languages` for SEO hreflang.
+6. **`src/app/sv/privacy/page.tsx`** — `/sv/privacy` route, same pattern.
+7. **`src/components/global/Footer.tsx`** — new site-wide footer (first one in
+   the repo). Links to both language versions of the policy.
+8. **`src/app/landing/page.tsx`** — drop the Footer onto the landing page.
+9. **`src/app/(auth)/register/page.tsx`** — the "I agree to the terms" checkbox
+   label now links to `/privacy` so the disclosure is reachable from signup.
+10. **`src/app/robots.ts`** + **`src/app/sitemap.ts`** — Next.js App Router
+    metadata routes. Sitemap exposes `/landing`, `/privacy`, `/sv/privacy` and
+    declares hreflang alternates. `NEXT_PUBLIC_SITE_URL` honoured (defaults to
+    `https://godo-dev.nu`).
 
-### Phase 4 done (2026-05-03):
-- New `components/SpotlightCarousel.tsx` — 160dp, 4s auto-rotate, framer-motion crossfade, yellow glow border, Spotlight badge, color stripe, pause/play
-- `ResultsScreen.tsx` shows SpotlightCarousel at top (top-3 events) when in list view
-- Provider chip on each event card: "Helsingborgs stad" (blue) or "Go.Do" (yellow) based on `sourceProvider`
+Verified: `npx tsc --noEmit` clean, `npm run lint` clean, `npm run build`
+green; both pages prerendered as static, `/robots.txt` and `/sitemap.xml`
+appear in the build output.
 
-### Phase 9 done (2026-05-04):
-- Removed `/preview/carousel-demo` (Phase 2 visual-verification harness)
-- Clean rebuild — route count down from 13 to 12
-- Reduce-motion confirmed on the two animation-heavy surfaces (3D carousel flat fallback, RGB border static colour)
-- All gates green: `tsc --noEmit`, `npm run lint`, `npm run build`
-- PR opened to `main`
+### Decisions made
+- **No new i18n library.** Repo currently has zero i18n. Used a simple `/sv/*`
+  folder for the Swedish route instead of pulling in `next-intl`. Easy to
+  migrate later if/when other pages need translation.
+- **One canonical Apple/Google form mapping** lives in the EN page's HTML
+  comment block. Counsel only needs to reconcile it once.
+- **Account deletion path documented as Profile -> Delete Account** to satisfy
+  both Apple (since June 2022) and Google (since May 2024) requirements.
+- **Minimum age set to 16** (default GDPR Art. 8 Member-State maximum,
+  unchanged in Sweden). Flagged `TODO` for counsel.
+- **Privacy contact email** is `privacy@godo.nu` — flagged for counsel to set
+  up if not already.
 
-### Phase 8 done (2026-05-03):
-- ProfileScreen rewritten: signed-in card with yellow-circle avatar (initial), email, four nav rows (Sparade evenemang / Mina listor / Nära mig / Prenumeration with plan pill), red-bordered logout. Logged-out fallback preserved.
-- FavoritesScreen rewritten: signed-in event list grouped into Kommande + Tidigare, framer-motion swipe-to-remove (snap-back if not committed, animate off-screen + remove past −60dp), empty state, logged-out fallback preserved
-- New ListsScreen + ListDetailScreen + CreateListModal: list cards with yellow-tint icon + count + chevron + trash, premium-gated empty state, list detail reuses Favorites visual, bottom-sheet create modal with text input
-- New NearMeScreen + NearMePremiumPromptModal: 5–50km radius slider, distance-sorted event list with yellow km badges, list/map toggle, fake map placeholder with concentric radius rings + center pin + counter overlay
-- New SubscriptionScreen: header + plan-badge card + features-list card (yellow-circle checks) + conditional upgrade area or manage button
-- AppPreview state machine extended: `profileRoute` axis (lists / list-detail / near-me / subscription), mock account state (signedIn, favoriteIds, lists, isPremium), tab switch dismisses any active route, logout clears profileRoute and downgrades to Free
-- Discovery: ProfileScreen has 4 rows (added "Nära mig"); MobileApp profile has 3 (NearMe entry is a Home pill not yet wired in preview). Lean entry point for marketing demo.
-
-### Phase 7 done (2026-05-03):
-- New `screens/LoginScreen.tsx` — Calibri-Bold "Logga in" title, email + password inputs (Neutral[900] border), dark primary button (disabled until both fields filled), "Har du inget konto? Skapa konto" switch link
-- New `screens/RegisterScreen.tsx` — title + Swedish subtitle, email/password/confirm inputs, inline mismatch error (red), "Har du redan ett konto? Logga in" switch link
-- New `components/SocialLoginButtons.tsx` — port of MobileApp `SocialLoginButtons.tsx`. Two stacked Neutral[900] pill buttons with brand SVG marks (Google four-color G + Apple silhouette) and "eller" divider
-- AppPreview gets `authRoute` axis (login/register) layered above tabs; tab bar stays visible to mirror MobileApp `(tabs)/login.tsx` re-export pattern
-- `LoginPromptModal` and `ProfileScreen` CTAs now route to login / register
-- Tab switch dismisses any active auth route automatically
-- Login ↔ Register switch in-place (no dismiss)
-
-### Phase 6 done (2026-05-03):
-- AppPreview state machine refactored: `activeTab` (home/favorites/profile) + per-tab screen stack + modal stack
-- New `components/TabBar.tsx`: 3 tabs (Hem/Sparat/Profil), lucide icons, GodoYellow[500] active tint, framer-motion press scale, top divider
-- `PhoneFrame.tsx` accepts `bottomBar` + `overlay` slots (modals sit absolutely above content + bottomBar)
-- Tab bar hidden on event detail screen for immersive parity with MobileApp
-- New `components/LoginPromptModal.tsx`: bottom-sheet, framer-motion slide-up spring + fade backdrop, heart icon, primary "Logga in" + secondary "Skapa konto" — port of MobileApp `LoginPromptModal`
-- Placeholder `screens/FavoritesScreen.tsx` + `screens/ProfileScreen.tsx`: logged-out empty states with CTAs that drive the modal stack end-to-end (full versions in Phase 8)
-- Tapping Hem tab while already on it pops back to home root (mirrors MobileApp)
-
-### Phase 5 done (2026-05-03):
-- Full rewrite of `screens/EventDetailScreen.tsx` as faithful port of MobileApp `app/event/[id].tsx`
-- 300dp yellow brand-gradient hero (`GodoYellow[500]CC → GodoYellow[500]`), floating top-row buttons (back left; heart/calendar/share right) — 40dp white pills with framer-motion `whileTap` press-spring (damping 18 / stiffness 320)
-- Subcategory label on hero bottom-left
-- Rounded content sheet (-20 overlap), title 24/700, date+time 16/600, tag chips Neutral[100]/700
-- About / Arrangör / Plats / När sections with small uppercase labels
-- Inline action button row (NOT sticky — parity with MobileApp): Boka (Neutral[800] + Ticket), Besök webbplats (yellow + ExternalLink), Vägbeskrivning (transparent + Neutral[300] border + Navigate)
-- Heart button toggles favourited state (red fill when active)
-- Web Share API with clipboard fallback
-- New `components/CalendarConfirmModal.tsx` — bottom-sheet with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, drag handle, GodoYellow[100] icon circle, Neutral[50] details box, yellow confirm + ghost cancel
-
-### Earlier history (preserved for reference):
-
-### What was done (2026-02-26):
-
-**Preview Redesign (PR #38, merged to main):**
-
-1. **`constants.ts`** — New design tokens matching Expo WCAG 2.1 AAA:
-   - Brand palette: Go.Do Yellow (#F3C10E), warm background (#FAF8F3), surface (#FFFEFA)
-   - Category colors with AAA contrast, soft tints, gradient pairs
-   - Category emojis for map pins, GPS mock locations
-2. **`PhoneFrame.tsx`** — Warm off-white background
-3. **`AppPreview.tsx`** — Multi-select categories, map toggle, Go.Do! flow
-4. **`HomeScreen.tsx`** — Category tiles with checkmarks, tag chips, Go.Do! button, upcoming cards, featured card with RGB border
-5. **`ResultsScreen.tsx`** — Toolbar, subcategory chips, styled map view with city pins, result cards, pagination
-6. **`EventDetailScreen.tsx`** — Hero gradient, floating buttons, tag pills, content sheet, sticky CTA
-7. **`globals.css`** — `@keyframes rgbShift` animation
-
-**Swedish Mock Events (PR #39, merged to main):**
-
-8. **`mockEvents.ts`** — 63 realistic Swedish events from Helsingborg/NV Skåne:
-   - Real organizers: Helsingborgs stad, Dunkers kulturhus, Sofiero Slott, Fredriksdals museer, HIF, Rögle BK
-   - Real addresses: Stortorget, Kungsgatan 11, Sofiero Slottsväg, Olympiavägen, Catena Arena
-   - All category/subcategory/tag names in Swedish
-   - Detailed Swedish descriptions
-
-**Documentation (PR #37, merged to main):**
-
-9. **`docs/ARCHITECTURE.md`** — 8 Mermaid diagrams for tech stack, user flow, data flow, JWT auth, form state, deployment
+### TODO markers for legal counsel to resolve (search for `<!-- TODO`):
+- Legal registered address (EN + SV)
+- Swedish organisation number
+- Whether a formal DPO / dataskyddsombud is appointed
+- Any additional subprocessors (analytics, error tracking, push notifications)
+- Confirm retention periods (currently proposed: 30 days post-deletion,
+  7 years for accounting, 90 days for logs, 30 days for backups)
+- Confirm minimum-age policy choice (currently 16)
+- Confirm Swedish term for "dataportabilitet" wording
+- Confirm legal postal address for the Contact section
 
 ### What's next:
-1. Connect preview to live API data (replace mock events with real API calls)
-2. Add real event images/thumbnails (currently gradient placeholders)
-3. Docker deployment to GleSYS VPS
-4. Consider adding search functionality to preview
+1. Get counsel sign-off and remove the DraftBanner + TODO comments
+2. Set the `/privacy` URL in App Store Connect and Google Play Console
+3. Fill in Apple Privacy Nutrition Label / Google Data Safety form using
+   the mapping in the HTML-comment block at the bottom of
+   `PrivacyPolicyEn.tsx`
+4. Consider also drafting a Terms & Conditions page (the register checkbox
+   already references one but no page exists yet)
+5. Add Footer to other top-level pages (login/register, my-events, etc.)
+   so the policy is reachable from everywhere
 
-## Key Decisions
-- **Preview matches Expo** — Phone mockup mirrors the accessibility-redesign branch design
-- **All Swedish** — Event titles, descriptions, organizers, categories, tags all in Swedish
-- **Go.Do Yellow #F3C10E** as primary brand color
-- **WCAG 2.1 AAA** — Contrast-safe category colors, 48dp touch targets
-- **Styled CSS map** — Preview uses CSS-based map (not real map integration)
-- **RGB animated border** — Featured card uses `@keyframes rgbShift` CSS animation
-
-## Project Structure (Preview Components)
-```
-src/components/preview/
-├── AppPreview.tsx          # State machine: home → results → detail
-├── PhoneFrame.tsx          # Phone bezel with status bar + home indicator
-├── constants.ts            # Design tokens matching Expo app
-├── mockEvents.ts           # 63 realistic Swedish events + filter helper
-└── screens/
-    ├── HomeScreen.tsx       # Category tiles, tags, Go.Do!, upcoming cards
-    ├── ResultsScreen.tsx    # Toolbar, map/list, subcategory chips, cards
-    └── EventDetailScreen.tsx # Hero, content sheet, sticky CTA
-```
+## Previous Session (2026-02-26)
+Preview Redesign (PRs #38/#39) and Architecture docs (PR #37) — see git log.
 
 ## Environment Notes
-- Frontend repo: `C:\InFiNetCode\Projects\GODO\FORM\Frontend`
-- Backend repo: `C:\InFiNetCode\Projects\GODO\BACKEND\Backend`
-- Mobile app repo: `C:\InFiNetCode\Projects\GODO\APP\MobileApp`
-- Preview page: `/preview` route
-- Build: `npx next build` (Next.js 16.1.4 with Turbopack)
+- Frontend repo: `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/FEProject/godo-fe-web` (NOT what CLAUDE.md still says)
+- Backend repo: `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/BEProject/CleanArchitectureBE-DOTNET`
+- Mobile app repo: `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/APP/MobileApp`
+- Build: `npm run build` (Next.js 16.1.4 with Turbopack)
+- Production URL after deploy: `https://godo-dev.nu/privacy` and `https://godo-dev.nu/sv/privacy`
