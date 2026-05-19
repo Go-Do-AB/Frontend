@@ -237,7 +237,15 @@ export default function OrganizerRegisterPage() {
                       })}
                     />
                     <Label htmlFor="acceptTerms" className="text-sm text-gray-700">
-                      I agree to the Terms and Conditions
+                      I agree to the Terms and Conditions and have read the{" "}
+                      <a
+                        href="/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        Privacy Policy
+                      </a>
                     </Label>
                   </div>
                   {errors.acceptTerms && (
