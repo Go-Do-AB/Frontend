@@ -1,7 +1,7 @@
 # Feature: Admin Moderation Dashboard (Backend#74 / Frontend#48)
 
 > Created: 2026-05-20
-> Status: Phase 2 complete — ready to execute Phase 3
+> Status: COMPLETE — all 3 phases done, ready for PR
 
 ## Goal
 
@@ -32,23 +32,23 @@ Build an admin-only moderation dashboard at `/admin/moderation` where admins can
 - [x] Loading skeleton (3 animated rows), empty state ("No reported events"), error state
 - [x] All gates pass: tsc clean, lint clean, build 19 pages
 
-### Phase 3: Navigation + polish — small
-- [ ] Landing page: add "Moderation" button for admin users (beside Quick Create)
-- [ ] Page metadata (`<title>`, OpenGraph) for `/admin/moderation`
-- [ ] Final `npm run lint && npx tsc --noEmit && npm run build`
-- [ ] Update `.claude/current-work.md`
+### Phase 3: Navigation + polish — small (COMPLETE)
+- [x] Landing page: add "Moderation" button for admin users (beside Quick Create)
+- [x] Page metadata ("Moderation | GODO Admin") via layout.tsx (metadata can't export from client page)
+- [x] Final `npm run lint && npx tsc --noEmit && npm run build` — all green, 19 static pages
+- [x] Update `.claude/current-work.md`
 
 ## Current Position
 
 ```
 Phase: 3 of 3
-Task:  0 of 3
-Status: Ready to execute
+Task:  3 of 3
+Status: COMPLETE — ready for PR
 ```
 
 ## Progress
 
-[█████████████░░░░░░░] 2/3 phases
+[████████████████████] 3/3 phases ✅
 
 ## Affected Repos
 
@@ -77,3 +77,4 @@ Status: Ready to execute
 | 2026-05-20 | Planning | Investigated Backend#74 epic, found linked Frontend#48. Mapped existing patterns (quick-create admin guard, useDeleteEvent, OperationResult wrapper). Created 3-phase plan. |
 | 2026-05-20 | Phase 1 | Added ReportReason + ReportStatus enums, ReportReasonLabel map, EventReportDto, ReportedEventSummaryDto to src/types/events.ts. Created src/hooks/useReports.ts with useAdminReports + useDismissReports. All gates green. |
 | 2026-05-20 | Phase 2 | Built src/app/admin/moderation/page.tsx — admin-gated, table with 6 columns (title, report count, reason chips, AI score badge, status pill, actions), Dialog confirm for remove, skeleton/empty/error states. Used Dialog instead of AlertDialog (not in ui/). All gates green, 19 static pages. |
+| 2026-05-20 | Phase 3 | Added Moderation button to landing page for admin users. Added layout.tsx for page metadata (metadata can't export from client pages). All gates green. current-work.md updated. |
