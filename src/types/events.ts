@@ -155,20 +155,21 @@ export type OperationResult<T> = {
 
 // ---- Moderation / Event Reports ----
 
+// Numeric values match the BE Domain.Enums.ReportReason
 export enum ReportReason {
-  RacistContent = "RacistContent",
-  HomophobicContent = "HomophobicContent",
-  Discriminatory = "Discriminatory",
-  ViolentOrThreatening = "ViolentOrThreatening",
-  SexuallyInappropriate = "SexuallyInappropriate",
-  MisleadingInformation = "MisleadingInformation",
-  SpamOrFraud = "SpamOrFraud",
-  Other = "Other",
+  RacistContent = 1,
+  HomophobicTransphobic = 2,
+  Discriminatory = 3,
+  ViolentOrThreatening = 4,
+  SexuallyInappropriate = 5,
+  MisleadingInformation = 6,
+  SpamOrFraud = 7,
+  Other = 8,
 }
 
 export const ReportReasonLabel: Record<ReportReason, string> = {
   [ReportReason.RacistContent]: "Rasistiskt innehåll",
-  [ReportReason.HomophobicContent]: "Homofobiskt / transfobiskt",
+  [ReportReason.HomophobicTransphobic]: "Homofobiskt / transfobiskt",
   [ReportReason.Discriminatory]: "Diskriminerande",
   [ReportReason.ViolentOrThreatening]: "Våldsamt eller hotfullt",
   [ReportReason.SexuallyInappropriate]: "Sexuellt olämpligt",
@@ -177,29 +178,28 @@ export const ReportReasonLabel: Record<ReportReason, string> = {
   [ReportReason.Other]: "Annat",
 };
 
-export enum ReportStatus {
-  Pending = "Pending",
-  Resolved = "Resolved",
-  Dismissed = "Dismissed",
+// Numeric values match the BE Domain.Enums.EventModerationStatus
+export enum EventModerationStatus {
+  None = 0,
+  Clean = 1,
+  NeedsReview = 2,
+  Blocked = 3,
 }
 
-export type EventReportDto = {
+export type ReportDetailDto = {
   id: string;
-  userId: string;
-  eventId: string;
+  reportedById: string;
   reasons: ReportReason[];
   description?: string;
-  status: ReportStatus;
   createdAt: string;
 };
 
 export type ReportedEventSummaryDto = {
   eventId: string;
   eventTitle: string;
+  isActive: boolean;
   reportCount: number;
-  reasons: ReportReason[];
+  moderationStatus: EventModerationStatus;
   aiModerationScore?: number;
-  status: ReportStatus;
-  reports: EventReportDto[];
-  lastReportedAt: string;
+  pendingReports: ReportDetailDto[];
 };

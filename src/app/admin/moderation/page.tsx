@@ -33,7 +33,7 @@ import {
   ReportedEventSummaryDto,
   ReportReason,
   ReportReasonLabel,
-  ReportStatus,
+  EventModerationStatus,
 } from "@/types/events";
 
 function getAiScoreBadge(score: number | undefined) {
@@ -61,32 +61,39 @@ function getAiScoreBadge(score: number | undefined) {
   );
 }
 
-function getStatusPill(status: ReportStatus) {
-  if (status === ReportStatus.Pending) {
+function getStatusPill(status: EventModerationStatus) {
+  if (status === EventModerationStatus.NeedsReview) {
     return (
       <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
-        Pending
+        Needs Review
       </span>
     );
   }
-  if (status === ReportStatus.Resolved) {
+  if (status === EventModerationStatus.Blocked) {
+    return (
+      <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">
+        Blocked
+      </span>
+    );
+  }
+  if (status === EventModerationStatus.Clean) {
     return (
       <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
-        Resolved
+        Clean
       </span>
     );
   }
   return (
     <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium">
-      Dismissed
+      None
     </span>
   );
 }
 
-function ReasonChips({ reasons }: { reasons: ReportReason[] }) {
+function ReasonChips({ reasons }: { reasons: ReportReason[] | undefined }) {
   const MAX_SHOWN = 3;
-  const shown = reasons.slice(0, MAX_SHOWN);
-  const overflow = reasons.length - MAX_SHOWN;
+  const safe = reasons ?? [];
+  const shown = safe.slice(0, MAX_SHOWN);
   return (
     <div className="flex flex-wrap gap-1">
       {shown.map((r) => (
@@ -94,12 +101,12 @@ function ReasonChips({ reasons }: { reasons: ReportReason[] }) {
           key={r}
           className="text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 whitespace-nowrap"
         >
-          {ReportReasonLabel[r]}
+          {ReportReasonLabel[r] ?? String(r)}
         </span>
       ))}
-      {overflow > 0 && (
+      {safe.length - MAX_SHOWN > 0 && (
         <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-          +{overflow}
+          +{safe.length - MAX_SHOWN}
         </span>
       )}
     </div>
@@ -298,7 +305,7 @@ export default function ModerationPage() {
             <div className="bg-white/70 backdrop-blur-sm rounded-lg px-4 py-2 text-sm font-medium">
               <span className="text-gray-500">Pending:</span>{" "}
               <span className="font-bold text-orange-600">
-                {sorted.filter((r) => r.status === ReportStatus.Pending).length}
+                {sorted.filter((r) => r.moderationStatus === EventModerationStatus.NeedsReview).length}
               </span>
             </div>
           </div>
@@ -363,16 +370,22 @@ export default function ModerationPage() {
                               </span>
                             </td>
 
-                            {/* Reasons */}
+                            {/* Reasons — aggregated from all pending reports */}
                             <td className="px-4 py-3 max-w-[260px]">
-                              <ReasonChips reasons={report.reasons} />
+                              <ReasonChips
+                                reasons={[
+                                  ...new Set(
+                                    (report.pendingReports ?? []).flatMap((r) => r.reasons ?? [])
+                                  ),
+                                ]}
+                              />
                             </td>
 
                             {/* AI score */}
                             <td className="px-4 py-3">{getAiScoreBadge(report.aiModerationScore)}</td>
 
                             {/* Status */}
-                            <td className="px-4 py-3">{getStatusPill(report.status)}</td>
+                            <td className="px-4 py-3">{getStatusPill(report.moderationStatus)}</td>
 
                             {/* Actions */}
                             <td className="px-4 py-3">
@@ -387,17 +400,13 @@ export default function ModerationPage() {
                                       title: report.eventTitle,
                                     })
                                   }
-                                  disabled={
-                                    report.status === ReportStatus.Resolved ||
-                                    isRemoving ||
-                                    isDismissing
-                                  }
+                                  disabled={!report.isActive || isRemoving || isDismissing}
                                 >
                                   <Trash2 className="w-3.5 h-3.5 mr-1" />
                                   Remove
                                 </Button>
 
-                                {report.status === ReportStatus.Pending && (
+                                {report.moderationStatus !== EventModerationStatus.Blocked && (
                                   <Button
                                     size="sm"
                                     variant="outline"
