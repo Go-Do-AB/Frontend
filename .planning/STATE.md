@@ -1,160 +1,79 @@
-# Feature: Preview Redesign — MobileApp Parity (3D Carousel & Full Surface)
+# Feature: Admin Moderation Dashboard (Backend#74 / Frontend#48)
 
-> Created: 2026-05-03
-> Status: Planned — ready to execute Phase 1
+> Created: 2026-05-20
+> Status: Phase 2 complete — ready to execute Phase 3
 
 ## Goal
 
-Bring the FE FORM `/preview` phone mockup up to parity with the GODO MobileApp's current visual design — anchored on the 3D perspective category carousel and extended to cover every shipped screen (Home, Results, Detail, Auth, Profile, Favorites, Lists, Near Me, Subscription) — so the marketing preview reflects what users actually see in the app today.
+Build an admin-only moderation dashboard at `/admin/moderation` where admins can review reported events, inspect AI moderation scores, and take action (remove or dismiss).
 
 ## Requirements
 
-- [ ] Faithfully replicate the **3D category carousel** (CoverFlow-style, ±35° rotateY, perspective 800, opacity falloff, gesture-driven snap with spring physics)
-- [ ] Add **Framer Motion** for gesture + spring animations (Approach A — full fidelity)
-- [ ] Refresh design tokens (`constants.ts`) to match current MobileApp `theme.ts` — yellow ramp, neutrals, category gradients, typography (Calibri-Bold via `next/font`)
-- [ ] Build reusable preview primitives: `GodoButton`, `GodoCard`, `GodoChip`, `RGBBorderCard` matching mobile press-scale springs
-- [ ] **Animated subcategory dropdown** beneath the active category card
-- [ ] Redesign Home, Results, Event Detail screens with new primitives
-- [ ] Add `SpotlightCarousel` to Results with 4s auto-rotate + pause/play + yellow glow border
-- [ ] Add new screens that don't exist in the preview yet: **Auth (Login/Register), Profile, Favorites, Lists, Near Me, Subscription modal**
-- [ ] Extend `AppPreview.tsx` state machine to support a **bottom tab bar** (Home / Favorites / Profile) and modal stack
-- [ ] Honour `prefers-reduced-motion` — flat fallback for the 3D carousel
-- [ ] No backend or API changes — preview stays on `mockEvents.ts`
-- [ ] All checks pass: `npm run lint`, `npm run typecheck`, `npm run build`
+- [ ] New types: `ReportReason`, `ReportStatus`, `EventReportDto`, `ReportedEventSummaryDto` in `src/types/events.ts`
+- [ ] New hooks: `useAdminReports()` (GET `/api/admin/reports`) and `useDismissReports()` (POST `/api/admin/reports/{eventId}/dismiss`) in `src/hooks/useReports.ts`; `useDeleteEvent()` already exists
+- [ ] New admin-gated page `src/app/admin/moderation/page.tsx` — DataTable sorted by report count; columns: title / report count / reasons / AI score / status / actions
+- [ ] Confirm dialog before "Remove Event" (shadcn `AlertDialog`)
+- [ ] Toast feedback on remove + dismiss (Sonner, already wired)
+- [ ] Landing page: "Moderation" link next to "Quick Create" for admin users
+- [ ] Empty state, loading skeleton, error state
 
 ## Roadmap
 
-### Phase 1: Design system foundation — small (COMPLETE)
-- [x] Added `framer-motion` (^12.x) to `package.json`
-- [x] Refreshed `constants.ts`: added `Semantic` colors (success/error/warning/info), updated `FontFamily.brand` to use Carlito CSS var with Calibri/system fallback chain
-- [x] Wired Carlito (open-source Calibri-metric clone) via `next/font/google` in `src/app/layout.tsx`, exposed as `--font-brand`
-- [x] Created primitives in `src/components/preview/ui/`: `GodoButton.tsx`, `GodoCard.tsx`, `GodoChip.tsx`, `RGBBorderCard.tsx`, plus `index.ts` barrel
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
+### Phase 1: Types + API layer — small (COMPLETE)
+- [x] Add `ReportReason` enum, `ReportStatus` enum, `EventReportDto`, `ReportedEventSummaryDto` to `src/types/events.ts`
+- [x] Create `src/hooks/useReports.ts` with `useAdminReports()` and `useDismissReports()`
+- [x] All gates pass: `npx tsc --noEmit`, `npm run lint`, `npm run build`
 
-### Phase 2: 3D Category Carousel — large (COMPLETE)
-- [x] New `src/components/preview/components/CategoryCarousel3D.tsx` using framer-motion `useMotionValue` + `onPan`
-- [x] Geometry: card width 42% of phone, ±35° rotateY, perspective 800, opacity falloff (0 → 0.4 → 0.7 → 1 → 0.7 → 0.4 → 0), z-index interpolation
-- [x] Spring snap (damping 18, stiffness 150, mass 0.8) on drag end past 40px threshold
-- [x] Animated subcategory dropdown beneath active card (height + opacity + marginTop spring, damping 20 / stiffness 200)
-- [x] `prefers-reduced-motion` fallback: flat horizontal scroll (`scroll-snap` + `overflow-x: auto`)
-- [x] Selection badge (gradient border + checkmark, lucide-react `Check`) on selected categories
-- [x] `categories.ts` with Swedish labels for all 8 categories + 24 subcategories
-- [x] Demo route at `/preview/carousel-demo` for visual verification (will be removed in Phase 9)
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
+### Phase 2: Moderation page — medium (COMPLETE)
+- [x] `src/app/admin/moderation/page.tsx` — admin-gated (reuse role-check pattern from `quick-create/page.tsx`)
+- [x] DataTable: columns = title, report count, reason chips, AI score badge (green <0.3 / amber 0.3–0.7 / red >0.7), status pill, action buttons
+- [x] "Remove Event" → shadcn `Dialog` confirm → `useDeleteEvent()` → invalidate reports query → success toast
+- [x] "Dismiss Reports" → `useDismissReports()` → toast on success/error
+- [x] Loading skeleton (3 animated rows), empty state ("No reported events"), error state
+- [x] All gates pass: tsc clean, lint clean, build 19 pages
 
-### Phase 3: Home screen redesign — medium (COMPLETE)
-- [x] Rebuilt `screens/HomeScreen.tsx` around `CategoryCarousel3D` (~770 LoC, full rewrite)
-- [x] Header: Calibri-Bold "Go.Do." logo + 🇸🇪/🇬🇧 language flag toggle (working — switches placeholder/labels) + bell icon
-- [x] Greeting line ("Vad vill du göra?" / "What do you want to do?" — language-aware)
-- [x] Search bar (48dp, Neutral[100] bg, rounded `Radii.input`, lucide Search/X icons)
-- [x] City pill (white, MapPin icon, opens existing CityModal) + Near Me pill (yellow, Compass + Lock — preview-only no-op for now, full premium-aware wiring in Phase 8)
-- [x] Date picker pill (`GodoYellow[50]` bg + yellow border, opens CalendarModal)
-- [x] Black 56dp Go.Do! button (Calibri-Bold, letter-spacing 1, Shadows.md)
-- [x] Calendar bottom-sheet modal (radius 24, swipe-up overlay, Swedish month/day names, `Go.Set.` confirm)
-- [x] City modal preserved with search + multi-select + "Alla städer" + selected-count badge
-- [x] Clear All button surfaces when carousel state is dirty (dashed neutral border)
-- [x] Carousel state local: `expandedCategory`, `selectedSubs`, `everything`, `showAll`
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
-
-### Phase 4: Results screen + SpotlightCarousel — medium (COMPLETE)
-- [x] New `components/SpotlightCarousel.tsx`: 160dp, 4s auto-rotate (setInterval, pausable), framer-motion `AnimatePresence` crossfade, 2px `GodoYellow[400]` border + yellow glow shadow, top-left Spotlight badge with Star (filled), category gradient background, 5px left color stripe per category, white date pill, title with text-shadow, pause/play button bottom-right
-- [x] `ResultsScreen.tsx`: SpotlightCarousel wired at top (top-3 events), already had toolbar/sort/filter/map-toggle/subcategory chips/event cards/pagination
-- [x] Provider info chip on each event card — "Helsingborgs stad" (sky blue) for `sourceProvider === "helsingborg"`, "Go.Do" (yellow) for internal events
-- [x] Hidden when on map view (spotlight is list-only)
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
-
-### Phase 5: Event Detail screen — small (COMPLETE)
-- [x] Rebuilt `screens/EventDetailScreen.tsx` as faithful port of MobileApp `app/event/[id].tsx`: 300dp yellow brand gradient hero (`GodoYellow[500]CC → GodoYellow[500]`), floating top row (back + heart/calendar/share, 40dp white pills with framer-motion `whileTap` press-spring), subcategory label on hero bottom, rounded sheet (overlap -20), title 24/700, date 16/600, tag chips (Neutral[100]), About/Organiser/Location/När sections
-- [x] Inline action button row: Boka (primary Neutral[800] + Ticket), Besök webbplats (yellow + ExternalLink), Vägbeskrivning (transparent + Neutral[300] border + Navigate)
-- [x] Heart button toggles favourited state (red fill when active)
-- [x] Web Share API fallback to clipboard for share button
-- [x] New `components/CalendarConfirmModal.tsx` — bottom-sheet modal with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, drag handle, GodoYellow[100] icon circle, Neutral[50] details box, yellow confirm + ghost cancel
-- [x] Removed sticky bottom CTA (MobileApp doesn't use one — actions are inline at bottom of sheet)
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
-
-### Phase 6: Tab-bar navigation model — medium (COMPLETE)
-- [x] Extended `AppPreview.tsx` state machine: `activeTab` (home / favorites / profile) layered above per-tab screen state. Home tab keeps the home → results → detail substack; switching tabs preserves it. Tapping the Hem tab while already on it pops back to the home root (mirrors MobileApp behaviour).
-- [x] New `components/TabBar.tsx` — 3 tabs (Hem / Sparat / Profil) with lucide icons, active GodoYellow[500] tint + inactive Neutral[500], framer-motion press scale 0.92, top-divider line, 60dp tall, FavoritesCount badge prop ready
-- [x] `PhoneFrame.tsx` accepts optional `bottomBar` slot (rendered between scroll area and home indicator) and `overlay` slot (for modal stack — sits absolutely above content + bottomBar)
-- [x] Tab bar hidden on event detail screen for immersive feel (matches MobileApp where event detail pushes above the tabs)
-- [x] Modal stack: `ModalState = null | { type: "loginPrompt" }` (extensible for premium/payment in their owning phases). Single overlay renderer in `PhoneFrame`.
-- [x] New `components/LoginPromptModal.tsx` — port of MobileApp `LoginPromptModal.tsx`. Bottom-sheet with framer-motion slide-up spring (damping 24 / stiffness 240) + fade backdrop, heart icon, primary "Logga in" (Neutral[800]) + secondary "Skapa konto" (yellow), close X.
-- [x] Placeholder `screens/FavoritesScreen.tsx` and `screens/ProfileScreen.tsx` — logged-out empty states with CTAs that drive the modal-stack end-to-end. Full versions (auth-aware) come in Phase 8.
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
-
-### Phase 7: Auth screens — medium (COMPLETE)
-- [x] New `screens/LoginScreen.tsx` — back arrow, Calibri-Bold "Logga in" title (28px), email + password inputs (Neutral[900] border, Radii.input, Surface.surface bg), dark Neutral[900] primary button (disabled at 0.5 opacity until both fields filled), inline "Har du inget konto? Skapa konto" switch link, SocialLoginButtons block with "eller" divider
-- [x] New `screens/RegisterScreen.tsx` — same shell + Swedish subtitle + confirm-password field with inline mismatch error (red) + "Har du redan ett konto? Logga in" switch link
-- [x] New `components/SocialLoginButtons.tsx` — port of MobileApp `SocialLoginButtons.tsx`. Two stacked Neutral[900] pill buttons (50dp), brand SVG marks (Google four-color G + Apple silhouette), "eller" divider above. framer-motion press scale 0.97 / opacity 0.85.
-- [x] `AppPreview.tsx` extended with `authRoute: null | "login" | "register"` axis. Auth screens render in place of tab content (above) but tab bar stays visible — mirrors MobileApp `(tabs)/login.tsx` re-export pattern. Tab switch automatically dismisses any active auth route.
-- [x] `LoginPromptModal` CTAs now route correctly: "Logga in" → `openLogin()`, "Skapa konto" → `openRegister()`. Profile screen CTAs use the same routes directly.
-- [x] Login ↔ Register switch links navigate within the auth route without dismissing it
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
-
-### Phase 8: Account & feature screens — large (COMPLETE)
-- [x] `screens/ProfileScreen.tsx` rewritten with full signed-in fidelity: yellow-circle avatar with initial, email, four nav rows (Sparade evenemang / Mina listor / Nära mig / Prenumeration), red-bordered logout button. Logged-out fallback preserved.
-- [x] `screens/FavoritesScreen.tsx` rewritten: signed-in event list grouped into Kommande + Tidigare sections, swipe-to-remove via framer-motion drag (snap-back if not committed, animate off-screen + remove if past −60dp threshold), empty state when no saved events, logged-out empty state with CTA preserved.
-- [x] `screens/ListsScreen.tsx` + `screens/ListDetailScreen.tsx` + `components/CreateListModal.tsx`: list cards (yellow-tint icon, count, chevron, trash), create-list bottom-sheet with text input + submit, premium-gated empty state, list detail with event-card list reusing the Favorites visual.
-- [x] `screens/NearMeScreen.tsx` + `components/NearMePremiumPromptModal.tsx`: radius slider (5–50km, snaps in 5s), distance-sorted event list with km badges (yellow pill), map/list toggle button, fake map placeholder with concentric radius rings + center pin + counter overlay. Premium prompt modal with yellow lock icon, copy, primary upgrade CTA, dark cancel.
-- [x] `screens/SubscriptionScreen.tsx`: header (back + title + bottom border), current-plan card with PlanBadge (yellow pill for Premium / neutral for Free), features-list card (yellow-circle checks), conditional upgrade area (Free) or "Hantera prenumeration" link (Premium). Upgrade button toggles `isPremium`.
-- [x] AppPreview state machine extended: added `profileRoute` axis (lists / list-detail / near-me / subscription) layered above tabs, mock account state (signedIn / favoriteIds / lists / isPremium), wiring for create-list + near-me-premium modals, login-prompt routing through Near Me when not signed in. Tab switch dismisses any active profileRoute. Logout clears profileRoute and downgrades to Free.
-- [x] **Discovery flagged**: ProfileScreen gained an extra "Nära mig" row (4 rows total). MobileApp's profile only has 3 rows (Saved / Lists / Subscription) and reaches Near Me from a yellow pill on Home. The Home pill isn't wired in the preview, so the profile-row is the lean entry point. Documented in commit message.
-- [x] All gates pass: `tsc --noEmit` clean, `npm run lint` clean, `npm run build` succeeds
-
-### Phase 9: Polish & verify — small (COMPLETE)
-- [x] Removed temporary `/preview/carousel-demo` page (Phase 2 verification harness no longer needed; `/preview` is the canonical surface)
-- [x] Clean rebuild after page removal — Next.js route count down from 13 to 12, no stale `.next/types/validator.ts` references
-- [x] Reduce-motion: confirmed coverage via `useReducedMotion()` on the two animation-heavy surfaces (`CategoryCarousel3D` flat fallback, `RGBBorderCard` static colour). Modal slide-up springs and `whileTap` micro-presses are within reduced-motion-friendly bounds (small transforms, brief durations) — not blanket-gated.
-- [x] `tsc --noEmit` clean
-- [x] `npm run lint` clean
-- [x] `npm run build` succeeds (12 static pages)
-- [x] Manual smoke: deferred to Nemo Sensei (he runs `npm run dev` himself for visual review; the build/types/lint sweep + per-phase commits give him the green light to verify)
-- [x] `.claude/current-work.md` updated to mark feature complete
-- [x] PR to `main` opened with summary + per-phase walkthrough
+### Phase 3: Navigation + polish — small
+- [ ] Landing page: add "Moderation" button for admin users (beside Quick Create)
+- [ ] Page metadata (`<title>`, OpenGraph) for `/admin/moderation`
+- [ ] Final `npm run lint && npx tsc --noEmit && npm run build`
+- [ ] Update `.claude/current-work.md`
 
 ## Current Position
 
 ```
-Phase: 9 of 9
-Task:  COMPLETE
-Status: Feature complete — PR opened to main
+Phase: 3 of 3
+Task:  0 of 3
+Status: Ready to execute
 ```
 
 ## Progress
 
-[████████████████████] 9/9 phases ✅
+[█████████████░░░░░░░] 2/3 phases
 
 ## Affected Repos
 
-- [ ] Backend
-- [x] Frontend
-- [ ] MobileApp (read-only reference)
+- [ ] Backend (ships GET /api/admin/reports + dismiss endpoint — tracked in Backend#74)
+- [x] Frontend (this plan)
+- [ ] MobileApp (ships report dialog — tracked in Backend#74)
 
 ## Decisions
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-05-03 | Approach A (full Framer Motion + drag fidelity) | Marketing preview must sell the *feeling* of the app — gesture-driven 3D is the wow moment |
-| 2026-05-03 | Full scope (all screens incl. Auth/Profile/Lists/Near Me) | Nemo Sensei wants a true mirror of what users see, not just discovery flow |
-| 2026-05-03 | Add `framer-motion` to deps | ~50KB gzipped is acceptable for the preview's job; alternative is hand-rolled spring math |
-| 2026-05-03 | Plan lives in Frontend repo `.planning/`, not Backend | Work is Frontend-only; Backend `.planning/STATE.md` is its own completed feature |
+| 2026-05-20 | Build types + hooks now with stubs | UI can be built and tested with mock data; wire to real endpoints when BE ships |
+| 2026-05-20 | Reuse `useDeleteEvent()` for remove action | Endpoint already exists (`DELETE /api/events/{id}`); no new BE work needed for this action |
+| 2026-05-20 | Use shadcn `AlertDialog` for confirm | Already in `src/components/ui/` — no new dependencies |
+| 2026-05-20 | No pagination in Phase 2 | Report volume will be low; add pagination later if needed |
 
 ## Cross-Repo Actions
 
-[None — pure Frontend feature. MobileApp is read-only reference for design parity.]
+- **Backend#74** must ship `GET /api/admin/reports` and `POST /api/admin/reports/{eventId}/dismiss` before the dashboard shows real data.
+- Response shape assumption: `OperationResult<ReportedEventSummaryDto[]>` (confirm with BE when endpoint is ready).
 
 ## Session Log
 
 | Date | Session | What happened |
 |------|---------|---------------|
-| 2026-05-03 | Planning | Investigated MobileApp current design (3D carousel, Spotlight, new screens), identified 9-phase roadmap, locked Approach A + Full scope + framer-motion |
-| 2026-05-03 | Phase 1 | Installed framer-motion, wired Carlito brand font via next/font/google, added Semantic colors to constants, built GodoButton/GodoCard/GodoChip/RGBBorderCard primitives. Issue #58 opened on Frontend repo. Branch `feature/preview-mobileapp-parity`. |
-| 2026-05-03 | Phase 2 | Built CategoryCarousel3D (framer-motion useMotionValue + onPan, ring-modulus index, useTransform-driven per-card transforms). Added preview/categories.ts with Swedish labels. Demo route at /preview/carousel-demo. |
-| 2026-05-03 | Phase 3 | Full rewrite of HomeScreen around the 3D carousel. Header (logo+flags+bell), greeting, search, carousel, Clear All, City+Near Me row, date pill, black Go.Do button, City modal, Calendar modal. Language toggle wired (sv/en). |
-| 2026-05-03 | Hotfix | Inline SVG flags (FlagSE, FlagGB) replace emoji 🇸🇪🇬🇧 — Windows lacks colour emoji for regional flags. Committed as `6dd857c3`. |
-| 2026-05-03 | Phase 4 | SpotlightCarousel ported (auto-rotate, crossfade, glow border, spotlight badge, color stripe). Wired to ResultsScreen (top-3 events). Provider chip ("Helsingborgs stad" / "Go.Do") on event cards. |
-| 2026-05-03 | Phase 5 | EventDetailScreen rewritten as MobileApp port: 300dp yellow brand-gradient hero, floating top-row buttons (back/heart/calendar/share with framer-motion press-spring), subcategory label, rounded sheet, inline action row (Boka/Besök/Vägbeskrivning). New CalendarConfirmModal (bottom-sheet, slide-up spring, fade backdrop). Sticky bottom CTA removed for MobileApp parity. |
-| 2026-05-03 | Phase 6 | Tab-bar navigation model. AppPreview state machine refactored: activeTab + per-tab stack + modal stack. New TabBar (Hem/Sparat/Profil) and LoginPromptModal. PhoneFrame gets bottomBar + overlay slots. Tab bar hidden on event detail. Placeholder Favorites + Profile screens drive the modal stack end-to-end. |
-| 2026-05-03 | Phase 7 | Auth screens. New LoginScreen and RegisterScreen ported from MobileApp (auth) routes — Calibri-Bold titles, dark primary buttons, inline switch links, validation. New SocialLoginButtons with brand SVG marks for Google + Apple. AppPreview gets `authRoute` axis (login/register) layered above tabs but with tab bar still visible (mirrors MobileApp `(tabs)/login.tsx` re-export). LoginPromptModal CTAs and ProfileScreen CTAs now route to the auth screens. |
-| 2026-05-03 | Phase 8 | Account & feature screens. Profile + Favorites rewritten with full signed-in fidelity (avatar, nav rows, swipe-to-remove favourites). New Lists, ListDetail, NearMe, Subscription screens with CreateListModal + NearMePremiumPromptModal. AppPreview state machine extended with `profileRoute` axis and mock account state (signedIn, favoriteIds, lists, isPremium). |
-| 2026-05-04 | Phase 9 | Polish & verify. Removed `/preview/carousel-demo` (Phase 2 harness). Clean rebuild — route count 13→12. Reduce-motion verified on the two heavy surfaces (3D carousel + RGB border). All gates green: tsc + lint + build. PR opened to main. |
+| 2026-05-20 | Planning | Investigated Backend#74 epic, found linked Frontend#48. Mapped existing patterns (quick-create admin guard, useDeleteEvent, OperationResult wrapper). Created 3-phase plan. |
+| 2026-05-20 | Phase 1 | Added ReportReason + ReportStatus enums, ReportReasonLabel map, EventReportDto, ReportedEventSummaryDto to src/types/events.ts. Created src/hooks/useReports.ts with useAdminReports + useDismissReports. All gates green. |
+| 2026-05-20 | Phase 2 | Built src/app/admin/moderation/page.tsx — admin-gated, table with 6 columns (title, report count, reason chips, AI score badge, status pill, actions), Dialog confirm for remove, skeleton/empty/error states. Used Dialog instead of AlertDialog (not in ui/). All gates green, 19 static pages. |
