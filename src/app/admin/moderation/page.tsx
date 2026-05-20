@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -146,10 +146,11 @@ export default function ModerationPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [isAdmin] = useState<boolean | null>(() => {
-    if (typeof window === "undefined") return null;
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return false;
+    if (!token) { setIsAdmin(false); return; }
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const roles =
@@ -157,11 +158,11 @@ export default function ModerationPage() {
         payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
         [];
       const roleArray = Array.isArray(roles) ? roles : [roles];
-      return roleArray.includes("Admin");
+      setIsAdmin(roleArray.includes("Admin"));
     } catch {
-      return false;
+      setIsAdmin(false);
     }
-  });
+  }, []);
 
   const [removeTarget, setRemoveTarget] = useState<{ id: string; title: string } | null>(null);
 

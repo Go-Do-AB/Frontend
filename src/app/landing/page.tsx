@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/global/Navbar";
 import { Footer } from "@/components/global/Footer";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,11 @@ function getInitialAuthState() {
 }
 
 export default function Home() {
-  const [{ isAdmin, isLoggedIn }] = useState(getInitialAuthState);
+  const [{ isAdmin, isLoggedIn }, setAuthState] = useState({ isLoggedIn: false, isAdmin: false });
+
+  useEffect(() => {
+    setAuthState(getInitialAuthState());
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col">
