@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/global/Navbar";
 import { Footer } from "@/components/global/Footer";
 import { Button } from "@/components/ui/button";
-import { CalendarPlus, Zap, List, Smartphone } from "lucide-react";
+import { CalendarPlus, Zap, List, Smartphone, Shield } from "lucide-react";
 import Link from "next/link";
 
 function getInitialAuthState() {
@@ -26,7 +26,11 @@ function getInitialAuthState() {
 }
 
 export default function Home() {
-  const [{ isAdmin, isLoggedIn }] = useState(getInitialAuthState);
+  const [{ isAdmin, isLoggedIn }, setAuthState] = useState({ isLoggedIn: false, isAdmin: false });
+
+  useEffect(() => {
+    setAuthState(getInitialAuthState());
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -63,6 +67,17 @@ export default function Home() {
                 >
                   <Zap className="mr-2 h-4 w-4" />
                   Quick Add Place
+                </Button>
+              </Link>
+            )}
+            {isAdmin && (
+              <Link href="/admin/moderation">
+                <Button
+                  variant="outline"
+                  className="w-52 h-10 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg border-black/30 bg-white/50 hover:bg-white"
+                >
+                  <Shield className="mr-2 h-4 w-4" />
+                  Moderation
                 </Button>
               </Link>
             )}

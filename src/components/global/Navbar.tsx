@@ -3,20 +3,19 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/axios";
 
-function getInitialLoggedIn() {
-  if (typeof window === "undefined") return false;
-  return !!localStorage.getItem("accessToken");
-}
-
 export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(getInitialLoggedIn);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("accessToken"));
+  }, []);
   const router = useRouter();
 
   // logout

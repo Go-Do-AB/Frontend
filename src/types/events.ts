@@ -152,3 +152,54 @@ export type OperationResult<T> = {
   data: T;
   errors: string[];
 };
+
+// ---- Moderation / Event Reports ----
+
+// Numeric values match the BE Domain.Enums.ReportReason
+export enum ReportReason {
+  RacistContent = 1,
+  HomophobicTransphobic = 2,
+  Discriminatory = 3,
+  ViolentOrThreatening = 4,
+  SexuallyInappropriate = 5,
+  MisleadingInformation = 6,
+  SpamOrFraud = 7,
+  Other = 8,
+}
+
+export const ReportReasonLabel: Record<ReportReason, string> = {
+  [ReportReason.RacistContent]: "Rasistiskt innehåll",
+  [ReportReason.HomophobicTransphobic]: "Homofobiskt / transfobiskt",
+  [ReportReason.Discriminatory]: "Diskriminerande",
+  [ReportReason.ViolentOrThreatening]: "Våldsamt eller hotfullt",
+  [ReportReason.SexuallyInappropriate]: "Sexuellt olämpligt",
+  [ReportReason.MisleadingInformation]: "Vilseledande information",
+  [ReportReason.SpamOrFraud]: "Spam eller bedrägeri",
+  [ReportReason.Other]: "Annat",
+};
+
+// Numeric values match the BE Domain.Enums.EventModerationStatus
+export enum EventModerationStatus {
+  None = 0,
+  Clean = 1,
+  NeedsReview = 2,
+  Blocked = 3,
+}
+
+export type ReportDetailDto = {
+  id: string;
+  reportedById: string;
+  reasons: ReportReason[];
+  description?: string;
+  createdAt: string;
+};
+
+export type ReportedEventSummaryDto = {
+  eventId: string;
+  eventTitle: string;
+  isActive: boolean;
+  reportCount: number;
+  moderationStatus: EventModerationStatus;
+  aiModerationScore?: number;
+  pendingReports: ReportDetailDto[];
+};

@@ -61,7 +61,6 @@ export default function EditEventPage() {
     if (eventData?.isSuccess && eventData.data) {
       const formData = eventDtoToFormData(eventData.data);
       form.reset(formData);
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- synchronizing form readiness after external data load
       setIsFormReady(true);
     }
   }, [eventData, form]);
