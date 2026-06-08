@@ -104,7 +104,7 @@ export default function OrganizerRegisterPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-yellow-400 text-black">
+    <main className="min-h-screen flex flex-col bg-[#F3C10E] text-black">
       <section className="flex flex-1 items-center justify-center px-6 md:px-10 py-14 md:py-20 relative">
         <div className="hidden md:block absolute left-20 top-1/2 -translate-y-1/2">
           <h2 className="text-6xl font-extrabold mb-4">Go.Do.</h2>
