@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/axios";
 
 export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
@@ -20,14 +19,8 @@ export function Navbar() {
 
   // logout
   const onLogout = () => {
-    try {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("token");
-    } catch {}
-    try {
-      const common = api.defaults.headers.common as Record<string, string | undefined>;
-      delete common.Authorization;
-    } catch {}
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     router.replace("/login");
   };
@@ -66,6 +59,11 @@ export function Navbar() {
           )}
 
           {/* logout button — only when logged in */}
+          {isLoggedIn && (
+            <Button variant="outline" size="sm" onClick={() => router.push("/profile")}>
+              Profile
+            </Button>
+          )}
           {isLoggedIn && (
             <Button variant="outline" size="sm" onClick={onLogout}>
               Log out
