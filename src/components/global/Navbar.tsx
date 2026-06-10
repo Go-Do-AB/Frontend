@@ -34,7 +34,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="w-full bg-[#F3C10E] p-4">
+    <header className="w-full bg-brand p-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left: Logo + Text */}
         <Link href="/landing" className="flex items-center gap-3">

@@ -120,7 +120,7 @@ export default function EditEventPage() {
   // Loading state
   if (isLoadingEvent || !isFormReady) {
     return (
-      <main className="min-h-screen bg-[#F3C10E] text-black flex flex-col">
+      <main className="min-h-screen bg-brand text-black flex flex-col">
         <Navbar />
         <section className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
@@ -135,7 +135,7 @@ export default function EditEventPage() {
   // Error state
   if (eventError || !eventData?.isSuccess) {
     return (
-      <main className="min-h-screen bg-[#F3C10E] text-black flex flex-col">
+      <main className="min-h-screen bg-brand text-black flex flex-col">
         <Navbar />
         <section className="flex-1 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow text-center">
@@ -157,7 +157,7 @@ export default function EditEventPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F3C10E] text-black flex flex-col">
+    <main className="min-h-screen bg-brand text-black flex flex-col">
       <Navbar />
       <section className="flex-1 flex flex-col items-center px-6 py-10">
         <div className="w-full max-w-xl mb-4">

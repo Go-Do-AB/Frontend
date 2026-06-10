@@ -64,12 +64,11 @@ export default function CreateEventPage() {
   const totalSteps = steps.length;
   const lastIndex = totalSteps - 1;
 
-  const nextStep = () =>
-    setStep((s) => {
-      const next = Math.min(s + 1, lastIndex);
-      setMaxStep((m) => Math.max(m, next));
-      return next;
-    });
+  const nextStep = () => {
+    const next = Math.min(step + 1, lastIndex);
+    setStep(next);
+    setMaxStep((m) => Math.max(m, next));
+  };
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = (data: CreateEventFormData) => {
@@ -118,7 +117,7 @@ export default function CreateEventPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F3C10E] text-black flex flex-col">
+    <main className="min-h-screen bg-brand text-black flex flex-col">
       <Navbar />
       <section className="flex-1 flex flex-col items-center px-6 py-10">
         <div className="w-full max-w-xl mb-4">

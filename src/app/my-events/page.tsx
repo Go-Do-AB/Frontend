@@ -115,7 +115,7 @@ export default function MyEventsPage() {
 
   if (!userId) {
     return (
-      <main className="min-h-screen bg-[#F3C10E] text-black flex flex-col">
+      <main className="min-h-screen bg-brand text-black flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin" />
@@ -125,7 +125,7 @@ export default function MyEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F3C10E] text-black flex flex-col">
+    <main className="min-h-screen bg-brand text-black flex flex-col">
       <Navbar />
 
       <section className="flex-1 px-6 py-10 max-w-6xl mx-auto w-full">

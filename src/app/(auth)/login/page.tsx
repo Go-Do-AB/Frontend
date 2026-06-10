@@ -59,7 +59,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#F3C10E] text-black">
+    <main className="min-h-screen flex flex-col bg-brand text-black">
       <section className="flex flex-1 flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 px-4 sm:px-8 lg:px-16 py-10 lg:py-20">
         {/* Branding — stacks above card on mobile, sits left on desktop */}
         <div className="text-center lg:text-left shrink-0">
@@ -133,7 +133,7 @@ export default function LoginPage() {
               <div className="w-full pt-2 border-t border-black/10">
                 <Link
                   href="/preview"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#F3C10E] text-black text-sm font-semibold hover:brightness-95 transition-colors"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-brand text-black text-sm font-semibold hover:brightness-95 transition-colors"
                 >
                   See the app in action
                   <span aria-hidden="true">&rarr;</span>
