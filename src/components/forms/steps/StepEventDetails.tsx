@@ -3,9 +3,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Controller, FieldErrors, UseFormRegister, Control } from "react-hook-form";
+import { Controller, FieldErrors, UseFormRegister, Control, useFormContext } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { categoryOptions, filterOptions, subcategoriesMap, CATEGORY_COLORS } from "@/lib/content/contentText";
 
 interface StepDetailsProps {
@@ -18,6 +18,23 @@ const MAX_CATEGORIES = 3;
 
 export function StepEventDetails({ register, control, errors }: StepDetailsProps) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [orgNrLocked, setOrgNrLocked] = useState(false);
+  const { setValue, clearErrors } = useFormContext<FormData>();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1])) as Record<string, unknown>;
+      const orgNr = payload.organisationNumber as string | undefined;
+      if (orgNr) {
+        setValue("organisationNumber", orgNr, { shouldValidate: false, shouldDirty: false });
+        clearErrors("organisationNumber");
+        setOrgNrLocked(true);
+      }
+    } catch {}
+  }, [setValue, clearErrors]);
 
   const toggleSubcategory = (
     subFieldValue: Record<number, number[]> | undefined,
@@ -57,7 +74,15 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         <Label className="py-2 block">
           Organisation number <span className="text-red-500">*</span>
         </Label>
-        <Input placeholder="XXXXXX-XXXX" {...register("organisationNumber")} />
+        <Input
+          placeholder="XXXXXX-XXXX"
+          {...register("organisationNumber")}
+          readOnly={orgNrLocked}
+          className={orgNrLocked ? "bg-gray-100 cursor-default select-none" : ""}
+        />
+        {orgNrLocked && (
+          <p className="text-xs text-muted-foreground mt-1">Auto-filled from your account</p>
+        )}
         {errors.organisationNumber && (
           <p className="text-red-500 text-sm">{errors.organisationNumber.message}</p>
         )}
@@ -272,7 +297,9 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
 
       {/* Description & URLs */}
       <div>
-        <Label className="py-2 block">Description</Label>
+        <Label className="py-2 block">
+          Description <span className="text-red-500">*</span>
+        </Label>
         <Textarea placeholder="Event Description" {...register("description")} />
         {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
       </div>

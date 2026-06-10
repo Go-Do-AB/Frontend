@@ -10,7 +10,7 @@ export const createEventSchema = z.object({
     .regex(ORGNR_REGEX, "Use format XXXXXX-XXXX")
     .refine(isValidSwedishOrgNr, "Invalid organisation number (checksum)"),
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
   categories: z.array(z.number()).min(1, "Please select at least one category"),
   subcategories: z.record(z.number(), z.array(z.number())).optional(),
   filters: z.array(z.number()).min(1, "Please select at least one category").optional(),
