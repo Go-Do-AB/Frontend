@@ -29,23 +29,11 @@ import {
 
 import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import type { EventDto } from "@/types/events";
+import { getStoredJwtPayload, getUserIdFromPayload } from "@/lib/jwt";
 
 function getUserIdFromToken(): string | null {
-  if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("accessToken");
-  if (!token) return null;
-
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return (
-      payload.sub ||
-      payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ||
-      payload.nameid ||
-      null
-    );
-  } catch {
-    return null;
-  }
+  const payload = getStoredJwtPayload();
+  return payload ? getUserIdFromPayload(payload) : null;
 }
 
 export default function MyEventsPage() {
