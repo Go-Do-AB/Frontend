@@ -237,8 +237,8 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
           name="filters"
           control={control}
           render={({ field }) => (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {filterOptions.map(({ code, label, icon }) => {
+            <div className="flex flex-wrap gap-2">
+              {filterOptions.map(({ code, label }) => {
                 const isSelected = (field.value ?? []).includes(code);
 
                 const toggle = () => {
@@ -254,14 +254,13 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                     type="button"
                     onClick={toggle}
                     className={cn(
-                      "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border transition-all text-sm font-medium",
+                      "px-4 py-2 rounded-full border text-sm font-medium transition-all",
                       isSelected
-                        ? "bg-yellow-400 text-black border-yellow-600"
+                        ? "bg-[#F3C10E] text-black border-[#F3C10E]"
                         : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                     )}
                   >
-                    {icon}
-                    <span className="text-center text-xs">{label}</span>
+                    {label}
                   </button>
                 );
               })}

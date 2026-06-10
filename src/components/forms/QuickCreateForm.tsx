@@ -232,21 +232,20 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
 
           <div className="space-y-4">
             <Label>Select Filters (optional)</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="flex flex-wrap gap-2">
               {filterOptions.map((filter) => (
                 <Button
                   key={filter.code}
                   type="button"
                   variant={selectedFilters.includes(filter.code) ? "default" : "outline"}
                   onClick={() => handleFilterToggle(filter.code)}
-                  className={`h-auto py-3 flex flex-col items-center gap-1 ${
+                  className={`rounded-full px-4 py-2 text-sm font-medium h-auto ${
                     selectedFilters.includes(filter.code)
-                      ? "bg-black text-white"
+                      ? "bg-black text-white border-black"
                       : "border-black/20 hover:bg-gray-100"
                   }`}
                 >
-                  {filter.icon}
-                  <span className="text-xs">{filter.label}</span>
+                  {filter.label}
                 </Button>
               ))}
             </div>
