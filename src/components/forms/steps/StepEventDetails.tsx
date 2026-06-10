@@ -6,13 +6,15 @@ import { cn } from "@/lib/utils";
 import { Controller, FieldErrors, UseFormRegister, Control } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
 import { useState } from "react";
-import { categoryOptions, filterOptions, subcategoriesMap } from "@/lib/content/contentText";
+import { categoryOptions, filterOptions, subcategoriesMap, CATEGORY_COLORS } from "@/lib/content/contentText";
 
 interface StepDetailsProps {
   register: UseFormRegister<FormData>;
   control: Control<FormData>;
   errors: FieldErrors<FormData>;
 }
+
+const MAX_CATEGORIES = 3;
 
 export function StepEventDetails({ register, control, errors }: StepDetailsProps) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
@@ -74,6 +76,9 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         <Label className="py-2 block">
           Select Categories <span className="text-red-500">*</span>
         </Label>
+        <p className="text-xs text-muted-foreground mb-3">
+          Max {MAX_CATEGORIES} categories — click a selected category to open subcategories
+        </p>
         <Controller
           name="categories"
           control={control}
@@ -81,107 +86,145 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
             <Controller
               name="subcategories"
               control={control}
-              render={({ field: subField }) => (
-                <div className="flex flex-col space-y-4">
-                  {Array.from({ length: Math.ceil(categoryOptions.length / 4) }).map(
-                    (_, rowIdx) => {
-                      const row = categoryOptions.slice(rowIdx * 4, rowIdx * 4 + 4);
-                      const openInThisRow = row.some((cat) => cat.code === openDropdown);
+              render={({ field: subField }) => {
+                const selectedCount = (catField.value ?? []).length;
+                const atLimit = selectedCount >= MAX_CATEGORIES;
 
-                      return (
-                        <div key={rowIdx} className="space-y-4">
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            {row.map(({ code, label, icon: Icon }) => {
-                              const isSelected = (catField.value ?? []).includes(code);
+                return (
+                  <div className="flex flex-col space-y-4">
+                    {Array.from({ length: Math.ceil(categoryOptions.length / 4) }).map(
+                      (_, rowIdx) => {
+                        const row = categoryOptions.slice(rowIdx * 4, rowIdx * 4 + 4);
+                        const openInThisRow = row.some((cat) => cat.code === openDropdown);
 
-                              const toggleCategory = () => {
-                                const current = catField.value ?? [];
-                                const newVal = isSelected
-                                  ? current.filter((c) => c !== code)
-                                  : [...current, code];
-                                catField.onChange(newVal);
-                                setOpenDropdown((prev) => (prev === code ? null : code));
-                              };
+                        return (
+                          <div key={rowIdx} className="space-y-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                              {row.map(({ code, label, icon: Icon }) => {
+                                const isSelected = (catField.value ?? []).includes(code);
 
-                              return (
-                                <button
-                                  key={code}
-                                  type="button"
-                                  onClick={toggleCategory}
-                                  className={cn(
-                                    "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border transition-all",
-                                    isSelected
-                                      ? "bg-yellow-400 text-black border-yellow-600"
-                                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                                  )}
-                                >
-                                  <Icon className="w-6 h-6 mb-2" />
-                                  <span className="text-xs font-medium text-center">{label}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          {openInThisRow && openDropdown !== null && (
-                            <div className="w-full bg-white border rounded-lg p-4 shadow">
-                              <p className="text-sm font-semibold mb-2 text-gray-700">
-                                {categoryOptions.find((c) => c.code === openDropdown)?.label}{" "}
-                                Subcategories
-                              </p>
-                              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto scroll-smooth">
-                                {subcategoriesMap[openDropdown]?.map(
-                                  ({ code: subCode, label: subLabel, icon: SubIcon }) => {
-                                    const selected =
-                                      subField.value?.[openDropdown]?.includes(subCode) ?? false;
-                                    return (
-                                      <button
-                                        key={subCode}
-                                        type="button"
-                                        onClick={() =>
-                                          toggleSubcategory(
-                                            subField.value,
-                                            subField.onChange,
-                                            openDropdown,
-                                            subCode
-                                          )
-                                        }
-                                        className={cn(
-                                          "flex flex-col items-center justify-center w-20 h-20 text-xs border rounded-lg transition p-2",
-                                          selected
-                                            ? "bg-yellow-300 border-yellow-500"
-                                            : "bg-white hover:bg-gray-100 border-gray-300"
-                                        )}
-                                      >
-                                        <SubIcon className="w-4 h-4 mb-1" />
-                                        <span className="text-center">{subLabel}</span>
-                                      </button>
-                                    );
+                                const handleClick = () => {
+                                  if (isSelected) {
+                                    if (openDropdown === code) {
+                                      // Second click on open tile → deselect + close
+                                      catField.onChange(
+                                        (catField.value ?? []).filter((c) => c !== code)
+                                      );
+                                      setOpenDropdown(null);
+                                    } else {
+                                      // First click on selected tile → open dropdown
+                                      setOpenDropdown(code);
+                                    }
+                                  } else if (!atLimit) {
+                                    catField.onChange([...(catField.value ?? []), code]);
+                                    setOpenDropdown(code);
                                   }
-                                )}
-                              </div>
-                              <div className="flex justify-center mt-4">
-                                <Button
-                                  variant="outline"
-                                  size="lg"
-                                  className="text-sm font-semibold px-6 py-2 border-yellow-500 text-yellow-700 hover:bg-yellow-100"
-                                  onClick={() =>
-                                    toggleAllSubs(subField.value, subField.onChange, openDropdown)
-                                  }
-                                >
-                                  {subField.value?.[openDropdown]?.length ===
-                                  subcategoriesMap[openDropdown]?.length
-                                    ? "Unselect All"
-                                    : "Select All"}
-                                </Button>
-                              </div>
+                                };
+
+                                const color = CATEGORY_COLORS[code] ?? "#888888";
+                                return (
+                                  <button
+                                    key={code}
+                                    type="button"
+                                    onClick={handleClick}
+                                    disabled={!isSelected && atLimit}
+                                    style={{
+                                      backgroundColor: color,
+                                      boxShadow: isSelected
+                                        ? `0 0 0 3px white, 0 0 0 6px ${color}`
+                                        : "none",
+                                      opacity: !isSelected && atLimit ? 0.35 : 1,
+                                    }}
+                                    className={cn(
+                                      "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border-0 transition-all text-white",
+                                      !isSelected && atLimit ? "cursor-not-allowed" : ""
+                                    )}
+                                  >
+                                    <Icon className="w-6 h-6 mb-2" />
+                                    <span className="text-xs font-medium text-center">
+                                      {label}
+                                    </span>
+                                  </button>
+                                );
+                              })}
                             </div>
-                          )}
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              )}
+
+                            {openInThisRow && openDropdown !== null && (
+                              <div className="w-full bg-white border rounded-lg p-4 shadow">
+                                <p className="text-sm font-semibold mb-2 text-gray-700">
+                                  {categoryOptions.find((c) => c.code === openDropdown)?.label}{" "}
+                                  Subcategories
+                                </p>
+                                <div className="flex flex-wrap gap-3 max-h-48 overflow-y-auto scroll-smooth p-1.5">
+                                  {subcategoriesMap[openDropdown]?.map(
+                                    ({ code: subCode, label: subLabel }) => {
+                                      const selected =
+                                        subField.value?.[openDropdown]?.includes(subCode) ?? false;
+                                      const catColor = CATEGORY_COLORS[openDropdown] ?? "#888888";
+                                      return (
+                                        <button
+                                          key={subCode}
+                                          type="button"
+                                          onClick={() =>
+                                            toggleSubcategory(
+                                              subField.value,
+                                              subField.onChange,
+                                              openDropdown,
+                                              subCode
+                                            )
+                                          }
+                                          style={{
+                                            backgroundColor: catColor,
+                                            boxShadow: selected
+                                              ? `0 0 0 2px white, 0 0 0 4px ${catColor}`
+                                              : "none",
+                                            opacity: selected ? 1 : 0.65,
+                                          }}
+                                          className={cn(
+                                            "px-3 py-1.5 text-xs border-0 rounded-full transition text-white",
+                                            selected ? "font-medium" : ""
+                                          )}
+                                        >
+                                          {subLabel}
+                                        </button>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                                <div className="flex justify-center mt-4">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="lg"
+                                    className="text-sm font-semibold px-6 py-2 border-yellow-500 text-yellow-700 hover:bg-yellow-100"
+                                    onClick={() =>
+                                      toggleAllSubs(
+                                        subField.value,
+                                        subField.onChange,
+                                        openDropdown
+                                      )
+                                    }
+                                  >
+                                    {subField.value?.[openDropdown]?.length ===
+                                    subcategoriesMap[openDropdown]?.length
+                                      ? "Unselect All"
+                                      : "Select All"}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                    )}
+                    {atLimit && (
+                      <p className="text-xs text-amber-600 font-medium">
+                        Max {MAX_CATEGORIES} categories selected — deselect one to choose another
+                      </p>
+                    )}
+                  </div>
+                );
+              }}
             />
           )}
         />
