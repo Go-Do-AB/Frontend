@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/axios";
@@ -33,18 +34,13 @@ export function Navbar() {
   };
 
   return (
-    <header className="w-full border-b bg-white p-4">
+    <header className="w-full bg-brand p-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left: Logo + Text */}
-        <div className="flex items-center gap-3">
+        <Link href="/landing" className="flex items-center gap-3">
           <Image src="/images/godologo.png" alt="Logo" width={100} height={100} />
-          <div>
-            <h1 className="text-xl font-semibold border-b-2 border-black inline-block">Go.Do.</h1>
-            <p className="text-sm italic text-gray-600">
-              More to do. <span className="text-gray-500">Close to you.</span>
-            </p>
-          </div>
-        </div>
+          <h1 className="text-xl font-semibold border-b-2 border-black inline-block">Go.Do.</h1>
+        </Link>
 
         {/* Right: Search */}
         <div className="flex items-center gap-2">

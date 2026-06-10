@@ -62,7 +62,7 @@ function ResetPasswordInner() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-yellow-400 text-black">
+    <main className="min-h-screen flex flex-col bg-brand text-black">
       <section className="flex flex-1 flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 px-4 sm:px-8 lg:px-16 py-10 lg:py-20">
         <div className="text-center lg:text-left shrink-0">
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-2 lg:mb-4">Go.Do.</h2>
