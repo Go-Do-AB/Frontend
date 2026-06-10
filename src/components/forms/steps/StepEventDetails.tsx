@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Controller, FieldErrors, UseFormRegister, Control } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { categoryOptions, filterOptions, subcategoriesMap, CATEGORY_COLORS } from "@/lib/content/contentText";
 
 interface StepDetailsProps {
@@ -102,49 +102,59 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                               {row.map(({ code, label, icon: Icon }) => {
                                 const isSelected = (catField.value ?? []).includes(code);
+                                const color = CATEGORY_COLORS[code] ?? "#888888";
 
                                 const handleClick = () => {
                                   if (isSelected) {
-                                    if (openDropdown === code) {
-                                      // Second click on open tile → deselect + close
-                                      catField.onChange(
-                                        (catField.value ?? []).filter((c) => c !== code)
-                                      );
-                                      setOpenDropdown(null);
-                                    } else {
-                                      // First click on selected tile → open dropdown
-                                      setOpenDropdown(code);
-                                    }
+                                    // Toggle dropdown only — never deselect on tile click
+                                    setOpenDropdown(openDropdown === code ? null : code);
                                   } else if (!atLimit) {
                                     catField.onChange([...(catField.value ?? []), code]);
                                     setOpenDropdown(code);
                                   }
                                 };
 
-                                const color = CATEGORY_COLORS[code] ?? "#888888";
+                                const handleDeselect = (e: MouseEvent<HTMLButtonElement>) => {
+                                  e.stopPropagation();
+                                  catField.onChange(
+                                    (catField.value ?? []).filter((c) => c !== code)
+                                  );
+                                  if (openDropdown === code) setOpenDropdown(null);
+                                };
+
                                 return (
-                                  <button
-                                    key={code}
-                                    type="button"
-                                    onClick={handleClick}
-                                    disabled={!isSelected && atLimit}
-                                    style={{
-                                      backgroundColor: color,
-                                      boxShadow: isSelected
-                                        ? `0 0 0 3px white, 0 0 0 6px ${color}`
-                                        : "none",
-                                      opacity: !isSelected && atLimit ? 0.35 : 1,
-                                    }}
-                                    className={cn(
-                                      "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border-0 transition-all text-white",
-                                      !isSelected && atLimit ? "cursor-not-allowed" : ""
+                                  <div key={code} className="relative w-full">
+                                    <button
+                                      type="button"
+                                      onClick={handleClick}
+                                      disabled={!isSelected && atLimit}
+                                      style={{
+                                        backgroundColor: color,
+                                        boxShadow: isSelected
+                                          ? `0 0 0 3px white, 0 0 0 6px ${color}`
+                                          : "none",
+                                        opacity: !isSelected && atLimit ? 0.35 : 1,
+                                      }}
+                                      className={cn(
+                                        "flex flex-col items-center justify-center p-4 rounded-xl w-full h-24 border-0 transition-all text-white",
+                                        !isSelected && atLimit ? "cursor-not-allowed" : ""
+                                      )}
+                                    >
+                                      <Icon className="w-6 h-6 mb-2" />
+                                      <span className="text-xs font-medium text-center">
+                                        {label}
+                                      </span>
+                                    </button>
+                                    {isSelected && (
+                                      <button
+                                        type="button"
+                                        onClick={handleDeselect}
+                                        className="absolute top-1 right-1 w-5 h-5 bg-white/30 rounded-full flex items-center justify-center text-white text-xs leading-none hover:bg-white/50 transition-colors"
+                                      >
+                                        ✕
+                                      </button>
                                     )}
-                                  >
-                                    <Icon className="w-6 h-6 mb-2" />
-                                    <span className="text-xs font-medium text-center">
-                                      {label}
-                                    </span>
-                                  </button>
+                                  </div>
                                 );
                               })}
                             </div>
@@ -197,13 +207,14 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                                     variant="outline"
                                     size="lg"
                                     className="text-sm font-semibold px-6 py-2 border-yellow-500 text-yellow-700 hover:bg-yellow-100"
-                                    onClick={() =>
+                                    onClick={() => {
                                       toggleAllSubs(
                                         subField.value,
                                         subField.onChange,
                                         openDropdown
-                                      )
-                                    }
+                                      );
+                                      setOpenDropdown(null);
+                                    }}
                                   >
                                     {subField.value?.[openDropdown]?.length ===
                                     subcategoriesMap[openDropdown]?.length
@@ -216,11 +227,6 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                           </div>
                         );
                       }
-                    )}
-                    {atLimit && (
-                      <p className="text-xs text-amber-600 font-medium">
-                        Max {MAX_CATEGORIES} categories selected — deselect one to choose another
-                      </p>
                     )}
                   </div>
                 );
