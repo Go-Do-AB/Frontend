@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 import { Controller, FieldErrors, UseFormRegister, Control } from "react-hook-form";
 import { FormData } from "@/hooks/useEventForm";
 import { useState } from "react";
-import { categoryOptions, filterOptions, subcategoriesMap } from "@/lib/content/contentText";
-import { CATEGORY_COLORS } from "@/components/preview/constants";
+import { categoryOptions, filterOptions, subcategoriesMap, CATEGORY_COLORS } from "@/lib/content/contentText";
 
 interface StepDetailsProps {
   register: UseFormRegister<FormData>;
@@ -78,7 +77,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
           Select Categories <span className="text-red-500">*</span>
         </Label>
         <p className="text-xs text-muted-foreground mb-3">
-          Max {MAX_CATEGORIES} kategorier — klicka på en vald kategori för att öppna underkategorier
+          Max {MAX_CATEGORIES} categories — click a selected category to open subcategories
         </p>
         <Controller
           name="categories"
@@ -122,6 +121,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                                   }
                                 };
 
+                                const color = CATEGORY_COLORS[code] ?? "#888888";
                                 return (
                                   <button
                                     key={code}
@@ -129,9 +129,9 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                                     onClick={handleClick}
                                     disabled={!isSelected && atLimit}
                                     style={{
-                                      backgroundColor: CATEGORY_COLORS[code],
+                                      backgroundColor: color,
                                       boxShadow: isSelected
-                                        ? `0 0 0 3px white, 0 0 0 6px ${CATEGORY_COLORS[code]}`
+                                        ? `0 0 0 3px white, 0 0 0 6px ${color}`
                                         : "none",
                                       opacity: !isSelected && atLimit ? 0.35 : 1,
                                     }}
@@ -160,7 +160,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                                     ({ code: subCode, label: subLabel }) => {
                                       const selected =
                                         subField.value?.[openDropdown]?.includes(subCode) ?? false;
-                                      const catColor = CATEGORY_COLORS[openDropdown];
+                                      const catColor = CATEGORY_COLORS[openDropdown] ?? "#888888";
                                       return (
                                         <button
                                           key={subCode}
@@ -219,7 +219,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                     )}
                     {atLimit && (
                       <p className="text-xs text-amber-600 font-medium">
-                        Max {MAX_CATEGORIES} kategorier valda — avmarkera en för att välja en annan
+                        Max {MAX_CATEGORIES} categories selected — deselect one to choose another
                       </p>
                     )}
                   </div>

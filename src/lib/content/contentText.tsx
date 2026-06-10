@@ -86,3 +86,15 @@ export const filterOptions: { code: number; label: string; icon: JSX.Element }[]
   { code: 1005, label: "Seniorer", icon: <Glasses className="w-6 h-6 mb-2" /> },
   { code: 1006, label: "Rullstolsanpassat", icon: <Accessibility className="w-6 h-6 mb-2" /> },
 ];
+
+// Category tile colors — one per category code, mirrors CategoryDark in mobile theme.ts
+export const CATEGORY_COLORS: Record<number, string> = {
+  1: "#FF0000", // Events — Red
+  2: "#7030A0", // Sports — Purple
+  3: "#000000", // Entertainment — Black
+  4: "#3333CC", // Culture — Blue
+  5: "#7F7F7F", // Adventure — Gray
+  6: "#ED7D31", // Learn — Orange
+  7: "#FF3399", // Health — Pink
+  8: "#00B050", // Fun for Kids — Green
+};
