@@ -39,6 +39,7 @@ const steps = [
 
 export default function CreateEventPage() {
   const [step, setStep] = useState(0);
+  const [maxStep, setMaxStep] = useState(0);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<CreateEventFormData | null>(null);
 
@@ -55,6 +56,7 @@ export default function CreateEventPage() {
   const handleCreateAnother = () => {
     form.reset(defaultFormValues);
     setStep(0);
+    setMaxStep(0);
     setFormSubmitted(false);
     setSubmittedData(null);
   };
@@ -62,7 +64,11 @@ export default function CreateEventPage() {
   const totalSteps = steps.length;
   const lastIndex = totalSteps - 1;
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, lastIndex));
+  const nextStep = () => {
+    const next = Math.min(step + 1, lastIndex);
+    setStep(next);
+    setMaxStep((m) => Math.max(m, next));
+  };
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = (data: CreateEventFormData) => {
@@ -111,7 +117,7 @@ export default function CreateEventPage() {
   };
 
   return (
-    <main className="min-h-screen bg-yellow-400 text-black flex flex-col">
+    <main className="min-h-screen bg-brand text-black flex flex-col">
       <Navbar />
       <section className="flex-1 flex flex-col items-center px-6 py-10">
         <div className="w-full max-w-xl mb-4">
@@ -127,13 +133,17 @@ export default function CreateEventPage() {
         <div className="w-full max-w-xl mb-6">
           <div className="flex justify-between text-sm font-medium mb-2">
             {steps.map((stepObj, i) => (
-              <span
+              <button
                 key={i}
-                className={`flex items-center gap-1 ${i <= step ? "text-black" : "text-gray-500"}`}
+                type="button"
+                onClick={() => i !== step && i <= maxStep && setStep(i)}
+                className={`flex items-center gap-1 ${
+                  i <= maxStep ? "text-black" : "text-gray-500"
+                } ${i !== step && i <= maxStep ? "cursor-pointer hover:underline" : "cursor-default"}`}
               >
                 {stepObj.icon}
                 {stepObj.label}
-              </span>
+              </button>
             ))}
           </div>
           <div className="h-2 bg-gray-300 rounded-full">
