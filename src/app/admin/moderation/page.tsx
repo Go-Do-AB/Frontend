@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAdminReports, useDismissReports } from "@/hooks/useReports";
 import { useDeleteEvent } from "@/hooks/useEvents";
+import { getStoredJwtPayload, getRolesFromPayload } from "@/lib/jwt";
 import {
   ReportedEventSummaryDto,
   ReportReason,
@@ -156,19 +157,8 @@ export default function ModerationPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) { setIsAdmin(false); return; }
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const roles =
-        payload.role ||
-        payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
-        [];
-      const roleArray = Array.isArray(roles) ? roles : [roles];
-      setIsAdmin(roleArray.includes("Admin"));
-    } catch {
-      setIsAdmin(false);
-    }
+    const payload = getStoredJwtPayload();
+    setIsAdmin(payload ? getRolesFromPayload(payload).includes("Admin") : false);
   }, []);
 
   const [removeTarget, setRemoveTarget] = useState<{ id: string; title: string } | null>(null);
