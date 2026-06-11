@@ -30,7 +30,7 @@ interface EventFormStepperProps {
 
 // per-step fields to validate
 const stepFields: Record<number, (keyof CreateEventFormData)[]> = {
-  0: ["title", "organiser", "categories", "organisationNumber"],
+  0: ["title", "organiser", "categories", "description"],
   1: ["streetName", "city", "postalCode"],
   2: ["startDate", "endDate", "scheduleStartTime", "scheduleEndTime"], // ✅ updated
   3: ["spotlight", "spotlightStartDate", "spotlightEndDate"],
