@@ -6,23 +6,14 @@ import { Footer } from "@/components/global/Footer";
 import { Button } from "@/components/ui/button";
 import { CalendarPlus, Zap, List, Smartphone, Shield } from "lucide-react";
 import Link from "next/link";
+import { getStoredJwtPayload, getRolesFromPayload } from "@/lib/jwt";
 
 function getInitialAuthState() {
-  if (typeof window === "undefined") return { isLoggedIn: false, isAdmin: false };
-  const token = localStorage.getItem("accessToken");
-  if (!token) return { isLoggedIn: false, isAdmin: false };
+  const payload = getStoredJwtPayload();
+  if (!payload) return { isLoggedIn: false, isAdmin: false };
 
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const roles =
-      payload.role ||
-      payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
-      [];
-    const roleArray = Array.isArray(roles) ? roles : [roles];
-    return { isLoggedIn: true, isAdmin: roleArray.includes("Admin") };
-  } catch {
-    return { isLoggedIn: false, isAdmin: false };
-  }
+  const roles = getRolesFromPayload(payload);
+  return { isLoggedIn: true, isAdmin: roles.includes("Admin") };
 }
 
 export default function Home() {
@@ -36,7 +27,7 @@ export default function Home() {
     <main className="min-h-screen flex flex-col">
       <Navbar />
 
-      <section className="flex-1 flex justify-between items-center bg-yellow-400 text-black px-10 py-20 relative">
+      <section className="flex-1 flex justify-between items-center bg-brand text-black px-10 py-20 relative">
         {/* Left: Brand */}
         <div>
           <h2 className="text-6xl font-extrabold mb-4">Go.Do.</h2>

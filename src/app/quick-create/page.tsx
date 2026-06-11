@@ -20,6 +20,7 @@ import { Navbar } from "@/components/global/Navbar";
 import { QuickCreateForm } from "@/components/forms/QuickCreateForm";
 import { useQuickCreateEvent } from "@/hooks/useQuickCreateEvent";
 import { Button } from "@/components/ui/button";
+import { getStoredJwtPayload, getRolesFromPayload } from "@/lib/jwt";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   quickCreateSchema,
@@ -35,19 +36,8 @@ export default function QuickCreatePage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) { setIsAdmin(false); return; }
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const roles =
-        payload.role ||
-        payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
-        [];
-      const roleArray = Array.isArray(roles) ? roles : [roles];
-      setIsAdmin(roleArray.includes("Admin"));
-    } catch {
-      setIsAdmin(false);
-    }
+    const payload = getStoredJwtPayload();
+    setIsAdmin(payload ? getRolesFromPayload(payload).includes("Admin") : false);
   }, []);
 
   const form = useForm<QuickCreateFormData>({
