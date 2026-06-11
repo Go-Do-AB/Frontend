@@ -136,17 +136,8 @@ export const BRAND = {
   neutral900: Neutral[900],
 } as const;
 
-// ── Category dark colors (matches CategoryDark in theme.ts) ─────────
-export const CATEGORY_COLORS: Record<number, string> = {
-  1: "#FF0000", // Events — Red
-  2: "#7030A0", // Sports — Purple
-  3: "#000000", // Entertainment — Black
-  4: "#3333CC", // Culture — Blue
-  5: "#7F7F7F", // Adventure — Gray
-  6: "#ED7D31", // Learn — Orange
-  7: "#FF3399", // Health — Pink
-  8: "#00B050", // Fun for Kids — Green
-};
+// ── Category dark colors — source of truth moved to contentText.tsx ──
+export { CATEGORY_COLORS } from "@/lib/content/contentText";
 
 // ── Category tints (matches CategoryTints in theme.ts) ──────────────
 export const CATEGORY_TINTS: Record<number, string> = {
