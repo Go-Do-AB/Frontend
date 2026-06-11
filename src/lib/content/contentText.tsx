@@ -1,6 +1,5 @@
 import {
   CalendarDays,
-  Users,
   Dribbble,
   Mountain,
   Film,
@@ -8,13 +7,7 @@ import {
   BookOpen,
   HeartPulse,
   Smile,
-  Home,
-  Accessibility,
-  Glasses,
-  Ticket,
-  TreePine,
 } from "lucide-react";
-import { JSX } from "react";
 
 // ────────────────────────────────────────────────────────────────
 // 8 Categories / 24 Subcategories — aligned with backend DataSeeder
@@ -77,14 +70,12 @@ export const categoryOptions: { code: number; label: string; icon: React.Element
   { code: 7, label: "Hälsa & välmående", icon: HeartPulse },
 ];
 
-// Filter tags (1001–1006) — matches backend Tag codebook
-export const filterOptions: { code: number; label: string; icon: JSX.Element }[] = [
-  { code: 1001, label: "Gratis", icon: <Ticket className="w-6 h-6 mb-2" /> },
-  { code: 1002, label: "Familjevänligt", icon: <Users className="w-6 h-6 mb-2" /> },
-  { code: 1003, label: "Inomhus", icon: <Home className="w-6 h-6 mb-2" /> },
-  { code: 1004, label: "Utomhus", icon: <TreePine className="w-6 h-6 mb-2" /> },
-  { code: 1005, label: "Seniorer", icon: <Glasses className="w-6 h-6 mb-2" /> },
-  { code: 1006, label: "Rullstolsanpassat", icon: <Accessibility className="w-6 h-6 mb-2" /> },
+// Filter tags — aligned with mobile app (sv.json tag keys)
+export const filterOptions: { code: number; label: string }[] = [
+  { code: 1001, label: "Gratis" },
+  { code: 1003, label: "Inomhus" },
+  { code: 1004, label: "Utomhus" },
+  { code: 1005, label: "Seniorfokus" },
 ];
 
 // Category tile colors — one per category code, mirrors CategoryDark in mobile theme.ts
