@@ -63,7 +63,12 @@ export function Navbar() {
               />
             )}
 
-            {/* logout button — only when logged in */}
+            {/* profile + logout buttons — only when logged in */}
+            {isLoggedIn && (
+              <Button variant="outline" size="sm" onClick={() => router.push("/profile")}>
+                Profile
+              </Button>
+            )}
             {isLoggedIn && (
               <Button variant="outline" size="sm" onClick={onLogout}>
                 Log out
