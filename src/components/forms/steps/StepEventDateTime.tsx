@@ -289,7 +289,7 @@ export function StepEventDateTime({ control, errors }: Props) {
               <Label>Valda datum ({singleDates.length})</Label>
               {singleDates.map((sd, index) => (
                 <div
-                  key={index}
+                  key={`${sd.startDate.toISOString()}-${index}`}
                   className="flex items-center justify-between gap-3 p-3 border rounded-lg bg-gray-50 text-sm"
                 >
                   <span className="font-medium">
