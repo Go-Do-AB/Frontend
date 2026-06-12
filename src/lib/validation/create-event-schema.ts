@@ -65,6 +65,9 @@ export const createEventSchema = z.object({
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "End time is required", path: ["endTime"] });
     }
   }
+  if (data.hasMultipleDates && (!data.singleDates || data.singleDates.length === 0)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Add at least one date", path: ["singleDates"] });
+  }
 });
 
 export const defaultFormValues: CreateEventFormData = {

@@ -280,6 +280,9 @@ export function StepEventDateTime({ control, errors }: Props) {
           >
             Lägg till datum
           </Button>
+          {errors.singleDates && (
+            <p className="text-red-500 text-sm">{errors.singleDates.message}</p>
+          )}
 
           {singleDates.length > 0 && (
             <div className="space-y-2">
