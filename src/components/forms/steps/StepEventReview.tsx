@@ -46,7 +46,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
 
   return (
     <div className="w-full max-w-xl space-y-4">
-      <h2 className="text-xl font-semibold text-center">Review your event info</h2>
+      <h2 className="text-xl font-semibold text-center">Granska ditt evenemang</h2>
 
       <Card className="bg-gray-50">
         <CardContent className="space-y-4 pt-6">
@@ -54,7 +54,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <Type className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Event Title</Label>
+                <Label className="text-muted-foreground">Evenemangets titel</Label>
                 <p className="text-lg font-medium">{values.title}</p>
               </div>
             </div>
@@ -64,7 +64,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <User className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Organiser</Label>
+                <Label className="text-muted-foreground">Arrangör</Label>
                 <p>{values.organiser}</p>
               </div>
             </div>
@@ -74,7 +74,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <User className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Organisation number</Label>
+                <Label className="text-muted-foreground">Organisationsnummer</Label>
                 <p>{values.organisationNumber}</p>
               </div>
             </div>
@@ -84,7 +84,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <AlignLeft className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Description</Label>
+                <Label className="text-muted-foreground">Beskrivning</Label>
                 <p>{values.description}</p>
               </div>
             </div>
@@ -94,7 +94,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Location</Label>
+                <Label className="text-muted-foreground">Plats</Label>
                 <p>
                   {[values.streetName, values.postalCode, values.city].filter(Boolean).join(", ")}
                 </p>
@@ -106,7 +106,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <Link className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Event URL</Label>
+                <Label className="text-muted-foreground">Evenemangslänk</Label>
                 <p>{values.eventUrl}</p>
               </div>
             </div>
@@ -116,7 +116,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <Link className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Booking URL</Label>
+                <Label className="text-muted-foreground">Bokningslänk</Label>
                 <p>{values.bookingUrl}</p>
               </div>
             </div>
@@ -127,7 +127,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <CalendarArrowDown className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Start</Label>
+                <Label className="text-muted-foreground">Starttid</Label>
                 <div className="flex items-center gap-4">
                   {values.startDate && (
                     <div className="flex items-center gap-1">
@@ -150,7 +150,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <CalendarArrowUp className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">End</Label>
+                <Label className="text-muted-foreground">Sluttid</Label>
                 <div className="flex items-center gap-4">
                   {values.endDate && (
                     <div className="flex items-center gap-1">
@@ -174,7 +174,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <CalendarIcon className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Dates</Label>
+                <Label className="text-muted-foreground">Datum</Label>
                 <div className="space-y-1 mt-1">
                   {values.singleDates.map((sd, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm">
@@ -201,10 +201,10 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <div className="flex items-start gap-3">
               <CalendarIcon className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
-                <Label className="text-muted-foreground">Weekdays</Label>
+                <Label className="text-muted-foreground">Veckodagar</Label>
                 <p>
                   {values.weekdays
-                    .map((d) => d.charAt(0).toUpperCase() + d.slice(1))
+                    .map((d) => ({ mon:"Måndag",tue:"Tisdag",wed:"Onsdag",thu:"Torsdag",fri:"Fredag",sat:"Lördag",sun:"Söndag" }[d] ?? d))
                     .join(", ")}
                 </p>
                 {(values.scheduleStartTime || values.scheduleEndTime) && (
@@ -223,8 +223,8 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
               <Label className="text-muted-foreground">Spotlight</Label>
               <p className="mt-0.5">
                 {values.spotlight
-                  ? `Enabled — ${fmt(values.spotlightStartDate)} → ${fmt(values.spotlightEndDate)}`
-                  : "Disabled"}
+                  ? `Aktiverad — ${fmt(values.spotlightStartDate)} → ${fmt(values.spotlightEndDate)}`
+                  : "Inaktiverad"}
               </p>
        {/*  this cost box is under Spotlight-text */}
               {isSpotlight && s && e && days > 0 && (
@@ -238,22 +238,22 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
 
                   <div className="text-sm">
                     <div className="flex justify-between">
-                      <span>{days} days × 99 kr</span>
+                      <span>{days} dagar × 99 kr</span>
                       <span className="font-medium">{money.format(subtotal)}</span>
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span>VAT (included)</span>
+                      <span>Moms (inkluderad)</span>
                       <span className="font-medium">{money.format(vat)}</span>
                     </div>
                     <hr className="my-2" />
                     <div className="flex justify-between text-base">
-                      <span className="font-semibold">Total (incl. VAT)</span>
+                      <span className="font-semibold">Totalt (inkl. moms)</span>
                       <span className="font-semibold">{money.format(total)}</span>
                     </div>
                   </div>
 
                   <p className="text-xs text-muted-foreground mt-2">
-                    The price is 99 kr per day plus 125 kr VAT. VAT is included in the total
+                    Priset är 99 kr per dag plus 125 kr moms. Momsen ingår i totalpriset.
                   </p>
                 </div>
               )}

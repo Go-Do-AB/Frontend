@@ -47,14 +47,14 @@ function ResetPasswordInner() {
         throw new Error(payload?.message ?? "Reset failed");
       }
 
-      toast.success("Password updated. You can now log in.");
+      toast.success("Lösenordet har uppdaterats. Du kan nu logga in.");
       router.replace("/login");
     } catch (e: unknown) {
       const axiosErr = e as { response?: { data?: { message?: string; errors?: string[] } } };
       const msg =
         axiosErr?.response?.data?.message ||
         axiosErr?.response?.data?.errors?.join(", ") ||
-        (e instanceof Error ? e.message : "Reset failed");
+        (e instanceof Error ? e.message : "Återställningen misslyckades");
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ function ResetPasswordInner() {
           <Card className="shadow-lg border-black/10 bg-white">
             <CardHeader className="text-center">
               <CardTitle className="text-xl sm:text-2xl font-semibold text-black">
-                Choose a new password
+                Välj ett nytt lösenord
               </CardTitle>
             </CardHeader>
 
@@ -84,22 +84,22 @@ function ResetPasswordInner() {
                     Återställningslänken saknas eller är ogiltig.
                   </p>
                   <p className="text-sm text-black/70">
-                    Request a new reset link from the forgot-password page.
+                    Begär en ny återställningslänk från sidan för glömt lösenord.
                   </p>
                 </div>
               ) : (
                 <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-black">
-                      New password
+                      Nytt lösenord
                     </Label>
                     <Input
                       id="password"
                       type="password"
                       autoComplete="new-password"
                       {...register("password", {
-                        required: "Password is required",
-                        minLength: { value: 8, message: "At least 8 characters" },
+                        required: "Lösenord krävs",
+                        minLength: { value: 8, message: "Minst 8 tecken" },
                       })}
                       className="bg-white"
                     />
@@ -110,15 +110,15 @@ function ResetPasswordInner() {
 
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword" className="text-black">
-                      Confirm new password
+                      Bekräfta nytt lösenord
                     </Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       autoComplete="new-password"
                       {...register("confirmPassword", {
-                        required: "Please confirm your password",
-                        validate: (v) => v === passwordValue || "Passwords do not match",
+                        required: "Bekräfta ditt lösenord",
+                        validate: (v) => v === passwordValue || "Lösenorden matchar inte",
                       })}
                       className="bg-white"
                     />
@@ -132,7 +132,7 @@ function ResetPasswordInner() {
                     disabled={loading}
                     className="w-full bg-black text-white hover:bg-black/90 transition-all disabled:opacity-60"
                   >
-                    {loading ? "Updating…" : "Update password"}
+                    {loading ? "Uppdaterar…" : "Uppdatera lösenord"}
                   </Button>
                 </form>
               )}
@@ -143,7 +143,7 @@ function ResetPasswordInner() {
                 href="/login"
                 className="text-sm underline underline-offset-4 text-black"
               >
-                Back to login
+                Tillbaka till inloggning
               </Link>
             </CardFooter>
           </Card>

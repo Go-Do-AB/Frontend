@@ -3,29 +3,28 @@ import { z } from "zod";
 import { ORGNR_REGEX, isValidSwedishOrgNr } from "@/lib/utils";
 
 export const createEventSchema = z.object({
-  organiser: z.string().min(1, "Organiser is required"),
+  organiser: z.string().min(1, "Arrangör krävs"),
   organisationNumber: z
     .string()
-    .min(1, "Organisation number is required")
-    .regex(ORGNR_REGEX, "Use format XXXXXX-XXXX")
-    .refine(isValidSwedishOrgNr, "Invalid organisation number (checksum)"),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  categories: z.array(z.number()).min(1, "Please select at least one category"),
+    .min(1, "Organisationsnummer krävs")
+    .regex(ORGNR_REGEX, "Använd formatet XXXXXX-XXXX")
+    .refine(isValidSwedishOrgNr, "Ogiltigt organisationsnummer (kontrollsumma)"),
+  title: z.string().min(1, "Titel krävs"),
+  description: z.string().min(1, "Beskrivning krävs"),
+  categories: z.array(z.number()).min(1, "Välj minst en kategori"),
   subcategories: z.record(z.number(), z.array(z.number())).optional(),
-  filters: z.array(z.number()).min(1, "Please select at least one category").optional(),
+  filters: z.array(z.number()).min(1, "Välj minst ett filter").optional(),
 
-  eventUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
+  eventUrl: z.url("Måste vara en giltig URL").optional().or(z.literal("")),
 
-  bookingUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
+  bookingUrl: z.url("Måste vara en giltig URL").optional().or(z.literal("")),
 
-  streetName: z.string().min(1, "Street name is required"),
-  streetName2: z.string().optional(),
-  houseNumber: z.number().int("Must be a number").positive("Must be greater than 0").optional(),
+  streetName: z.string().min(1, "Gatunamn krävs"),
+  houseNumber: z.number().int("Måste vara ett heltal").positive("Måste vara större än 0").optional(),
 
-  city: z.string().min(1, "City is required"),
-  postalCode: z.string().min(1, "Postal code is required"),
-  gpsCoordinates: z.string().max(50, "Max 50 characters").optional().or(z.literal("")),
+  city: z.string().min(1, "Stad krävs"),
+  postalCode: z.string().min(1, "Postnummer krävs"),
+  gpsCoordinates: z.string().max(50, "Max 50 tecken").optional().or(z.literal("")),
 
   hasSingleDates: z.boolean().optional(),
   startDate: z.date().optional(),
@@ -60,14 +59,14 @@ export const createEventSchema = z.object({
 }).superRefine((data, ctx) => {
   if (data.hasSingleDates) {
     if (!data.startTime) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Start time is required", path: ["startTime"] });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Starttid krävs", path: ["startTime"] });
     }
     if (!data.endTime) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "End time is required", path: ["endTime"] });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Sluttid krävs", path: ["endTime"] });
     }
   }
   if (data.hasMultipleDates && (!data.singleDates || data.singleDates.length === 0)) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Add at least one date", path: ["singleDates"] });
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Lägg till minst ett datum", path: ["singleDates"] });
   }
 });
 
@@ -84,8 +83,7 @@ export const defaultFormValues: CreateEventFormData = {
   bookingUrl: "",
 
   streetName: "",
-  streetName2: "",
-  houseNumber: 0,
+  houseNumber: undefined,
 
   city: "",
   postalCode: "",
@@ -167,7 +165,6 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     bookingUrl: data.bookingUrl || undefined,
 
     streetName: data.streetName,
-    streetName2: data.streetName2 || undefined,
     houseNumber: data.houseNumber,
 
     city: data.city,
@@ -218,7 +215,6 @@ export const eventDtoToFormData = (event: {
   eventUrl?: string;
   bookingUrl?: string;
   streetName: string;
-  streetName2?: string;
   houseNumber?: number;
   city: string;
   postalCode: string;
@@ -280,8 +276,7 @@ export const eventDtoToFormData = (event: {
     bookingUrl: event.bookingUrl || "",
 
     streetName: event.streetName || "",
-    streetName2: event.streetName2 || "",
-    houseNumber: event.houseNumber || 0,
+    houseNumber: event.houseNumber ?? undefined,
 
     city: event.city || "",
     postalCode: event.postalCode || "",
