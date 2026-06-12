@@ -74,8 +74,8 @@ export default function QuickCreatePage() {
           <div className="flex items-start gap-3 text-black">
             <CheckCircle className="text-green-500 mt-1" />
             <div>
-              <p className="font-semibold">Place created!</p>
-              <p className="text-sm">Added as always-open attraction on Go.Do.</p>
+              <p className="font-semibold">Platsen skapades!</p>
+              <p className="text-sm">Tillagd som alltid öppen attraktion på Go.Do.</p>
             </div>
           </div>
         );
@@ -83,12 +83,12 @@ export default function QuickCreatePage() {
       onError: (error: unknown) => {
         const axiosError = error as { response?: { data?: { errors?: string[] } } };
         const message =
-          axiosError?.response?.data?.errors?.[0] || "Please check your input and try again.";
+          axiosError?.response?.data?.errors?.[0] || "Kontrollera dina uppgifter och försök igen.";
         toast(
           <div className="flex items-start gap-3 text-black">
             <XCircle className="text-red-500 mt-1" />
             <div>
-              <p className="font-semibold">Creation failed</p>
+              <p className="font-semibold">Det gick inte att skapa platsen</p>
               <p className="text-sm">{message}</p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function QuickCreatePage() {
         <section className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="w-8 h-8 animate-spin" />
-            <p>Checking permissions...</p>
+            <p>Kontrollerar behörigheter...</p>
           </div>
         </section>
       </main>
@@ -121,16 +121,16 @@ export default function QuickCreatePage() {
           <Card className="max-w-md bg-white shadow-lg">
             <CardContent className="pt-6 text-center space-y-4">
               <ShieldX className="w-16 h-16 text-red-500 mx-auto" />
-              <h2 className="text-2xl font-bold">Access Denied</h2>
+              <h2 className="text-2xl font-bold">Åtkomst nekad</h2>
               <p className="text-gray-600">
-                This page is only accessible to administrators.
+                Den här sidan är endast tillgänglig för administratörer.
               </p>
               <Button
                 onClick={() => router.push("/landing")}
                 className="w-full bg-black text-white hover:bg-black/90"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Home
+                Tillbaka till startsidan
               </Button>
             </CardContent>
           </Card>
@@ -149,13 +149,13 @@ export default function QuickCreatePage() {
             <Zap className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Quick Create</h1>
-            <p className="text-sm text-gray-700">Add places & attractions on the go</p>
+            <h1 className="text-3xl font-bold">Snabbskapa</h1>
+            <p className="text-sm text-gray-700">Lägg till platser och attraktioner snabbt</p>
           </div>
         </div>
 
         {/* Admin badge */}
-        <div className="mb-6 bg-black text-white text-xs px-3 py-1 rounded-full">Admin Only</div>
+        <div className="mb-6 bg-black text-white text-xs px-3 py-1 rounded-full">Endast admin</div>
 
         <div className="w-full max-w-2xl">
           {formSubmitted && submittedData ? (
@@ -166,8 +166,8 @@ export default function QuickCreatePage() {
                 <div className="bg-green-500 text-white px-6 py-4 flex items-center gap-3">
                   <CheckCircle className="w-8 h-8" />
                   <div>
-                    <h2 className="text-xl font-bold">Successfully Added!</h2>
-                    <p className="text-sm opacity-90">Place is now live on Go.Do.</p>
+                    <h2 className="text-xl font-bold">Tillagd!</h2>
+                    <p className="text-sm opacity-90">Platsen är nu live på Go.Do.</p>
                   </div>
                 </div>
 
@@ -176,14 +176,14 @@ export default function QuickCreatePage() {
                   <div className="space-y-3">
                     {submittedData.name && (
                       <div>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Name</p>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Namn</p>
                         <p className="text-lg font-semibold">{submittedData.name}</p>
                       </div>
                     )}
 
                     {(submittedData.place || submittedData.address) && (
                       <div>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Location</p>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Plats</p>
                         <p className="font-medium">
                           {[submittedData.address, submittedData.place].filter(Boolean).join(", ")}
                         </p>
@@ -192,14 +192,14 @@ export default function QuickCreatePage() {
 
                     {submittedData.organiserName && (
                       <div>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Owner</p>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Ägare</p>
                         <p className="font-medium">{submittedData.organiserName}</p>
                       </div>
                     )}
 
                     {submittedData.description && (
                       <div>
-                        <p className="text-xs text-gray-500 uppercase tracking-wide">Description</p>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Beskrivning</p>
                         <p className="text-sm text-gray-700 line-clamp-3">
                           {submittedData.description}
                         </p>
@@ -210,17 +210,17 @@ export default function QuickCreatePage() {
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 pt-2 border-t">
                     <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
-                      Always Open
+                      Alltid öppet
                     </span>
                     {submittedData.subcategoryCodes &&
                       submittedData.subcategoryCodes.length > 0 && (
                         <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                          {submittedData.subcategoryCodes.length} categories
+                          {submittedData.subcategoryCodes.length} kategorier
                         </span>
                       )}
                     {submittedData.filterCodes && submittedData.filterCodes.length > 0 && (
                       <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
-                        {submittedData.filterCodes.length} filters
+                        {submittedData.filterCodes.length} filter
                       </span>
                     )}
                   </div>
@@ -234,7 +234,7 @@ export default function QuickCreatePage() {
                   className="w-full bg-black text-white hover:bg-black/90 flex items-center justify-center gap-2 h-12"
                 >
                   <Plus className="w-5 h-5" />
-                  Add Another Place
+                  Lägg till en till plats
                 </Button>
 
                 <div className="flex gap-3">
@@ -244,7 +244,7 @@ export default function QuickCreatePage() {
                     className="flex-1 border-black/20 hover:bg-white/50 flex items-center justify-center gap-2"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Start
+                    Tillbaka till start
                   </Button>
                   <Button
                     onClick={handleLogout}
@@ -252,7 +252,7 @@ export default function QuickCreatePage() {
                     className="flex-1 border-red-300 text-red-600 hover:bg-red-50 flex items-center justify-center gap-2"
                   >
                     <LogOut className="w-4 h-4" />
-                    Logout
+                    Logga ut
                   </Button>
                 </div>
               </div>

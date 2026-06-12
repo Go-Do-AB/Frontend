@@ -19,13 +19,13 @@ interface Props {
 }
 
 const WEEKDAYS = [
-  { value: "mon", label: "Mon" },
-  { value: "tue", label: "Tue" },
-  { value: "wed", label: "Wed" },
-  { value: "thu", label: "Thu" },
-  { value: "fri", label: "Fri" },
-  { value: "sat", label: "Sat" },
-  { value: "sun", label: "Sun" },
+  { value: "mon", label: "Mån" },
+  { value: "tue", label: "Tis" },
+  { value: "wed", label: "Ons" },
+  { value: "thu", label: "Tor" },
+  { value: "fri", label: "Fre" },
+  { value: "sat", label: "Lör" },
+  { value: "sun", label: "Sön" },
 ];
 
 const WEEKDAY_LABELS: Record<string, string> = {
@@ -54,13 +54,13 @@ function RecurringSummary({
     startDate && endDate
       ? `${format(startDate, "dd.MM.yyyy")} → ${format(endDate, "dd.MM.yyyy")}`
       : startDate
-        ? `from ${format(startDate, "dd.MM.yyyy")}`
+        ? `från ${format(startDate, "dd.MM.yyyy")}`
         : null;
   const timeRange =
     scheduleStartTime && scheduleEndTime
       ? `${scheduleStartTime} – ${scheduleEndTime}`
       : scheduleStartTime
-        ? `from ${scheduleStartTime}`
+        ? `från ${scheduleStartTime}`
         : null;
 
   return (
@@ -143,23 +143,23 @@ export function StepEventDateTime({ control, errors }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <Label className="mb-4 block">Select Timing Type</Label>
+        <Label className="mb-4 block">Välj tidstyp</Label>
         <RadioGroup value={selected} onValueChange={handleTimingChange} className="flex flex-wrap gap-4">
           <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="single" id="single" />
-            <Label htmlFor="single" className="text-base">Single instance</Label>
+            <Label htmlFor="single" className="text-base">Enstaka tillfälle</Label>
           </div>
           <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="multiple" id="multiple" />
-            <Label htmlFor="multiple" className="text-base">Multiple dates</Label>
+            <Label htmlFor="multiple" className="text-base">Flera datum</Label>
           </div>
           <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="recurring" id="recurring" />
-            <Label htmlFor="recurring" className="text-base">Recurring (weekly)</Label>
+            <Label htmlFor="recurring" className="text-base">Återkommande (veckovis)</Label>
           </div>
           <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="always" id="always" />
-            <Label htmlFor="always" className="text-base">Always Open</Label>
+            <Label htmlFor="always" className="text-base">Alltid öppet</Label>
           </div>
         </RadioGroup>
       </div>
@@ -168,7 +168,7 @@ export function StepEventDateTime({ control, errors }: Props) {
       {selected === "single" && (
         <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
           <div>
-            <Label className="block mb-2">Select date</Label>
+            <Label className="block mb-2">Välj datum</Label>
             <Calendar
               mode="single"
               selected={startDate}
@@ -190,7 +190,7 @@ export function StepEventDateTime({ control, errors }: Props) {
                 value={field.value}
                 onChange={field.onChange}
                 placeholder="Start"
-                label="Start Time"
+                label="Starttid"
               />
             )}
           />
@@ -201,8 +201,8 @@ export function StepEventDateTime({ control, errors }: Props) {
               <TimePicker
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="End"
-                label="End Time"
+                placeholder="Slut"
+                label="Sluttid"
                 disabledOptions={(opt) => (startTime ? opt <= startTime : false)}
               />
             )}
@@ -239,7 +239,7 @@ export function StepEventDateTime({ control, errors }: Props) {
 
           <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
             <div>
-              <Label className="block mb-2">Select date range</Label>
+              <Label className="block mb-2">Välj datumintervall</Label>
               <Calendar
                 mode="range"
                 selected={tempRange}
@@ -251,13 +251,13 @@ export function StepEventDateTime({ control, errors }: Props) {
               value={tempStartTime}
               onChange={setTempStartTime}
               placeholder="Start"
-              label="Start Time"
+              label="Starttid"
             />
             <TimePicker
               value={tempEndTime}
               onChange={setTempEndTime}
-              placeholder="End"
-              label="End Time"
+              placeholder="Slut"
+              label="Sluttid"
               disabledOptions={(opt) => {
                 if (
                   tempRange?.from &&
@@ -349,7 +349,7 @@ export function StepEventDateTime({ control, errors }: Props) {
 
           <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
             <div>
-              <Label className="block mb-2">Select date range</Label>
+              <Label className="block mb-2">Välj datumintervall</Label>
               <Calendar
                 mode="range"
                 selected={{ from: startDate, to: endDate }}
@@ -371,7 +371,7 @@ export function StepEventDateTime({ control, errors }: Props) {
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="Start"
-                  label="Start Time"
+                  label="Starttid"
                 />
               )}
             />
@@ -382,8 +382,8 @@ export function StepEventDateTime({ control, errors }: Props) {
                 <TimePicker
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="End"
-                  label="End Time"
+                  placeholder="Slut"
+                  label="Sluttid"
                   disabledOptions={(opt) => (scheduleStartTime ? opt <= scheduleStartTime : false)}
                 />
               )}
@@ -428,10 +428,9 @@ export function StepEventDateTime({ control, errors }: Props) {
 
       {/* Always Open */}
       {selected === "always" && (
-        <p className="text-muted-foreground italic">This event will be listed as always open.</p>
+        <p className="text-muted-foreground italic">Det här evenemanget visas som alltid öppet.</p>
       )}
 
-      <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );
 }

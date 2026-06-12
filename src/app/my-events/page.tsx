@@ -74,12 +74,12 @@ export default function MyEventsPage() {
 
     deleteEvent(deletingEvent.id, {
       onSuccess: () => {
-        toast.success("Event deleted successfully");
+        toast.success("Evenemanget togs bort");
         setDeletingEvent(null);
         refetch();
       },
       onError: () => {
-        toast.error("Failed to delete event");
+        toast.error("Det gick inte att ta bort evenemanget");
       },
     });
   };
@@ -118,10 +118,10 @@ export default function MyEventsPage() {
 
       <section className="flex-1 px-6 py-10 max-w-6xl mx-auto w-full">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">My Events</h1>
+          <h1 className="text-4xl font-bold">Mina evenemang</h1>
           <Button onClick={() => router.push("/create-event")} className="gap-2">
             <Plus className="w-4 h-4" />
-            Create New Event
+            Skapa nytt evenemang
           </Button>
         </div>
 
@@ -134,7 +134,7 @@ export default function MyEventsPage() {
         {error && (
           <Card className="bg-red-50 border-red-200">
             <CardContent className="py-6 text-center text-red-700">
-              Failed to load events. Please try again.
+              Det gick inte att hämta evenemang. Försök igen.
             </CardContent>
           </Card>
         )}
@@ -142,8 +142,8 @@ export default function MyEventsPage() {
         {!isLoading && events.length === 0 && (
           <Card className="bg-white">
             <CardContent className="py-12 text-center">
-              <p className="text-lg text-gray-600 mb-4">No events yet</p>
-              <Button onClick={() => router.push("/create-event")}>Create your first event</Button>
+              <p className="text-lg text-gray-600 mb-4">Inga evenemang än</p>
+              <Button onClick={() => router.push("/create-event")}>Skapa ditt första evenemang</Button>
             </CardContent>
           </Card>
         )}
@@ -189,14 +189,14 @@ export default function MyEventsPage() {
                         <Calendar className="w-4 h-4 mt-0.5 text-gray-500" />
                         <div>
                           {event.isAlwaysOpen ? (
-                            <p>Always open</p>
+                            <p>Alltid öppet</p>
                           ) : event.hasSingleDates ? (
                             <>
                               <p>Start: {formatDate(event.startDate)}</p>
-                              <p>End: {formatDate(event.endDate)}</p>
+                              <p>Slut: {formatDate(event.endDate)}</p>
                             </>
                           ) : (
-                            <p>Recurring event</p>
+                            <p>Återkommande evenemang</p>
                           )}
                         </div>
                       </div>
@@ -243,7 +243,7 @@ export default function MyEventsPage() {
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 <span className="text-sm">
-                  Page {pageNumber} of {totalPages}
+                  Sida {pageNumber} av {totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -263,19 +263,18 @@ export default function MyEventsPage() {
       <Dialog open={!!deletingEvent} onOpenChange={() => setDeletingEvent(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Event</DialogTitle>
+            <DialogTitle>Ta bort evenemang</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deletingEvent?.title}&quot;? This action cannot
-              be undone.
+              Är du säker på att du vill ta bort &quot;{deletingEvent?.title}&quot;? Det går inte att ångra.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeletingEvent(null)}>
-              Cancel
+              Avbryt
             </Button>
             <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isDeleting}>
               {isDeleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Delete
+              Ta bort
             </Button>
           </DialogFooter>
         </DialogContent>

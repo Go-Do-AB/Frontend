@@ -37,8 +37,8 @@ export default function Home() {
         {/* Right: Call to Action */}
         <div className="max-w-md text-right space-y-4">
           <p className="text-lg font-medium mb-4">
-            Are you organizing an event? <br />
-            Make it visible on <span className="font-bold">Go.Do.</span>
+            Arrangerar du ett evenemang? <br />
+            Gör det synligt på <span className="font-bold">Go.Do.</span>
           </p>
           <div className="flex flex-col gap-3">
             <Link href="/create-event">
@@ -46,7 +46,7 @@ export default function Home() {
                 variant="default"
                 className="w-52 h-12 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
               >
-                Create an Event
+                Skapa ett evenemang
                 <CalendarPlus className="mr-2 h-4 w-4" />
               </Button>
             </Link>
@@ -57,7 +57,7 @@ export default function Home() {
                   className="w-52 h-10 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg border-black/30 bg-white/50 hover:bg-white"
                 >
                   <Zap className="mr-2 h-4 w-4" />
-                  Quick Add Place
+                  Lägg till plats
                 </Button>
               </Link>
             )}
@@ -68,7 +68,7 @@ export default function Home() {
                   className="w-52 h-10 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg border-black/30 bg-white/50 hover:bg-white"
                 >
                   <Shield className="mr-2 h-4 w-4" />
-                  Moderation
+                  Moderering
                 </Button>
               </Link>
             )}
@@ -79,7 +79,7 @@ export default function Home() {
                   className="w-52 h-10 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg border-black/30 bg-white/50 hover:bg-white"
                 >
                   <List className="mr-2 h-4 w-4" />
-                  My Events
+                  Mina evenemang
                 </Button>
               </Link>
             )}
@@ -90,15 +90,15 @@ export default function Home() {
                 className="w-52 h-10 cursor-pointer transition-transform hover:scale-105 hover:shadow-lg border-black/30 bg-white/50 hover:bg-white"
               >
                 <Smartphone className="mr-2 h-4 w-4" />
-                Try the App
+                Prova appen
               </Button>
             </Link>
           {!isLoggedIn && (
             <p className="text-xs text-gray-600">
               <Link href="/login" className="underline">
-                Log in
+                Logga in
               </Link>{" "}
-              to manage your events
+              för att hantera dina evenemang
             </p>
           )}
         </div>

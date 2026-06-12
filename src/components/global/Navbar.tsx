@@ -49,7 +49,7 @@ export function Navbar() {
             {showSearch ? (
               <div className="flex items-center gap-2 border rounded-md px-2 py-1 bg-white shadow-sm">
                 <Input
-                  placeholder="Search..."
+                  placeholder="Sök..."
                   className="w-48 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onBlur={() => setShowSearch(false)}
                   autoFocus
@@ -66,12 +66,12 @@ export function Navbar() {
             {/* profile + logout buttons — only when logged in */}
             {isLoggedIn && (
               <Button variant="outline" size="sm" onClick={() => router.push("/profile")}>
-                Profile
+                Profil
               </Button>
             )}
             {isLoggedIn && (
               <Button variant="outline" size="sm" onClick={onLogout}>
-                Log out
+                Logga ut
               </Button>
             )}
           </div>

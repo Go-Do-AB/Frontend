@@ -30,11 +30,11 @@ import {
 } from "@/lib/validation/create-event-schema";
 
 const steps = [
-  { label: "Details", icon: <Info className="w-4 h-4 mr-1" /> },
-  { label: "Location", icon: <MapPin className="w-4 h-4 mr-1" /> },
-  { label: "Date & Time", icon: <Clock className="w-4 h-4 mr-1" /> },
+  { label: "Detaljer", icon: <Info className="w-4 h-4 mr-1" /> },
+  { label: "Plats", icon: <MapPin className="w-4 h-4 mr-1" /> },
+  { label: "Datum & Tid", icon: <Clock className="w-4 h-4 mr-1" /> },
   { label: "Spotlight", icon: <Sparkles className="w-4 h-4 mr-1" /> },
-  { label: "Confirm", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
+  { label: "Bekräfta", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
 ];
 
 export default function CreateEventPage() {
@@ -72,7 +72,6 @@ export default function CreateEventPage() {
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = (data: CreateEventFormData) => {
-    console.log("running");
     try {
       const payload: CreateEventDto = createPayload(data);
 
@@ -84,8 +83,8 @@ export default function CreateEventPage() {
             <div className="flex items-start gap-3 text-black">
               <CheckCircle className="text-green-500 mt-1" />
               <div>
-                <p className="font-semibold">Event created!</p>
-                <p className="text-sm">Your event is now live on Go.Do.</p>
+                <p className="font-semibold">Evenemanget skapades!</p>
+                <p className="text-sm">Ditt evenemang är nu publicerat på Go.Do.</p>
               </div>
             </div>
           );
@@ -95,21 +94,20 @@ export default function CreateEventPage() {
             <div className="flex items-start gap-3 text-black">
               <XCircle className="text-red-500 mt-1" />
               <div>
-                <p className="font-semibold">Submission failed</p>
-                <p className="text-sm">Please check your input and try again.</p>
+                <p className="font-semibold">Kunde inte skicka in</p>
+                <p className="text-sm">Kontrollera dina uppgifter och försök igen.</p>
               </div>
             </div>
           );
         },
       });
     } catch (err) {
-      console.log(err);
       toast(
         <div className="flex items-start gap-3 text-black">
           <XCircle className="text-red-500 mt-1" />
           <div>
-            <p className="font-semibold">Unexpected error</p>
-            <p className="text-sm">Something went wrong, please try again later.</p>
+            <p className="font-semibold">Oväntat fel</p>
+            <p className="text-sm">Något gick fel, försök igen senare.</p>
           </div>
         </div>
       );
@@ -124,11 +122,11 @@ export default function CreateEventPage() {
           <Link href="/landing">
             <Button variant="ghost" size="sm" className="gap-2 hover:bg-black/10">
               <ArrowLeft className="w-4 h-4" />
-              Back to Home
+              Tillbaka till startsidan
             </Button>
           </Link>
         </div>
-        <h1 className="text-4xl font-bold mb-6">Create an Event</h1>
+        <h1 className="text-4xl font-bold mb-6">Skapa ett evenemang</h1>
 
         <div className="w-full max-w-xl mb-6">
           <div className="flex justify-between text-sm font-medium mb-2">

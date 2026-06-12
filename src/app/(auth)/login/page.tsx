@@ -45,14 +45,14 @@ export default function LoginPage() {
         localStorage.setItem("accessToken", token);
       }
 
-      toast.success("Logged in");
+      toast.success("Inloggad");
       router.replace(LANDING_PATH);
     } catch (e: unknown) {
       const axiosErr = e as { response?: { data?: { message?: string; errors?: string[] } } };
       const msg =
         axiosErr?.response?.data?.message ||
         axiosErr?.response?.data?.errors?.join(", ") ||
-        (e instanceof Error ? e.message : "Login failed");
+        (e instanceof Error ? e.message : "Inloggningen misslyckades");
       toast.error(msg);
       console.error("Login error:", msg);
     }
@@ -72,7 +72,7 @@ export default function LoginPage() {
           <Card className="shadow-lg border-black/10 bg-white">
             <CardHeader className="text-center">
               <CardTitle className="text-xl sm:text-2xl font-semibold text-black">
-                Log in as an organizer
+                Logga in som arrangör
               </CardTitle>
             </CardHeader>
 
@@ -80,11 +80,11 @@ export default function LoginPage() {
               <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
                   <Label htmlFor="username" className="text-black">
-                    Username
+                    Användarnamn
                   </Label>
                   <Input
                     id="username"
-                    {...register("username", { required: "Username is required" })}
+                    {...register("username", { required: "Användarnamn krävs" })}
                     className="bg-white"
                   />
                   {errors.username && (
@@ -94,12 +94,12 @@ export default function LoginPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-black">
-                    Password
+                    Lösenord
                   </Label>
                   <Input
                     id="password"
                     type="password"
-                    {...register("password", { required: "Password is required" })}
+                    {...register("password", { required: "Lösenord krävs" })}
                     className="bg-white"
                   />
                   {errors.password && (
@@ -111,14 +111,14 @@ export default function LoginPage() {
                   type="submit"
                   className="w-full bg-black text-white hover:bg-black/90 transition-all"
                 >
-                  Log in
+                  Logga in
                 </Button>
               </form>
             </CardContent>
 
             <CardFooter className="flex flex-col gap-3">
               <Button variant="outline" className="w-full border-black/20" asChild>
-                <Link href="/register">Register as an organizer</Link>
+                <Link href="/register">Registrera dig som arrangör</Link>
               </Button>
 
               <div className="text-center">
@@ -126,7 +126,7 @@ export default function LoginPage() {
                   href="/forgot-password"
                   className="text-sm underline underline-offset-4 text-black"
                 >
-                  Forgot my password
+                  Glömt mitt lösenord
                 </Link>
               </div>
 
@@ -135,7 +135,7 @@ export default function LoginPage() {
                   href="/preview"
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-brand text-black text-sm font-semibold hover:brightness-95 transition-colors"
                 >
-                  See the app in action
+                  Se appen i action
                   <span aria-hidden="true">&rarr;</span>
                 </Link>
               </div>

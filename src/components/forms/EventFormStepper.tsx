@@ -76,7 +76,7 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
 
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={prevStep} disabled={step === 0}>
-          Back
+          Tillbaka
         </Button>
         {step < LAST_STEP ? (
           <TooltipProvider>
@@ -84,20 +84,20 @@ export function EventFormStepper({ step, nextStep, prevStep, onSubmit }: EventFo
               <TooltipTrigger asChild>
                 <span>
                   <Button type="button" onClick={handleNext} disabled={!isStepFilled}>
-                    Next
+                    Nästa
                   </Button>
                 </span>
               </TooltipTrigger>
               {!isStepFilled && (
                 <TooltipContent>
-                  Please fill out all required fields before continuing.
+                  Fyll i alla obligatoriska fält innan du fortsätter.
                 </TooltipContent>
               )}
             </Tooltip>
           </TooltipProvider>
         ) : (
           <Button type="submit" className="bg-black text-white hover:bg-gray-800">
-            Submit
+            Skicka in
           </Button>
         )}
       </div>

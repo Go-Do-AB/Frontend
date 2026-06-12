@@ -88,7 +88,7 @@ export function StepSpotlight() {
         <div>
           <Label className="font-medium">Spotlight</Label>
           <p className="text-sm text-muted-foreground">
-            Promote this event in spotlight. Toggle off to skip spotlight settings.
+            Lyft fram ditt evenemang i spotlight. Stäng av för att hoppa över spotlightinställningarna.
           </p>
         </div>
         <input
@@ -110,7 +110,7 @@ export function StepSpotlight() {
             name="spotlightStartDate"
             render={({ field, fieldState }) => (
               <div>
-                <Label className="block mb-1">Spotlight start date</Label>
+                <Label className="block mb-1">Startdatum för spotlight</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -121,7 +121,7 @@ export function StepSpotlight() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value ? format(field.value, "dd.MM.yyyy") : "Pick a date"}
+                      {field.value ? format(field.value, "dd.MM.yyyy") : "Välj datum"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -147,7 +147,7 @@ export function StepSpotlight() {
             name="spotlightEndDate"
             render={({ field, fieldState }) => (
               <div>
-                <Label className="block mb-1">Spotlight end date</Label>
+                <Label className="block mb-1">Slutdatum för spotlight</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -159,7 +159,7 @@ export function StepSpotlight() {
                       disabled={!spotlight}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value ? format(field.value, "dd.MM.yyyy") : "Pick a date"}
+                      {field.value ? format(field.value, "dd.MM.yyyy") : "Välj datum"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -184,7 +184,7 @@ export function StepSpotlight() {
       {/* Image upload */}
       {spotlight && (
         <div className="space-y-2">
-          <Label>Banner image (optional)</Label>
+          <Label>Bannerbild (valfritt)</Label>
 
           {spotlightImageUrl ? (
             <div className="relative">
@@ -204,7 +204,7 @@ export function StepSpotlight() {
                 onClick={handleRemove}
               >
                 <X className="mr-1 h-3 w-3" />
-                Remove / Replace
+                Ta bort / Ersätt
               </Button>
             </div>
           ) : (
@@ -231,7 +231,7 @@ export function StepSpotlight() {
               {isUploading ? (
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-yellow-400 border-t-transparent" />
-                  <span className="text-sm text-muted-foreground">Uploading…</span>
+                  <span className="text-sm text-muted-foreground">Laddar upp…</span>
                 </div>
               ) : (
                 <>
@@ -243,9 +243,9 @@ export function StepSpotlight() {
                     )}
                   </div>
                   <p className="text-sm font-medium">
-                    Drag & drop or click to upload
+                    Dra och släpp eller klicka för att ladda upp
                   </p>
-                  <p className="text-xs text-muted-foreground">JPEG, PNG or WebP · max 5 MB</p>
+                  <p className="text-xs text-muted-foreground">JPEG, PNG eller WebP · max 5 MB</p>
                 </>
               )}
             </div>
@@ -261,7 +261,7 @@ export function StepSpotlight() {
 {spotlight && startDate && endDate && (
   <>
     <p className="text-sm text-muted-foreground">
-      Spotlight period:{" "}
+      Spotlightperiod:{" "}
       <span className="font-medium">{format(startDate, "dd.MM.yyyy")}</span>{" "}
       {"\u2192"}{" "}
       <span className="font-medium">{format(endDate, "dd.MM.yyyy")}</span>
@@ -270,21 +270,21 @@ export function StepSpotlight() {
     <div className="rounded-2xl border p-4 bg-muted/30">
       <div className="text-sm">
         <div className="flex justify-between">
-          <span>{days} days × 99 kr</span>
+          <span>{days} dagar × 99 kr</span>
           <span className="font-medium">{fmt.format(subtotal)}</span>
         </div>
         <div className="flex justify-between mt-1">
-          <span>VAT (included)</span>
+          <span>Moms (inkluderad)</span>
           <span className="font-medium">{fmt.format(vat)}</span>
         </div>
         <hr className="my-2" />
         <div className="flex justify-between text-base">
-          <span className="font-semibold">Total (incl. VAT)</span>
+          <span className="font-semibold">Totalt (inkl. moms)</span>
           <span className="font-semibold">{fmt.format(total)}</span>
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-2">
-        The price is 99 SEK per day plus 125 SEK VAT. VAT is included in the total
+        Priset är 99 kr per dag plus 125 kr moms. Momsen ingår i totalpriset.
       </p>
     </div>
   </>

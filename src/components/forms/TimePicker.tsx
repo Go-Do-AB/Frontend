@@ -14,12 +14,8 @@ type TimeOption = { value: string; label: string };
 const timeOptions: TimeOption[] = Array.from({ length: 24 * 2 }, (_, i) => {
   const h = Math.floor(i / 2);
   const m = i % 2 === 0 ? "00" : "30";
-  const raw = `${h.toString().padStart(2, "0")}:${m}:00`;
-  const display = new Date(`1970-01-01T${raw}`).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const raw = `${h.toString().padStart(2, "0")}:${m}`;
+  const display = `${h.toString().padStart(2, "0")}:${m}`;
   return { value: raw, label: display };
 });
 
@@ -50,7 +46,7 @@ export function TimePicker({
       <Select value={value} onValueChange={handleValueChange}>
         <SelectTrigger className="w-full">
           <Clock className="w-4 h-4 mr-2 text-muted-foreground" />
-          <SelectValue placeholder={placeholder || "Pick time"} />
+          <SelectValue placeholder={placeholder || "Välj tid"} />
         </SelectTrigger>
         <SelectContent className="max-h-48 overflow-y-auto">
           {timeOptions.map((t) => {

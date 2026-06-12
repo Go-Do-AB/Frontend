@@ -31,11 +31,11 @@ import {
 } from "@/lib/validation/create-event-schema";
 
 const steps = [
-  { label: "Details", icon: <Info className="w-4 h-4 mr-1" /> },
-  { label: "Location", icon: <MapPin className="w-4 h-4 mr-1" /> },
-  { label: "Date & Time", icon: <Clock className="w-4 h-4 mr-1" /> },
+  { label: "Detaljer", icon: <Info className="w-4 h-4 mr-1" /> },
+  { label: "Plats", icon: <MapPin className="w-4 h-4 mr-1" /> },
+  { label: "Datum & Tid", icon: <Clock className="w-4 h-4 mr-1" /> },
   { label: "Spotlight", icon: <Sparkles className="w-4 h-4 mr-1" /> },
-  { label: "Confirm", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
+  { label: "Bekräfta", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
 ];
 
 export default function EditEventPage() {
@@ -83,8 +83,8 @@ export default function EditEventPage() {
               <div className="flex items-start gap-3 text-black">
                 <CheckCircle className="text-green-500 mt-1" />
                 <div>
-                  <p className="font-semibold">Event updated!</p>
-                  <p className="text-sm">Your changes have been saved.</p>
+                  <p className="font-semibold">Evenemanget uppdaterades!</p>
+                  <p className="text-sm">Dina ändringar har sparats.</p>
                 </div>
               </div>
             );
@@ -95,22 +95,21 @@ export default function EditEventPage() {
               <div className="flex items-start gap-3 text-black">
                 <XCircle className="text-red-500 mt-1" />
                 <div>
-                  <p className="font-semibold">Update failed</p>
-                  <p className="text-sm">Please check your input and try again.</p>
+                  <p className="font-semibold">Uppdateringen misslyckades</p>
+                  <p className="text-sm">Kontrollera dina uppgifter och försök igen.</p>
                 </div>
               </div>
             );
           },
         }
       );
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast(
         <div className="flex items-start gap-3 text-black">
           <XCircle className="text-red-500 mt-1" />
           <div>
-            <p className="font-semibold">Unexpected error</p>
-            <p className="text-sm">Something went wrong, please try again later.</p>
+            <p className="font-semibold">Oväntat fel</p>
+            <p className="text-sm">Något gick fel, försök igen senare.</p>
           </div>
         </div>
       );
@@ -125,7 +124,7 @@ export default function EditEventPage() {
         <section className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="w-8 h-8 animate-spin" />
-            <p>Loading event...</p>
+            <p>Laddar evenemang...</p>
           </div>
         </section>
       </main>
@@ -140,15 +139,15 @@ export default function EditEventPage() {
         <section className="flex-1 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow text-center">
             <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Event not found</h2>
+            <h2 className="text-xl font-bold mb-2">Evenemanget hittades inte</h2>
             <p className="text-gray-600 mb-4">
-              The event you&apos;re trying to edit doesn&apos;t exist.
+              Evenemanget du försöker redigera finns inte.
             </p>
             <button
               onClick={() => router.push("/my-events")}
               className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
             >
-              Back to My Events
+              Tillbaka till mina evenemang
             </button>
           </div>
         </section>
@@ -164,11 +163,11 @@ export default function EditEventPage() {
           <Link href="/my-events">
             <Button variant="ghost" size="sm" className="gap-2 hover:bg-black/10">
               <ArrowLeft className="w-4 h-4" />
-              Back to My Events
+              Tillbaka till mina evenemang
             </Button>
           </Link>
         </div>
-        <h1 className="text-4xl font-bold mb-6">Edit Event</h1>
+        <h1 className="text-4xl font-bold mb-6">Redigera evenemang</h1>
 
         <div className="w-full max-w-xl mb-6">
           <div className="flex justify-between text-sm font-medium mb-2">
@@ -203,7 +202,7 @@ export default function EditEventPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg flex items-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span>Saving changes...</span>
+              <span>Sparar ändringar...</span>
             </div>
           </div>
         )}
