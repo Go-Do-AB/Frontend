@@ -6,30 +6,107 @@ import { Calendar } from "@/components/ui/calendar";
 import { TimePicker } from "../TimePicker";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { format } from "date-fns";
+import { X, Info } from "lucide-react";
 
 interface Props {
   control: Control<FormData>;
   errors: FieldErrors<FormData>;
 }
 
+const WEEKDAYS = [
+  { value: "mon", label: "Mon" },
+  { value: "tue", label: "Tue" },
+  { value: "wed", label: "Wed" },
+  { value: "thu", label: "Thu" },
+  { value: "fri", label: "Fri" },
+  { value: "sat", label: "Sat" },
+  { value: "sun", label: "Sun" },
+];
+
+const WEEKDAY_LABELS: Record<string, string> = {
+  mon: "Måndag", tue: "Tisdag", wed: "Onsdag", thu: "Torsdag",
+  fri: "Fredag", sat: "Lördag", sun: "Söndag",
+};
+
+function RecurringSummary({
+  startDate,
+  endDate,
+  weekdays,
+  scheduleStartTime,
+  scheduleEndTime,
+}: {
+  startDate?: Date;
+  endDate?: Date;
+  weekdays: string[];
+  scheduleStartTime: string;
+  scheduleEndTime: string;
+}) {
+  const hasAnything = startDate || weekdays.length > 0 || scheduleStartTime;
+  if (!hasAnything) return null;
+
+  const dayNames = weekdays.map((d) => WEEKDAY_LABELS[d] ?? d).join(", ");
+  const dateRange =
+    startDate && endDate
+      ? `${format(startDate, "dd.MM.yyyy")} → ${format(endDate, "dd.MM.yyyy")}`
+      : startDate
+        ? `from ${format(startDate, "dd.MM.yyyy")}`
+        : null;
+  const timeRange =
+    scheduleStartTime && scheduleEndTime
+      ? `${scheduleStartTime} – ${scheduleEndTime}`
+      : scheduleStartTime
+        ? `from ${scheduleStartTime}`
+        : null;
+
+  return (
+    <div className="rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm space-y-1">
+      <p className="font-medium text-yellow-800">Sammanfattning</p>
+      {dayNames && (
+        <p className="text-yellow-900">
+          <span className="text-muted-foreground">Varje </span>{dayNames}
+        </p>
+      )}
+      {timeRange && (
+        <p className="text-yellow-900">
+          <span className="text-muted-foreground">Tid </span>{timeRange}
+        </p>
+      )}
+      {dateRange && (
+        <p className="text-yellow-900">
+          <span className="text-muted-foreground">Period </span>{dateRange}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function StepEventDateTime({ control, errors }: Props) {
   const { setValue, watch } = useFormContext<FormData>();
-  const timingType = watch(["hasSingleDates", "hasSchedule", "isAlwaysOpen"]);
+  const [hasSingleDates, hasMultipleDates, hasSchedule, isAlwaysOpen] = watch([
+    "hasSingleDates",
+    "hasMultipleDates",
+    "hasSchedule",
+    "isAlwaysOpen",
+  ]);
 
-  // Determine selected type
-  const selected = timingType[0] ? "single" : timingType[1] ? "recurring" : "always";
+  const selected = hasSingleDates
+    ? "single"
+    : hasMultipleDates
+      ? "multiple"
+      : hasSchedule
+        ? "recurring"
+        : isAlwaysOpen
+          ? "always"
+          : "single";
 
   const handleTimingChange = (value: string) => {
     setValue("hasSingleDates", value === "single");
+    setValue("hasMultipleDates", value === "multiple");
     setValue("hasSchedule", value === "recurring");
     setValue("isAlwaysOpen", value === "always");
   };
@@ -37,228 +114,255 @@ export function StepEventDateTime({ control, errors }: Props) {
   const startDate = watch("startDate");
   const endDate = watch("endDate");
   const startTime = watch("startTime");
+  const scheduleStartTime = watch("scheduleStartTime");
+  const singleDates = watch("singleDates") || [];
 
-  useEffect(() => {
-    // Default to single if nothing is set
-    if (!timingType.includes(true)) {
-      setValue("hasSingleDates", true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [tempRange, setTempRange] = useState<DateRange | undefined>();
+  const [tempStartTime, setTempStartTime] = useState("");
+  const [tempEndTime, setTempEndTime] = useState("");
+
+  const [showMultipleHelp, setShowMultipleHelp] = useState(false);
+  const [showRecurringHelp, setShowRecurringHelp] = useState(false);
+
+  const handleAddDate = () => {
+    if (!tempRange?.from) return;
+    setValue("singleDates", [
+      ...singleDates,
+      {
+        startDate: tempRange.from,
+        endDate: tempRange.to,
+        startTime: tempStartTime,
+        endTime: tempEndTime,
+      },
+    ]);
+    setTempRange(undefined);
+    setTempStartTime("");
+    setTempEndTime("");
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <Label className="mb-4  block">Select Timing Type</Label>
-        <RadioGroup value={selected} onValueChange={handleTimingChange} className="flex gap-6">
+        <Label className="mb-4 block">Select Timing Type</Label>
+        <RadioGroup value={selected} onValueChange={handleTimingChange} className="flex flex-wrap gap-4">
           <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="single" id="single" />
-            <Label htmlFor="single" className="text-base">
-              Single date/time
-            </Label>
+            <Label htmlFor="single" className="text-base">Single instance</Label>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 py-2">
+            <RadioGroupItem value="multiple" id="multiple" />
+            <Label htmlFor="multiple" className="text-base">Multiple dates</Label>
+          </div>
+          <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="recurring" id="recurring" />
-            <Label htmlFor="recurring" className="text-base">
-              Scheduled (recurring)
-            </Label>
+            <Label htmlFor="recurring" className="text-base">Recurring (weekly)</Label>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 py-2">
             <RadioGroupItem value="always" id="always" />
-            <Label htmlFor="always" className="text-base">
-              Always Open
-            </Label>
+            <Label htmlFor="always" className="text-base">Always Open</Label>
           </div>
         </RadioGroup>
       </div>
 
-      {/* Single Date/Time */}
+      {/* Single instance: one date + start/end time */}
       {selected === "single" && (
-        <>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
           <div>
-            <Label className="block mb-2">Start</Label>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-              <Controller
-                name="startDate"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    className="rounded-md border shadow bg-white"
-                    disabled={(date) => (watch("endDate") ? date > watch("endDate")! : false)}
-                  />
-                )}
-              />
-              <Controller
-                name="startTime"
-                control={control}
-                render={({ field }) => (
-                  <TimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Start with"
-                    label="Start Time"
-                  />
-                )}
-              />
-            </div>
-            {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
+            <Label className="block mb-2">Select date</Label>
+            <Calendar
+              mode="single"
+              selected={startDate}
+              onSelect={(date) => {
+                setValue("startDate", date as Date);
+                setValue("endDate", date as Date);
+              }}
+              className="rounded-md border shadow bg-white"
+            />
+            {errors.startDate && (
+              <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
+            )}
           </div>
-
-          <div>
-            <Label className="block mb-2">End</Label>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-              <Controller
-                name="endDate"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    className="rounded-md border shadow bg-white"
-                    disabled={(date) => (watch("startDate") ? date < watch("startDate")! : false)}
-                  />
-                )}
+          <Controller
+            name="startTime"
+            control={control}
+            render={({ field }) => (
+              <TimePicker
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Start"
+                label="Start Time"
               />
-              <Controller
-                name="endTime"
-                control={control}
-                render={({ field }) => (
-                  <TimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="End with"
-                    label="End Time"
-                    disabledOptions={(opt) => {
-                      if (
-                        startDate &&
-                        endDate &&
-                        startDate.toDateString() === endDate.toDateString() &&
-                        startTime
-                      ) {
-                        return opt < startTime;
-                      }
-                      return false; // default to not disabled
-                    }}
-                  />
-                )}
+            )}
+          />
+          <Controller
+            name="endTime"
+            control={control}
+            render={({ field }) => (
+              <TimePicker
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="End"
+                label="End Time"
+                disabledOptions={(opt) => (startTime ? opt <= startTime : false)}
               />
-            </div>
-            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
-          </div>
-        </>
+            )}
+          />
+        </div>
       )}
 
-      {/* Recurring Schedule */}
-      {selected === "recurring" && (
+      {/* Multiple dates */}
+      {selected === "multiple" && (
         <>
-          <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
-            {/* Recurrence Start Date */}
-            <div className="flex-1">
-              <Label className="mb-1">Recurrence Start Date</Label>
-              <Controller
-                name="startDate"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    className="rounded-md border shadow bg-white"
-                    disabled={(date) => (watch("endDate") ? date < watch("endDate")! : false)}
-                  />
-                )}
-              />
-              {errors.startDate && (
-                <p className="text-red-500 text-sm">{errors.startDate.message}</p>
-              )}
-            </div>
-
-            {/* Recurrence End Date */}
-            <div className="flex-1">
-              <Label className="mb-1">Recurrence End Date (optional)</Label>
-              <Controller
-                name="endDate"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    className="rounded-md border shadow bg-white"
-                    disabled={(date) => (watch("startDate") ? date < watch("startDate")! : false)}
-                  />
-                )}
-              />
-              {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
-            </div>
+          <div className="flex items-center gap-1.5">
+            <Label>Hur fungerar det?</Label>
+            <button
+              type="button"
+              onClick={() => setShowMultipleHelp((v) => !v)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Visa hjälptext för flera datum"
+            >
+              <Info className="w-4 h-4" />
+            </button>
           </div>
+          {showMultipleHelp && (
+            <div className="text-xs text-muted-foreground space-y-1 bg-gray-50 rounded-lg p-3 border">
+              <p>Det går att lägga till flera datum för ett inlägg. Gör så här:</p>
+              <ol className="list-decimal list-inside space-y-0.5">
+                <li>Välj ett datum eller ett datumintervall i kalendern.</li>
+                <li>Ange start- och sluttid till höger om kalendern.</li>
+                <li>Klicka på <strong>Lägg till datum</strong> för att lägga till datumet i listan.</li>
+                <li>Upprepa för fler datum.</li>
+                <li>För att ta bort ett datum klickar du på krysset bredvid datumet i listan.</li>
+              </ol>
+            </div>
+          )}
 
-          <div>
-            <Controller
-              name="weekday"
-              control={control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label>Recurring Weekday</Label>
-                  <ToggleGroup
-                    type="single"
-                    className="grid grid-cols-7 gap-2"
-                    onValueChange={field.onChange}
-                    value={field.value || ""}
-                  >
-                    <ToggleGroupItem
-                      value="mon"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Mon
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="tue"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Tue
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="wed"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Wed
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="thu"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Thu
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="fri"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Fri
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="sat"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Sat
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="sun"
-                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
-                    >
-                      Sun
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                </div>
-              )}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
+            <div>
+              <Label className="block mb-2">Select date range</Label>
+              <Calendar
+                mode="range"
+                selected={tempRange}
+                onSelect={setTempRange}
+                className="rounded-md border shadow bg-white"
+              />
+            </div>
+            <TimePicker
+              value={tempStartTime}
+              onChange={setTempStartTime}
+              placeholder="Start"
+              label="Start Time"
+            />
+            <TimePicker
+              value={tempEndTime}
+              onChange={setTempEndTime}
+              placeholder="End"
+              label="End Time"
+              disabledOptions={(opt) => {
+                if (
+                  tempRange?.from &&
+                  tempRange?.to &&
+                  tempRange.from.toDateString() === tempRange.to.toDateString() &&
+                  tempStartTime
+                ) {
+                  return opt <= tempStartTime;
+                }
+                return false;
+              }}
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:gap-4">
+          <Button
+            type="button"
+            onClick={handleAddDate}
+            disabled={!tempRange?.from}
+            className="bg-yellow-500 hover:bg-yellow-400 text-black"
+          >
+            Lägg till datum
+          </Button>
+          {errors.singleDates && (
+            <p className="text-red-500 text-sm">{errors.singleDates.message}</p>
+          )}
+
+          {singleDates.length > 0 && (
+            <div className="space-y-2">
+              <Label>Valda datum ({singleDates.length})</Label>
+              {singleDates.map((sd, index) => (
+                <div
+                  key={`${sd.startDate.toISOString()}-${index}`}
+                  className="flex items-center justify-between gap-3 p-3 border rounded-lg bg-gray-50 text-sm"
+                >
+                  <span className="font-medium">
+                    {format(sd.startDate, "dd.MM.yyyy")}
+                    {sd.endDate && sd.endDate.toDateString() !== sd.startDate.toDateString()
+                      ? ` → ${format(sd.endDate, "dd.MM.yyyy")}`
+                      : ""}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {sd.startTime || "—"} – {sd.endTime || "—"}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0"
+                    onClick={() =>
+                      setValue(
+                        "singleDates",
+                        singleDates.filter((_, i) => i !== index)
+                      )
+                    }
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Recurring weekly */}
+      {selected === "recurring" && (
+        <>
+          <div className="flex items-center gap-1.5">
+            <Label>Hur fungerar det?</Label>
+            <button
+              type="button"
+              onClick={() => setShowRecurringHelp((v) => !v)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Visa hjälptext för återkommande evenemang"
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          </div>
+          {showRecurringHelp && (
+            <div className="text-xs text-muted-foreground space-y-1 bg-gray-50 rounded-lg p-3 border">
+              <p>Återkommande evenemang visas varje vald veckodag under den valda perioden. Gör så här:</p>
+              <ol className="list-decimal list-inside space-y-0.5">
+                <li>Välj start- och slutdatum för perioden i kalendern.</li>
+                <li>Ange start- och sluttid för varje tillfälle.</li>
+                <li>Välj vilka veckodagar evenemanget äger rum.</li>
+              </ol>
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
+            <div>
+              <Label className="block mb-2">Select date range</Label>
+              <Calendar
+                mode="range"
+                selected={{ from: startDate, to: endDate }}
+                onSelect={(range) => {
+                  setValue("startDate", range?.from as Date);
+                  setValue("endDate", range?.to as Date);
+                }}
+                className="rounded-md border shadow bg-white"
+              />
+              {errors.startDate && (
+                <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
+              )}
+            </div>
             <Controller
               name="scheduleStartTime"
               control={control}
@@ -280,46 +384,45 @@ export function StepEventDateTime({ control, errors }: Props) {
                   onChange={field.onChange}
                   placeholder="End"
                   label="End Time"
-                  disabledOptions={(opt) => {
-                    if (
-                      startDate &&
-                      endDate &&
-                      startDate.toDateString() === endDate.toDateString() &&
-                      startTime
-                    ) {
-                      return opt < startTime;
-                    }
-                    return false; // default to not disabled
-                  }}
+                  disabledOptions={(opt) => (scheduleStartTime ? opt <= scheduleStartTime : false)}
                 />
               )}
             />
           </div>
 
-          <div>
-            <Controller
-              name="recurrence"
-              control={control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label>Recurrence</Label>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select recurrence" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Does not repeat</SelectItem>
-                      <SelectItem value="weekdays">Every weekday (Mon - Fri)</SelectItem>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            />
-          </div>
+          <Controller
+            name="weekdays"
+            control={control}
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Label>Veckodagar</Label>
+                <ToggleGroup
+                  type="multiple"
+                  className="grid grid-cols-7 gap-2"
+                  onValueChange={field.onChange}
+                  value={field.value || []}
+                >
+                  {WEEKDAYS.map(({ value, label }) => (
+                    <ToggleGroupItem
+                      key={value}
+                      value={value}
+                      className="data-[state=on]:bg-yellow-500 data-[state=on]:text-white"
+                    >
+                      {label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            )}
+          />
+
+          <RecurringSummary
+            startDate={startDate}
+            endDate={endDate}
+            weekdays={watch("weekdays") || []}
+            scheduleStartTime={scheduleStartTime || ""}
+            scheduleEndTime={watch("scheduleEndTime") || ""}
+          />
         </>
       )}
 
@@ -327,6 +430,7 @@ export function StepEventDateTime({ control, errors }: Props) {
       {selected === "always" && (
         <p className="text-muted-foreground italic">This event will be listed as always open.</p>
       )}
+
       <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );

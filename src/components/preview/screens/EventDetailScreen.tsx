@@ -332,9 +332,6 @@ export function EventDetailScreen({ eventId, onBack }: EventDetailScreenProps) {
           <Section label="NÄR">
             <p style={{ fontSize: 15, lineHeight: "22px", color: Neutral[700] }}>
               {dateAndTime}
-              {event.recurrence && (
-                <span style={{ color: Neutral[500] }}> ({event.recurrence})</span>
-              )}
             </p>
           </Section>
         )}

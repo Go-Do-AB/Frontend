@@ -30,23 +30,44 @@ export const createEventSchema = z.object({
   hasSingleDates: z.boolean().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  startTime: z.string().min(1, "Start time is required"),
-  endTime: z.string().min(1, "End time is required"),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
 
-  hasSchedule: z.boolean().optional(),
-  weekday: z
-    .enum(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
+  hasMultipleDates: z.boolean().optional(),
+  singleDates: z
+    .array(
+      z.object({
+        startDate: z.date(),
+        endDate: z.date().optional(),
+        startTime: z.string(),
+        endTime: z.string(),
+      })
+    )
     .optional(),
 
-  scheduleStartTime: z.string().optional(), // You may refine these to match HH:mm
+  hasSchedule: z.boolean().optional(),
+  weekdays: z.array(z.string()).optional(),
+
+  scheduleStartTime: z.string().optional(),
   scheduleEndTime: z.string().optional(),
 
-  recurrence: z.string().optional(),
   isAlwaysOpen: z.boolean().optional(),
 
   spotlight: z.boolean().optional(),
   spotlightStartDate: z.date().optional(),
   spotlightEndDate: z.date().optional(),
+}).superRefine((data, ctx) => {
+  if (data.hasSingleDates) {
+    if (!data.startTime) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Start time is required", path: ["startTime"] });
+    }
+    if (!data.endTime) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "End time is required", path: ["endTime"] });
+    }
+  }
+  if (data.hasMultipleDates && (!data.singleDates || data.singleDates.length === 0)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Add at least one date", path: ["singleDates"] });
+  }
 });
 
 export const defaultFormValues: CreateEventFormData = {
@@ -69,18 +90,20 @@ export const defaultFormValues: CreateEventFormData = {
   postalCode: "",
   gpsCoordinates: "",
 
-  hasSingleDates: false,
+  hasSingleDates: true,
   startDate: undefined as unknown as Date,
   endDate: undefined as unknown as Date,
   startTime: "",
   endTime: "",
 
+  hasMultipleDates: false,
+  singleDates: [],
+
   hasSchedule: false,
-  weekday: undefined,
+  weekdays: [],
   scheduleStartTime: "",
   scheduleEndTime: "",
 
-  recurrence: "",
   isAlwaysOpen: false,
 
   spotlight: false,
@@ -102,32 +125,25 @@ const combineDateAndTime = (
   return d.toISOString();
 };
 
-// Map abbreviated weekday to full name for .NET DayOfWeek enum
-const weekdayMap: Record<string, string> = {
-  sun: "Sunday",
-  mon: "Monday",
-  tue: "Tuesday",
-  wed: "Wednesday",
-  thu: "Thursday",
-  fri: "Friday",
-  sat: "Saturday",
-  // Also support full names directly
-  Sunday: "Sunday",
-  Monday: "Monday",
-  Tuesday: "Tuesday",
-  Wednesday: "Wednesday",
-  Thursday: "Thursday",
-  Friday: "Friday",
-  Saturday: "Saturday",
+const weekdayAbbrevToIndex: Record<string, number> = {
+  sun: 0, sunday: 0,
+  mon: 1, monday: 1,
+  tue: 2, tuesday: 2,
+  wed: 3, wednesday: 3,
+  thu: 4, thursday: 4,
+  fri: 5, friday: 5,
+  sat: 6, saturday: 6,
 };
 
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {
-  // Map weekday abbreviation to index
-  const weekdayIndex = data.weekday
-    ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(
-        weekdayMap[data.weekday] || data.weekday
-      )
-    : undefined;
+  const weekdayIndices = (data.weekdays || [])
+    .map((w) => weekdayAbbrevToIndex[w.toLowerCase()])
+    .filter((i): i is number => i !== undefined && i >= 0);
+
+  const singleDatePayload = (data.singleDates || []).map((sd) => ({
+    startDate: combineDateAndTime(sd.startDate, sd.startTime) ?? "",
+    endDate: combineDateAndTime(sd.endDate ?? sd.startDate, sd.endTime) ?? "",
+  }));
 
   return {
     organiser: data.organiser,
@@ -157,19 +173,17 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     gpsCoordinates: data.gpsCoordinates || undefined,
 
     hasSingleDates: data.hasSingleDates,
-    // Combine date with time for single date events
-    startDate: combineDateAndTime(data.startDate, data.startTime),
-    endDate: combineDateAndTime(data.endDate, data.endTime),
+    startDate: data.hasSingleDates ? combineDateAndTime(data.startDate, data.startTime) : undefined,
+    endDate: data.hasSingleDates ? combineDateAndTime(data.endDate, data.endTime) : undefined,
+
+    hasMultipleDates: data.hasMultipleDates,
+    singleDates: data.hasMultipleDates ? singleDatePayload : undefined,
 
     hasSchedule: data.hasSchedule,
-    // Map weekday abbreviation to .NET DayOfWeek enum index
-    weekday: weekdayIndex !== undefined && weekdayIndex >= 0 ? weekdayIndex : undefined,
+    weekdays: weekdayIndices.length > 0 ? weekdayIndices : undefined,
 
-    // Schedule times as HH:mm strings (BE expects TimeSpan format)
     scheduleStartTime: data.scheduleStartTime || undefined,
     scheduleEndTime: data.scheduleEndTime || undefined,
-
-    recurrence: data.recurrence || undefined,
 
     isAlwaysOpen: data.isAlwaysOpen,
     spotlight: data.spotlight,
@@ -184,15 +198,9 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
 
 export type CreateEventFormData = z.infer<typeof createEventSchema>;
 
-// Weekday index to name mapping (for converting from BE to FE)
-const weekdayIndexToName: Record<number, CreateEventFormData["weekday"]> = {
-  0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday",
+// Weekday index to abbreviated name (for converting from BE to FE)
+const weekdayIndexToAbbrev: Record<number, string> = {
+  0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat",
 };
 
 // Convert EventDto from API to CreateEventFormData for editing
@@ -215,11 +223,12 @@ export const eventDtoToFormData = (event: {
   hasSingleDates?: boolean;
   startDate?: string;
   endDate?: string;
+  hasMultipleDates?: boolean;
+  singleDates?: Array<{ startDate: string; endDate: string }>;
   hasSchedule?: boolean;
-  weekday?: number;
+  weekdays?: number[];
   scheduleStartTime?: string;
   scheduleEndTime?: string;
-  recurrence?: string;
   isAlwaysOpen?: boolean;
   spotlight?: boolean;
   spotlightStartDate?: string;
@@ -280,12 +289,21 @@ export const eventDtoToFormData = (event: {
     startTime: extractTime(event.startDate),
     endTime: extractTime(event.endDate),
 
+    hasMultipleDates: event.hasMultipleDates || false,
+    singleDates: (event.singleDates || []).map((sd) => ({
+      startDate: new Date(sd.startDate),
+      endDate: sd.endDate ? new Date(sd.endDate) : undefined,
+      startTime: extractTime(sd.startDate),
+      endTime: extractTime(sd.endDate),
+    })),
+
     hasSchedule: event.hasSchedule || false,
-    weekday: event.weekday !== undefined ? weekdayIndexToName[event.weekday] : undefined,
+    weekdays: (event.weekdays || [])
+      .map((i) => weekdayIndexToAbbrev[i])
+      .filter(Boolean),
     scheduleStartTime: parseTimeSpan(event.scheduleStartTime),
     scheduleEndTime: parseTimeSpan(event.scheduleEndTime),
 
-    recurrence: event.recurrence || "",
     isAlwaysOpen: event.isAlwaysOpen || false,
 
     spotlight: event.spotlight || false,

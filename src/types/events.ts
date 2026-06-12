@@ -31,11 +31,13 @@ export type CreateEventDto = {
   startDate?: string; // ISO 8601
   endDate?: string;
 
+  hasMultipleDates?: boolean;
+  singleDates?: Array<{ startDate: string; endDate: string }>;
+
   hasSchedule?: boolean;
-  weekday?: number;
+  weekdays?: number[];
   scheduleStartTime?: string; // "HH:mm"
   scheduleEndTime?: string;
-  recurrence?: string;
 
   isAlwaysOpen?: boolean;
   spotlight?: boolean;
@@ -84,11 +86,12 @@ export type EventDto = {
   hasSingleDates?: boolean;
   startDate?: string;
   endDate?: string;
+  hasMultipleDates?: boolean;
+  singleDates?: Array<{ startDate: string; endDate: string }>;
   hasSchedule?: boolean;
-  weekday?: number;
+  weekdays?: number[];
   scheduleStartTime?: string;
   scheduleEndTime?: string;
-  recurrence?: string;
   isAlwaysOpen?: boolean;
   spotlight?: boolean;
   spotlightStartDate?: string;
