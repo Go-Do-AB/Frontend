@@ -43,6 +43,7 @@ export type CreateEventDto = {
   spotlight?: boolean;
   spotlightStartDate?: string | null;
   spotlightEndDate?: string | null;
+  spotlightImageUrl?: string;
 
   // ---- Matching backend ----
   categoryCodes: number[];
@@ -96,6 +97,7 @@ export type EventDto = {
   spotlight?: boolean;
   spotlightStartDate?: string;
   spotlightEndDate?: string;
+  spotlightImageUrl?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;
