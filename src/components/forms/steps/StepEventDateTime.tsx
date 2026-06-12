@@ -417,7 +417,7 @@ export function StepEventDateTime({ control, errors }: Props) {
             startDate={startDate}
             endDate={endDate}
             weekdays={watch("weekdays") || []}
-            scheduleStartTime={scheduleStartTime}
+            scheduleStartTime={scheduleStartTime || ""}
             scheduleEndTime={watch("scheduleEndTime") || ""}
           />
         </>
