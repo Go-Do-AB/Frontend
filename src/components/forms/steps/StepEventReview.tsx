@@ -122,7 +122,8 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             </div>
           )}
 
-          {(values.startDate || values.startTime) && (
+          {/* Single instance */}
+          {values.hasSingleDates && (values.startDate || values.startTime) && (
             <div className="flex items-start gap-3">
               <CalendarArrowDown className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
@@ -145,7 +146,7 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             </div>
           )}
 
-          {(values.endDate || values.endTime) && (
+          {values.hasSingleDates && (values.endDate || values.endTime) && (
             <div className="flex items-start gap-3">
               <CalendarArrowUp className="w-5 h-5 mt-1 text-muted-foreground" />
               <div>
@@ -164,6 +165,54 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Multiple single dates */}
+          {values.hasMultipleDates && values.singleDates && values.singleDates.length > 0 && (
+            <div className="flex items-start gap-3">
+              <CalendarIcon className="w-5 h-5 mt-1 text-muted-foreground" />
+              <div>
+                <Label className="text-muted-foreground">Dates</Label>
+                <div className="space-y-1 mt-1">
+                  {values.singleDates.map((sd, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm">
+                      <span className="font-medium">
+                        {format(sd.startDate, "dd.MM.yyyy")}
+                        {sd.endDate && sd.endDate.toDateString() !== sd.startDate.toDateString()
+                          ? ` → ${format(sd.endDate, "dd.MM.yyyy")}`
+                          : ""}
+                      </span>
+                      {(sd.startTime || sd.endTime) && (
+                        <span className="text-muted-foreground">
+                          {sd.startTime} {sd.endTime ? `– ${sd.endTime}` : ""}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Recurring */}
+          {values.hasSchedule && values.weekdays && values.weekdays.length > 0 && (
+            <div className="flex items-start gap-3">
+              <CalendarIcon className="w-5 h-5 mt-1 text-muted-foreground" />
+              <div>
+                <Label className="text-muted-foreground">Weekdays</Label>
+                <p>
+                  {values.weekdays
+                    .map((d) => d.charAt(0).toUpperCase() + d.slice(1))
+                    .join(", ")}
+                </p>
+                {(values.scheduleStartTime || values.scheduleEndTime) && (
+                  <p className="text-sm text-muted-foreground">
+                    {values.scheduleStartTime}
+                    {values.scheduleEndTime ? ` – ${values.scheduleEndTime}` : ""}
+                  </p>
+                )}
               </div>
             </div>
           )}
