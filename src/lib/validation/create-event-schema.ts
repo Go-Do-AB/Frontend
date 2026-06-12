@@ -276,7 +276,7 @@ export const eventDtoToFormData = (event: {
     bookingUrl: event.bookingUrl || "",
 
     streetName: event.streetName || "",
-    houseNumber: event.houseNumber || 0,
+    houseNumber: event.houseNumber ?? undefined,
 
     city: event.city || "",
     postalCode: event.postalCode || "",
