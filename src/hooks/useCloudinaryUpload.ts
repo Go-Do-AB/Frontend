@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { api } from "@/lib/axios";
 
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -59,9 +59,9 @@ export function useCloudinaryUpload() {
     }
   };
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setError(null);
-  };
+  }, []);
 
   return { upload, isUploading, error, reset };
 }
