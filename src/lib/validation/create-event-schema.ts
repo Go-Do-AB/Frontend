@@ -56,6 +56,7 @@ export const createEventSchema = z.object({
   spotlight: z.boolean().optional(),
   spotlightStartDate: z.date().optional(),
   spotlightEndDate: z.date().optional(),
+  spotlightImageUrl: z.string().url().optional().or(z.literal("")),
 }).superRefine((data, ctx) => {
   if (data.hasSingleDates) {
     if (!data.startTime) {
@@ -109,6 +110,7 @@ export const defaultFormValues: CreateEventFormData = {
   spotlight: false,
   spotlightStartDate: undefined as unknown as Date,
   spotlightEndDate: undefined as unknown as Date,
+  spotlightImageUrl: "",
 };
 
 // Helper to combine date and time into ISO string
@@ -193,6 +195,7 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     spotlightEndDate: data.spotlightEndDate
       ? new Date(data.spotlightEndDate).toISOString()
       : undefined,
+    spotlightImageUrl: data.spotlightImageUrl || undefined,
   };
 };
 
@@ -233,6 +236,7 @@ export const eventDtoToFormData = (event: {
   spotlight?: boolean;
   spotlightStartDate?: string;
   spotlightEndDate?: string;
+  spotlightImageUrl?: string;
 }): CreateEventFormData => {
   // Extract time from ISO date string
   const extractTime = (isoString?: string): string => {
@@ -313,5 +317,6 @@ export const eventDtoToFormData = (event: {
     spotlightEndDate: event.spotlightEndDate
       ? new Date(event.spotlightEndDate)
       : (undefined as unknown as Date),
+    spotlightImageUrl: event.spotlightImageUrl || "",
   };
 };
