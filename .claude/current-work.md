@@ -3,9 +3,39 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-06-12
+Last updated: 2026-06-30
 
 ## Active Task
+**Spotlight placement purchase UI** — branch `feature/spotlight-payments-ui` (committed locally, not pushed).
+
+### What was done (2026-06-30):
+
+**Branch: `feature/spotlight-payments-ui`**
+
+New organiser-facing flow to buy a Spotlight placement for an event. Consumes the new
+Backend `/api/spotlight` API. Payments are MOCKED end-to-end (no real Stripe/Klarna/Swish SDK).
+
+- `src/types/spotlight.ts` — types for SpotlightPackage, checkout/confirm requests + responses, SpotlightPayment.
+- `src/types/events.ts` — added optional `isForbidden` / `isNotFound` to `OperationResult<T>` (matches BE contract).
+- `src/hooks/useSpotlight.ts` — TanStack Query hooks: packages, payments, checkout, confirm.
+- `src/components/spotlight/SpotlightPurchaseDialog.tsx` — 5-step state machine modal
+  (package → method → processing → success → error). Checkout then immediate confirm
+  (mock gateway auto-approves). Honest "Demo / testläge" badge on payment step.
+- `src/app/my-events/page.tsx` — "Spotlight" button on each event card (entry point) +
+  "Spotlight" badge when an event's spotlight window is active.
+- `src/lib/content/strings-en.ts` — EN archive strings for the new flow.
+
+### Decisions made
+- Entry point = button on the my-events event card (best match for existing UX).
+- Runtime copy is Swedish inline (matches the rest of the app post-#87); EN kept in the archive file.
+- Providers shown: Stripe / Klarna / Swish (the real options to wire later); selected provider
+  is sent to `/checkout`, which the mock gateway auto-approves via the immediate `/confirm` call.
+
+### What's next:
+1. Push branch + open PR when ready.
+2. Wire real payment SDKs later (replace the immediate confirm with provider redirect/webhook return).
+
+## Earlier Task
 **Translate frontend to Swedish — Issue #87** — PR #89 open, issue moved to "In Review".
 
 ### What was done (2026-06-12):
