@@ -87,6 +87,35 @@ export const EN = {
     priceNote: "The price is 99 SEK per day plus 125 SEK VAT. VAT is included in the total",
   },
 
+  // SpotlightPurchaseDialog (my-events spotlight placement purchase flow)
+  spotlightPurchase: {
+    title: "Spotlight your event",
+    choosePackagePrompt: "Choose how long your event stays in the spotlight.",
+    packagesError: "Could not load packages. Please try again.",
+    continue: "Continue",
+    days: "{days} days",
+    daysInSpotlight: "{days} days in the spotlight",
+    choosePaymentMethod: "Choose a payment method",
+    demoBadgeTitle: "Demo / test mode.",
+    demoBadgeBody:
+      "Payments are simulated for now — no real money is charged. Real payments will be wired up later.",
+    back: "Back",
+    pay: "Pay",
+    processing: "Processing payment…",
+    paymentSuccess: "Payment successful",
+    spotlightUntil: "Your event is now in the spotlight until {date}.",
+    done: "Done",
+    errorTitle: "Something went wrong",
+    forbidden: "You can only spotlight events that you own.",
+    checkoutFailed: "Could not start the payment.",
+    confirmFailed: "Could not confirm the payment.",
+    genericError: "Something went wrong. Please try again later.",
+    close: "Close",
+    retry: "Try again",
+    badge: "Spotlight",
+    toastSuccess: "Your event is now in the spotlight",
+  },
+
   // StepEventReview
   review: {
     heading: "Review your event info",
