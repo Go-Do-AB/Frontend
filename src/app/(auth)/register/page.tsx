@@ -90,14 +90,14 @@ export default function OrganizerRegisterPage() {
       const token = parsed?.data?.token;
       if (token) localStorage.setItem("accessToken", token);
 
-      toast.success("Organizer account created successfully!");
+      toast.success("Arrangörskontot skapades!");
       router.replace(LANDING_PATH);
     } catch (e: unknown) {
       const axiosErr = e as { response?: { data?: OperationResult<unknown> } };
       const message =
         axiosErr?.response?.data?.message ||
         axiosErr?.response?.data?.errors?.join(", ") ||
-        (e instanceof Error ? e.message : "Registration failed");
+        (e instanceof Error ? e.message : "Registreringen misslyckades");
       setError("root", { message });
       toast.error(message);
     }
@@ -116,21 +116,21 @@ export default function OrganizerRegisterPage() {
             <Card className="shadow-lg border-black/10 bg-white">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-semibold text-black">
-                  Register as an organizer
+                  Registrera dig som arrangör
                 </CardTitle>
               </CardHeader>
 
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div>
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username">Användarnamn</Label>
                     <Input
                       id="username"
                       autoComplete="username"
                       {...register("username", {
-                        required: "Username is required",
-                        minLength: { value: 3, message: "Min 3 characters" },
-                        maxLength: { value: 64, message: "Max 64 characters" },
+                        required: "Användarnamn krävs",
+                        minLength: { value: 3, message: "Min 3 tecken" },
+                        maxLength: { value: 64, message: "Max 64 tecken" },
                       })}
                     />
                     {errors.username && (
@@ -139,14 +139,14 @@ export default function OrganizerRegisterPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Lösenord</Label>
                     <Input
                       id="password"
                       type="password"
                       autoComplete="new-password"
                       {...register("password", {
-                        required: "Password is required",
-                        minLength: { value: 6, message: "Min 6 characters" },
+                        required: "Lösenord krävs",
+                        minLength: { value: 6, message: "Min 6 tecken" },
                       })}
                     />
                     {errors.password && (
@@ -155,13 +155,13 @@ export default function OrganizerRegisterPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="fullName">Full name</Label>
+                    <Label htmlFor="fullName">Fullständigt namn</Label>
                     <Input
                       id="fullName"
                       autoComplete="name"
                       {...register("fullName", {
-                        required: "Full name is required",
-                        minLength: { value: 2, message: "Min 2 characters" },
+                        required: "Fullständigt namn krävs",
+                        minLength: { value: 2, message: "Min 2 tecken" },
                       })}
                     />
                     {errors.fullName && (
@@ -170,10 +170,10 @@ export default function OrganizerRegisterPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="businessName">Business name</Label>
+                    <Label htmlFor="businessName">Företagsnamn</Label>
                     <Input
                       id="businessName"
-                      {...register("businessName", { required: "Business name is required" })}
+                      {...register("businessName", { required: "Företagsnamn krävs" })}
                     />
                     {errors.businessName && (
                       <p className="text-red-500 text-sm mt-1">{errors.businessName.message}</p>
@@ -181,12 +181,12 @@ export default function OrganizerRegisterPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="phoneNumber">Phone number</Label>
+                    <Label htmlFor="phoneNumber">Telefonnummer</Label>
                     <Input
                       id="phoneNumber"
                       type="tel"
                       autoComplete="tel"
-                      {...register("phoneNumber", { required: "Phone number is required" })}
+                      {...register("phoneNumber", { required: "Telefonnummer krävs" })}
                     />
                     {errors.phoneNumber && (
                       <p className="text-red-500 text-sm mt-1">{errors.phoneNumber.message}</p>
@@ -194,11 +194,11 @@ export default function OrganizerRegisterPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="organisationNumber">Organisation number</Label>
+                    <Label htmlFor="organisationNumber">Organisationsnummer</Label>
                     <Input
                       id="organisationNumber"
                       {...register("organisationNumber", {
-                        required: "Organisation number is required",
+                        required: "Organisationsnummer krävs",
                       })}
                     />
                     {errors.organisationNumber && (
@@ -209,16 +209,16 @@ export default function OrganizerRegisterPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">E-post</Label>
                     <Input
                       id="email"
                       type="email"
                       autoComplete="email"
                       {...register("email", {
-                        required: "Email is required",
+                        required: "E-post krävs",
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Invalid email address",
+                          message: "Ogiltig e-postadress",
                         },
                       })}
                     />
@@ -233,18 +233,18 @@ export default function OrganizerRegisterPage() {
                       type="checkbox"
                       className="h-4 w-4"
                       {...register("acceptTerms", {
-                        validate: (v) => v === true || "You must accept the terms",
+                        validate: (v) => v === true || "Du måste godkänna villkoren",
                       })}
                     />
                     <Label htmlFor="acceptTerms" className="text-sm text-gray-700">
-                      I agree to the Terms and Conditions and have read the{" "}
+                      Jag godkänner villkoren och har läst{" "}
                       <a
                         href="/privacy"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline"
                       >
-                        Privacy Policy
+                        integritetspolicyn
                       </a>
                     </Label>
                   </div>
@@ -259,7 +259,7 @@ export default function OrganizerRegisterPage() {
                     className="w-full bg-black text-white hover:bg-gray-800 mt-4 disabled:opacity-50"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Registering..." : "Register"}
+                    {isSubmitting ? "Registrerar..." : "Registrera"}
                   </Button>
 
                   {errors.root?.message && (
@@ -270,12 +270,12 @@ export default function OrganizerRegisterPage() {
 
               <CardFooter className="text-center">
                 <p className="text-sm text-gray-600">
-                  Already have an account{" "}
+                  Har du redan ett konto?{" "}
                   <span
                     className="text-blue-600 cursor-pointer hover:underline"
                     onClick={() => router.push("/login")}
                   >
-                    Log in
+                    Logga in
                   </span>
                 </p>
               </CardFooter>

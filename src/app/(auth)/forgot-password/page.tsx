@@ -30,14 +30,14 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       await api.post("/organisers/auth/forgot-password", { email: values.email });
-      toast.success("If the email exists, a reset link is on its way.");
+      toast.success("Om e-postadressen finns skickas en återställningslänk.");
       setSubmitted(true);
     } catch (e: unknown) {
       const axiosErr = e as { response?: { data?: { message?: string; errors?: string[] } } };
       const msg =
         axiosErr?.response?.data?.message ||
         axiosErr?.response?.data?.errors?.join(", ") ||
-        (e instanceof Error ? e.message : "Something went wrong");
+        (e instanceof Error ? e.message : "Något gick fel");
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -56,10 +56,10 @@ export default function ForgotPasswordPage() {
           <Card className="shadow-lg border-black/10 bg-white">
             <CardHeader className="text-center">
               <CardTitle className="text-xl sm:text-2xl font-semibold text-black">
-                Reset your password
+                Återställ ditt lösenord
               </CardTitle>
               <p className="text-sm text-black/70 mt-2">
-                Enter the email for your organiser account and we&apos;ll send a reset link.
+                Ange e-postadressen för ditt arrangörskonto så skickar vi en återställningslänk.
               </p>
             </CardHeader>
 
@@ -67,28 +67,27 @@ export default function ForgotPasswordPage() {
               {submitted ? (
                 <div className="space-y-4 text-center">
                   <p className="text-black">
-                    If an account exists for that email, a reset link has been sent. The link is
-                    valid for 15 minutes.
+                    Om ett konto finns för den e-postadressen har en återställningslänk skickats. Länken är giltig i 15 minuter.
                   </p>
                   <p className="text-sm text-black/70">
-                    Check your spam folder if it hasn&apos;t arrived.
+                    Kolla din skräppostmapp om den inte har kommit fram.
                   </p>
                 </div>
               ) : (
                 <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-black">
-                      Email
+                      E-post
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       autoComplete="email"
                       {...register("email", {
-                        required: "Email is required",
+                        required: "E-post krävs",
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Enter a valid email",
+                          message: "Ange en giltig e-postadress",
                         },
                       })}
                       className="bg-white"
@@ -103,7 +102,7 @@ export default function ForgotPasswordPage() {
                     disabled={loading}
                     className="w-full bg-black text-white hover:bg-black/90 transition-all disabled:opacity-60"
                   >
-                    {loading ? "Sending…" : "Send reset link"}
+                    {loading ? "Skickar…" : "Skicka återställningslänk"}
                   </Button>
                 </form>
               )}
@@ -114,7 +113,7 @@ export default function ForgotPasswordPage() {
                 href="/login"
                 className="text-sm underline underline-offset-4 text-black"
               >
-                Back to login
+                Tillbaka till inloggning
               </Link>
             </CardFooter>
           </Card>

@@ -64,15 +64,15 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
     <div className="space-y-4">
       <div>
         <Label className="py-2 block">
-          Organiser <span className="text-red-500">*</span>
+          Arrangör <span className="text-red-500">*</span>
         </Label>
-        <Input placeholder="Organiser name" {...register("organiser")} />
+        <Input placeholder="Arrangörens namn" {...register("organiser")} />
         {errors.organiser && <p className="text-red-500 text-sm">{errors.organiser.message}</p>}
       </div>
 
       <div>
         <Label className="py-2 block">
-          Organisation number <span className="text-red-500">*</span>
+          Organisationsnummer <span className="text-red-500">*</span>
         </Label>
         <Input
           placeholder="XXXXXX-XXXX"
@@ -81,7 +81,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
           className={orgNrLocked ? "bg-gray-100 cursor-default select-none" : ""}
         />
         {orgNrLocked && (
-          <p className="text-xs text-muted-foreground mt-1">Auto-filled from your account</p>
+          <p className="text-xs text-muted-foreground mt-1">Hämtad från ditt konto</p>
         )}
         {errors.organisationNumber && (
           <p className="text-red-500 text-sm">{errors.organisationNumber.message}</p>
@@ -90,19 +90,19 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
 
       <div>
         <Label className="py-2 block">
-          Title <span className="text-red-500">*</span>
+          Titel <span className="text-red-500">*</span>
         </Label>
-        <Input placeholder="Event Title" {...register("title")} />
+        <Input placeholder="Evenemangets titel" {...register("title")} />
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
       </div>
 
       {/* Categories + Subcategories */}
       <div>
         <Label className="py-2 block">
-          Select Categories <span className="text-red-500">*</span>
+          Välj kategorier <span className="text-red-500">*</span>
         </Label>
         <p className="text-xs text-muted-foreground mb-3">
-          Max {MAX_CATEGORIES} categories — click a selected category to open subcategories
+          Max {MAX_CATEGORIES} kategorier — klicka på en vald kategori för att öppna underkategorier
         </p>
         <Controller
           name="categories"
@@ -188,7 +188,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                               <div className="w-full bg-white border rounded-lg p-4 shadow">
                                 <p className="text-sm font-semibold mb-2 text-gray-700">
                                   {categoryOptions.find((c) => c.code === openDropdown)?.label}{" "}
-                                  Subcategories
+                                  Underkategorier
                                 </p>
                                 <div className="flex flex-wrap gap-3 max-h-48 overflow-y-auto scroll-smooth p-1.5">
                                   {subcategoriesMap[openDropdown]?.map(
@@ -243,8 +243,8 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
                                   >
                                     {subField.value?.[openDropdown]?.length ===
                                     subcategoriesMap[openDropdown]?.length
-                                      ? "Unselect All"
-                                      : "Select All"}
+                                      ? "Avmarkera alla"
+                                      : "Välj alla"}
                                   </Button>
                                 </div>
                               </div>
@@ -263,7 +263,7 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
 
       {/* Filters */}
       <div>
-        <Label className="py-2 block">Filters</Label>
+        <Label className="py-2 block">Filter</Label>
         <Controller
           name="filters"
           control={control}
@@ -303,24 +303,23 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
       {/* Description & URLs */}
       <div>
         <Label className="py-2 block">
-          Description <span className="text-red-500">*</span>
+          Beskrivning <span className="text-red-500">*</span>
         </Label>
-        <Textarea placeholder="Event Description" {...register("description")} />
+        <Textarea placeholder="Beskrivning av evenemanget" {...register("description")} />
         {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
       </div>
 
       <div>
-        <Label className="py-2 block">Event URL</Label>
+        <Label className="py-2 block">Evenemangslänk</Label>
         <Input placeholder="https://event-link.com" {...register("eventUrl")} />
         {errors.eventUrl && <p className="text-red-500 text-sm">{errors.eventUrl.message}</p>}
       </div>
 
       <div>
-        <Label className="py-2 block">Booking URL</Label>
+        <Label className="py-2 block">Bokningslänk</Label>
         <Input placeholder="https://booking-link.com" {...register("bookingUrl")} />
         {errors.bookingUrl && <p className="text-red-500 text-sm">{errors.bookingUrl.message}</p>}
       </div>
-      <p className="text-xs text-muted-foreground italic">* Not all fields above are required</p>
     </div>
   );
 }

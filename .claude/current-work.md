@@ -3,41 +3,38 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-05-20
+Last updated: 2026-06-12
 
 ## Active Task
-**Admin Moderation Dashboard (Frontend#48 / Backend#74)** — FE implementation complete, pending BE endpoints.
+**Translate frontend to Swedish — Issue #87** — PR #89 open, issue moved to "In Review".
 
-### What was done (2026-05-20):
+### What was done (2026-06-12):
 
-**Admin Moderation Dashboard (branch `feature/admin-moderation-dashboard`):**
+**Branch: `87-translate-event-creation-form-to-swedish`** — PR #89
 
-1. **`src/types/events.ts`** — added `ReportReason` enum (8 values) + `ReportReasonLabel`
-   Swedish label map, `ReportStatus` enum, `EventReportDto`, `ReportedEventSummaryDto`.
-2. **`src/hooks/useReports.ts`** — `useAdminReports()` (GET `/api/admin/reports`) and
-   `useDismissReports()` (POST `/api/admin/reports/{eventId}/dismiss`).
-3. **`src/app/admin/moderation/page.tsx`** — admin-gated dashboard (same JWT role-check
-   pattern as quick-create). 6-column table sorted by report count: title, report count badge,
-   reason chips (Swedish, truncated), AI score badge (green/amber/red), status pill,
-   Remove + Dismiss actions. Dialog confirm before remove. Skeleton / empty / error states.
-4. **`src/app/admin/moderation/layout.tsx`** — server layout holding page metadata
-   ("Moderation | GODO Admin"). Needed because page.tsx is a client component.
-5. **`src/app/landing/page.tsx`** — added "Moderation" button for admin users beside
-   "Quick Add Place", linking to `/admin/moderation`.
+All UI strings translated to Swedish across every page and form step:
+- `create-event/page.tsx`, `my-events/page.tsx`, `my-events/[id]/edit/page.tsx`
+- `landing/page.tsx`, `profile/page.tsx`, `quick-create/page.tsx`
+- `(auth)/login`, `register`, `forgot-password`, `reset-password`
+- All 5 form steps, `EventFormStepper.tsx`, `QuickCreateForm.tsx`, `Navbar.tsx`, `TimePicker.tsx`
+- All Zod validation messages in `create-event-schema.ts`
 
-All phases complete. All gates green: tsc, lint, build (19 static pages).
+Removals and fixes:
+- `streetName2` removed from form/schema/payload/edit adapter (kept in `EventDto` for backend compat)
+- "Not all fields required" notice removed
+- `TimePicker` now stores and displays `HH:mm` (was `HH:mm:ss`, was showing AM/PM)
+- `houseNumber` default fixed from `0` to `undefined`
+- `filters` error message fixed to "Välj minst ett filter"
+- Debug `console.log` calls removed from create and edit pages
+- English strings archived in `src/lib/content/strings-en.ts`
 
 ### Decisions made
-- Used `Dialog` (available) instead of `AlertDialog` (not installed) for confirm flow.
-- Metadata placed in `layout.tsx` because `metadata` export is not allowed in `"use client"` pages.
-- No pagination — report volume expected to be low; can add later if needed.
+- `streetName2` kept in `EventDto`/`CreateEventDto` types for backend API compatibility
+- No language toggle — Swedish only as specified
 
 ### What's next:
-1. **PR to main** once this is reviewed.
-2. **Wire to real data** when Backend ships `GET /api/admin/reports` and
-   `POST /api/admin/reports/{eventId}/dismiss` (tracked in Backend#74).
-3. Confirm response shape with BE: assumed `OperationResult<ReportedEventSummaryDto[]>`.
-4. Move Frontend#48 to "In Review" on the project board after PR is opened.
+1. **PR #89 awaits review** — merge when approved.
+2. Move issue #87 to "Done" on project board after PR is merged.
 
 ## Previous Session (2026-05-19)
 Privacy Policy page (bilingual, DRAFT) — branch `feature/privacy-policy`.

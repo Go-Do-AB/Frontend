@@ -3,50 +3,71 @@ import { z } from "zod";
 import { ORGNR_REGEX, isValidSwedishOrgNr } from "@/lib/utils";
 
 export const createEventSchema = z.object({
-  organiser: z.string().min(1, "Organiser is required"),
+  organiser: z.string().min(1, "Arrangör krävs"),
   organisationNumber: z
     .string()
-    .min(1, "Organisation number is required")
-    .regex(ORGNR_REGEX, "Use format XXXXXX-XXXX")
-    .refine(isValidSwedishOrgNr, "Invalid organisation number (checksum)"),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  categories: z.array(z.number()).min(1, "Please select at least one category"),
+    .min(1, "Organisationsnummer krävs")
+    .regex(ORGNR_REGEX, "Använd formatet XXXXXX-XXXX")
+    .refine(isValidSwedishOrgNr, "Ogiltigt organisationsnummer (kontrollsumma)"),
+  title: z.string().min(1, "Titel krävs"),
+  description: z.string().min(1, "Beskrivning krävs"),
+  categories: z.array(z.number()).min(1, "Välj minst en kategori"),
   subcategories: z.record(z.number(), z.array(z.number())).optional(),
-  filters: z.array(z.number()).min(1, "Please select at least one category").optional(),
+  filters: z.array(z.number()).min(1, "Välj minst ett filter").optional(),
 
-  eventUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
+  eventUrl: z.url("Måste vara en giltig URL").optional().or(z.literal("")),
 
-  bookingUrl: z.url("Must be a valid URL").optional().or(z.literal("")),
+  bookingUrl: z.url("Måste vara en giltig URL").optional().or(z.literal("")),
 
-  streetName: z.string().min(1, "Street name is required"),
-  streetName2: z.string().optional(),
-  houseNumber: z.number().int("Must be a number").positive("Must be greater than 0").optional(),
+  streetName: z.string().min(1, "Gatunamn krävs"),
+  houseNumber: z.number().int("Måste vara ett heltal").positive("Måste vara större än 0").optional(),
 
-  city: z.string().min(1, "City is required"),
-  postalCode: z.string().min(1, "Postal code is required"),
-  gpsCoordinates: z.string().max(50, "Max 50 characters").optional().or(z.literal("")),
+  city: z.string().min(1, "Stad krävs"),
+  postalCode: z.string().min(1, "Postnummer krävs"),
+  gpsCoordinates: z.string().max(50, "Max 50 tecken").optional().or(z.literal("")),
 
   hasSingleDates: z.boolean().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  startTime: z.string().min(1, "Start time is required"),
-  endTime: z.string().min(1, "End time is required"),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
 
-  hasSchedule: z.boolean().optional(),
-  weekday: z
-    .enum(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"])
+  hasMultipleDates: z.boolean().optional(),
+  singleDates: z
+    .array(
+      z.object({
+        startDate: z.date(),
+        endDate: z.date().optional(),
+        startTime: z.string(),
+        endTime: z.string(),
+      })
+    )
     .optional(),
 
-  scheduleStartTime: z.string().optional(), // You may refine these to match HH:mm
+  hasSchedule: z.boolean().optional(),
+  weekdays: z.array(z.string()).optional(),
+
+  scheduleStartTime: z.string().optional(),
   scheduleEndTime: z.string().optional(),
 
-  recurrence: z.string().optional(),
   isAlwaysOpen: z.boolean().optional(),
 
   spotlight: z.boolean().optional(),
   spotlightStartDate: z.date().optional(),
   spotlightEndDate: z.date().optional(),
+  spotlightImageUrl: z.string().url().optional().or(z.literal("")),
+}).superRefine((data, ctx) => {
+  if (data.hasSingleDates) {
+    if (!data.startTime) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Starttid krävs", path: ["startTime"] });
+    }
+    if (!data.endTime) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Sluttid krävs", path: ["endTime"] });
+    }
+  }
+  if (data.hasMultipleDates && (!data.singleDates || data.singleDates.length === 0)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Lägg till minst ett datum", path: ["singleDates"] });
+  }
 });
 
 export const defaultFormValues: CreateEventFormData = {
@@ -62,30 +83,32 @@ export const defaultFormValues: CreateEventFormData = {
   bookingUrl: "",
 
   streetName: "",
-  streetName2: "",
-  houseNumber: 0,
+  houseNumber: undefined,
 
   city: "",
   postalCode: "",
   gpsCoordinates: "",
 
-  hasSingleDates: false,
+  hasSingleDates: true,
   startDate: undefined as unknown as Date,
   endDate: undefined as unknown as Date,
   startTime: "",
   endTime: "",
 
+  hasMultipleDates: false,
+  singleDates: [],
+
   hasSchedule: false,
-  weekday: undefined,
+  weekdays: [],
   scheduleStartTime: "",
   scheduleEndTime: "",
 
-  recurrence: "",
   isAlwaysOpen: false,
 
   spotlight: false,
   spotlightStartDate: undefined as unknown as Date,
   spotlightEndDate: undefined as unknown as Date,
+  spotlightImageUrl: "",
 };
 
 // Helper to combine date and time into ISO string
@@ -102,32 +125,25 @@ const combineDateAndTime = (
   return d.toISOString();
 };
 
-// Map abbreviated weekday to full name for .NET DayOfWeek enum
-const weekdayMap: Record<string, string> = {
-  sun: "Sunday",
-  mon: "Monday",
-  tue: "Tuesday",
-  wed: "Wednesday",
-  thu: "Thursday",
-  fri: "Friday",
-  sat: "Saturday",
-  // Also support full names directly
-  Sunday: "Sunday",
-  Monday: "Monday",
-  Tuesday: "Tuesday",
-  Wednesday: "Wednesday",
-  Thursday: "Thursday",
-  Friday: "Friday",
-  Saturday: "Saturday",
+const weekdayAbbrevToIndex: Record<string, number> = {
+  sun: 0, sunday: 0,
+  mon: 1, monday: 1,
+  tue: 2, tuesday: 2,
+  wed: 3, wednesday: 3,
+  thu: 4, thursday: 4,
+  fri: 5, friday: 5,
+  sat: 6, saturday: 6,
 };
 
 export const createPayload = (data: CreateEventFormData): CreateEventDto => {
-  // Map weekday abbreviation to index
-  const weekdayIndex = data.weekday
-    ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(
-        weekdayMap[data.weekday] || data.weekday
-      )
-    : undefined;
+  const weekdayIndices = (data.weekdays || [])
+    .map((w) => weekdayAbbrevToIndex[w.toLowerCase()])
+    .filter((i): i is number => i !== undefined && i >= 0);
+
+  const singleDatePayload = (data.singleDates || []).map((sd) => ({
+    startDate: combineDateAndTime(sd.startDate, sd.startTime) ?? "",
+    endDate: combineDateAndTime(sd.endDate ?? sd.startDate, sd.endTime) ?? "",
+  }));
 
   return {
     organiser: data.organiser,
@@ -149,7 +165,6 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     bookingUrl: data.bookingUrl || undefined,
 
     streetName: data.streetName,
-    streetName2: data.streetName2 || undefined,
     houseNumber: data.houseNumber,
 
     city: data.city,
@@ -157,19 +172,17 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     gpsCoordinates: data.gpsCoordinates || undefined,
 
     hasSingleDates: data.hasSingleDates,
-    // Combine date with time for single date events
-    startDate: combineDateAndTime(data.startDate, data.startTime),
-    endDate: combineDateAndTime(data.endDate, data.endTime),
+    startDate: data.hasSingleDates ? combineDateAndTime(data.startDate, data.startTime) : undefined,
+    endDate: data.hasSingleDates ? combineDateAndTime(data.endDate, data.endTime) : undefined,
+
+    hasMultipleDates: data.hasMultipleDates,
+    singleDates: data.hasMultipleDates ? singleDatePayload : undefined,
 
     hasSchedule: data.hasSchedule,
-    // Map weekday abbreviation to .NET DayOfWeek enum index
-    weekday: weekdayIndex !== undefined && weekdayIndex >= 0 ? weekdayIndex : undefined,
+    weekdays: weekdayIndices.length > 0 ? weekdayIndices : undefined,
 
-    // Schedule times as HH:mm strings (BE expects TimeSpan format)
     scheduleStartTime: data.scheduleStartTime || undefined,
     scheduleEndTime: data.scheduleEndTime || undefined,
-
-    recurrence: data.recurrence || undefined,
 
     isAlwaysOpen: data.isAlwaysOpen,
     spotlight: data.spotlight,
@@ -179,20 +192,15 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     spotlightEndDate: data.spotlightEndDate
       ? new Date(data.spotlightEndDate).toISOString()
       : undefined,
+    spotlightImageUrl: data.spotlightImageUrl || undefined,
   };
 };
 
 export type CreateEventFormData = z.infer<typeof createEventSchema>;
 
-// Weekday index to name mapping (for converting from BE to FE)
-const weekdayIndexToName: Record<number, CreateEventFormData["weekday"]> = {
-  0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday",
+// Weekday index to abbreviated name (for converting from BE to FE)
+const weekdayIndexToAbbrev: Record<number, string> = {
+  0: "sun", 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat",
 };
 
 // Convert EventDto from API to CreateEventFormData for editing
@@ -207,7 +215,6 @@ export const eventDtoToFormData = (event: {
   eventUrl?: string;
   bookingUrl?: string;
   streetName: string;
-  streetName2?: string;
   houseNumber?: number;
   city: string;
   postalCode: string;
@@ -215,15 +222,17 @@ export const eventDtoToFormData = (event: {
   hasSingleDates?: boolean;
   startDate?: string;
   endDate?: string;
+  hasMultipleDates?: boolean;
+  singleDates?: Array<{ startDate: string; endDate: string }>;
   hasSchedule?: boolean;
-  weekday?: number;
+  weekdays?: number[];
   scheduleStartTime?: string;
   scheduleEndTime?: string;
-  recurrence?: string;
   isAlwaysOpen?: boolean;
   spotlight?: boolean;
   spotlightStartDate?: string;
   spotlightEndDate?: string;
+  spotlightImageUrl?: string;
 }): CreateEventFormData => {
   // Extract time from ISO date string
   const extractTime = (isoString?: string): string => {
@@ -267,8 +276,7 @@ export const eventDtoToFormData = (event: {
     bookingUrl: event.bookingUrl || "",
 
     streetName: event.streetName || "",
-    streetName2: event.streetName2 || "",
-    houseNumber: event.houseNumber || 0,
+    houseNumber: event.houseNumber ?? undefined,
 
     city: event.city || "",
     postalCode: event.postalCode || "",
@@ -280,12 +288,21 @@ export const eventDtoToFormData = (event: {
     startTime: extractTime(event.startDate),
     endTime: extractTime(event.endDate),
 
+    hasMultipleDates: event.hasMultipleDates || false,
+    singleDates: (event.singleDates || []).map((sd) => ({
+      startDate: new Date(sd.startDate),
+      endDate: sd.endDate ? new Date(sd.endDate) : undefined,
+      startTime: extractTime(sd.startDate),
+      endTime: extractTime(sd.endDate),
+    })),
+
     hasSchedule: event.hasSchedule || false,
-    weekday: event.weekday !== undefined ? weekdayIndexToName[event.weekday] : undefined,
+    weekdays: (event.weekdays || [])
+      .map((i) => weekdayIndexToAbbrev[i])
+      .filter(Boolean),
     scheduleStartTime: parseTimeSpan(event.scheduleStartTime),
     scheduleEndTime: parseTimeSpan(event.scheduleEndTime),
 
-    recurrence: event.recurrence || "",
     isAlwaysOpen: event.isAlwaysOpen || false,
 
     spotlight: event.spotlight || false,
@@ -295,5 +312,6 @@ export const eventDtoToFormData = (event: {
     spotlightEndDate: event.spotlightEndDate
       ? new Date(event.spotlightEndDate)
       : (undefined as unknown as Date),
+    spotlightImageUrl: event.spotlightImageUrl || "",
   };
 };

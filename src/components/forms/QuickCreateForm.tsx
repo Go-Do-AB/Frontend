@@ -57,15 +57,15 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold mb-4">
             <Building2 className="w-5 h-5" />
-            <span>Basic Info</span>
+            <span>Grundinformation</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Place/Attraction Name</Label>
+              <Label htmlFor="name">Plats-/attraktionsnamn</Label>
               <Input
                 id="name"
-                placeholder="e.g., Helsingborg Castle"
+                placeholder="t.ex. Helsingborgs slott"
                 {...register("name")}
                 className="bg-white"
               />
@@ -73,10 +73,10 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="organiserName">Owner/Organiser</Label>
+              <Label htmlFor="organiserName">Ägare/Arrangör</Label>
               <Input
                 id="organiserName"
-                placeholder="e.g., City of Helsingborg"
+                placeholder="t.ex. Helsingborgs stad"
                 {...register("organiserName")}
                 className="bg-white"
               />
@@ -86,10 +86,10 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="organisationNumber">Organisation Number</Label>
+              <Label htmlFor="organisationNumber">Organisationsnummer</Label>
               <Input
                 id="organisationNumber"
-                placeholder="e.g., 556677-8899"
+                placeholder="t.ex. 556677-8899"
                 {...register("organisationNumber")}
                 className="bg-white"
               />
@@ -99,7 +99,7 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="readMoreUrl">Website URL</Label>
+              <Label htmlFor="readMoreUrl">Webbplatsadress</Label>
               <Input
                 id="readMoreUrl"
                 placeholder="https://..."
@@ -119,15 +119,15 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold mb-4">
             <MapPin className="w-5 h-5" />
-            <span>Location</span>
+            <span>Plats</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="place">City/Place</Label>
+              <Label htmlFor="place">Stad/Plats</Label>
               <Input
                 id="place"
-                placeholder="e.g., Helsingborg"
+                placeholder="t.ex. Helsingborg"
                 {...register("place")}
                 className="bg-white"
               />
@@ -135,10 +135,10 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">Adress</Label>
               <Input
                 id="address"
-                placeholder="e.g., Slottshagen 1"
+                placeholder="t.ex. Slottshagen 1"
                 {...register("address")}
                 className="bg-white"
               />
@@ -146,10 +146,10 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="gpsCoordinates">GPS Coordinates</Label>
+              <Label htmlFor="gpsCoordinates">GPS-koordinater</Label>
               <Input
                 id="gpsCoordinates"
-                placeholder="e.g., 56.0465, 12.6945"
+                placeholder="t.ex. 56.0465, 12.6945"
                 {...register("gpsCoordinates")}
                 className="bg-white"
               />
@@ -166,14 +166,14 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold mb-4">
             <FileText className="w-5 h-5" />
-            <span>Description</span>
+            <span>Beskrivning</span>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Beskrivning</Label>
             <Textarea
               id="description"
-              placeholder="Describe the place or attraction..."
+              placeholder="Beskriv platsen eller attraktionen..."
               rows={4}
               {...register("description")}
               className="bg-white resize-none"
@@ -190,11 +190,11 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold mb-4">
             <Tag className="w-5 h-5" />
-            <span>Categories</span>
+            <span>Kategorier</span>
           </div>
 
           <div className="space-y-4">
-            <Label>Select Subcategories (optional)</Label>
+            <Label>Välj underkategorier (valfritt)</Label>
             <div className="flex flex-wrap gap-2">
               {allSubcategories.map((sub) => (
                 <Button
@@ -215,7 +215,7 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
             </div>
             {selectedSubcategories.length > 0 && (
               <p className="text-sm text-gray-600">
-                Selected: {selectedSubcategories.length} subcategories
+                Valda: {selectedSubcategories.length} underkategorier
               </p>
             )}
           </div>
@@ -227,11 +227,11 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold mb-4">
             <Zap className="w-5 h-5" />
-            <span>Filters</span>
+            <span>Filter</span>
           </div>
 
           <div className="space-y-4">
-            <Label>Select Filters (optional)</Label>
+            <Label>Välj filter (valfritt)</Label>
             <div className="flex flex-wrap gap-2">
               {filterOptions.map((filter) => (
                 <Button
@@ -261,11 +261,11 @@ export function QuickCreateForm({ form, onSubmit, isLoading }: QuickCreateFormPr
       >
         {isLoading ? (
           <span className="flex items-center gap-2">
-            <span className="animate-spin">⏳</span> Creating...
+            <span className="animate-spin">⏳</span> Skapar...
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <Zap className="w-5 h-5" /> Quick Create
+            <Zap className="w-5 h-5" /> Snabbskapa
           </span>
         )}
       </Button>

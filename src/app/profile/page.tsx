@@ -42,10 +42,10 @@ type EditField = {
 };
 
 const EDIT_FIELDS: EditField[] = [
-  { key: "fullName", label: "Full Name" },
-  { key: "phoneNumber", label: "Phone Number", inputType: "tel" },
-  { key: "businessName", label: "Business Name" },
-  { key: "organisationNumber", label: "Organisation Number" },
+  { key: "fullName", label: "Fullständigt namn" },
+  { key: "phoneNumber", label: "Telefonnummer", inputType: "tel" },
+  { key: "businessName", label: "Företagsnamn" },
+  { key: "organisationNumber", label: "Organisationsnummer" },
 ];
 
 function ProfileRow({
@@ -123,7 +123,7 @@ export default function ProfilePage() {
           setProfile(res.data.data);
         }
       } catch {
-        toast.error("Failed to load profile. Please log in again.");
+        toast.error("Det gick inte att hämta profilen. Logga in igen.");
       } finally {
         setIsLoading(false);
       }
@@ -147,14 +147,14 @@ export default function ProfilePage() {
       });
       if (res.data.isSuccess && res.data.data) {
         setProfile((prev) => (prev ? { ...prev, ...res.data.data } : prev));
-        toast.success(`${editField.label} updated`);
+        toast.success(`${editField.label} uppdaterades`);
         setEditField(null);
       } else {
-        toast.error(res.data.errors?.join(", ") || "Failed to update");
+        toast.error(res.data.errors?.join(", ") || "Det gick inte att uppdatera");
       }
     } catch (e: unknown) {
       const err = e as { response?: { data?: OperationResult<unknown> } };
-      toast.error(err?.response?.data?.errors?.join(", ") || "Failed to update");
+      toast.error(err?.response?.data?.errors?.join(", ") || "Det gick inte att uppdatera");
     } finally {
       setIsSaving(false);
     }
@@ -162,7 +162,7 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
-      toast.error("New passwords do not match");
+      toast.error("De nya lösenorden matchar inte");
       return;
     }
     setIsChangingPassword(true);
@@ -173,15 +173,15 @@ export default function ProfilePage() {
         confirmNewPassword: passwordForm.confirmNewPassword,
       });
       if (res.data.isSuccess) {
-        toast.success("Password changed successfully");
+        toast.success("Lösenordet har ändrats");
         setChangePasswordOpen(false);
         setPasswordForm({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
       } else {
-        toast.error(res.data.errors?.join(", ") || "Failed to change password");
+        toast.error(res.data.errors?.join(", ") || "Det gick inte att ändra lösenordet");
       }
     } catch (e: unknown) {
       const err = e as { response?: { data?: OperationResult<unknown> } };
-      toast.error(err?.response?.data?.errors?.join(", ") || "Failed to change password");
+      toast.error(err?.response?.data?.errors?.join(", ") || "Det gick inte att ändra lösenordet");
     } finally {
       setIsChangingPassword(false);
     }
@@ -200,14 +200,14 @@ export default function ProfilePage() {
       });
       if (res.data.isSuccess) {
         localStorage.removeItem("accessToken");
-        toast.success("Account deleted");
+        toast.success("Kontot har tagits bort");
         router.replace("/login");
       } else {
-        toast.error(res.data.errors?.join(", ") || "Failed to delete account");
+        toast.error(res.data.errors?.join(", ") || "Det gick inte att ta bort kontot");
       }
     } catch (e: unknown) {
       const err = e as { response?: { data?: OperationResult<unknown> } };
-      toast.error(err?.response?.data?.errors?.join(", ") || "Failed to delete account");
+      toast.error(err?.response?.data?.errors?.join(", ") || "Det gick inte att ta bort kontot");
     } finally {
       setIsDeleting(false);
     }
@@ -244,7 +244,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Account Details */}
-        <SectionCard title="My Account">
+        <SectionCard title="Mitt konto">
           {EDIT_FIELDS.map((field) => (
             <ProfileRow
               key={field.key}
@@ -256,9 +256,9 @@ export default function ProfilePage() {
         </SectionCard>
 
         {/* Security */}
-        <SectionCard title="Security">
+        <SectionCard title="Säkerhet">
           <ProfileRow
-            label="Change Password"
+            label="Ändra lösenord"
             onClick={() => setChangePasswordOpen(true)}
           />
           <button
@@ -266,7 +266,7 @@ export default function ProfilePage() {
             onClick={() => setDeleteOpen(true)}
             className="w-full flex items-center justify-between py-3.5 px-1 hover:bg-gray-50 transition-colors"
           >
-            <span className="text-sm font-medium text-red-600">Delete Account</span>
+            <span className="text-sm font-medium text-red-600">Ta bort konto</span>
             <ChevronRight className="w-4 h-4 text-red-400 shrink-0" />
           </button>
         </SectionCard>
@@ -278,7 +278,7 @@ export default function ProfilePage() {
             onClick={handleLogout}
             className="w-full py-3 rounded-[26px] border-2 border-red-600 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
           >
-            Log Out
+            Logga ut
           </button>
         </div>
       </section>
@@ -291,7 +291,7 @@ export default function ProfilePage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editField?.label}</DialogTitle>
-            <DialogDescription>Update your {editField?.label?.toLowerCase()}.</DialogDescription>
+            <DialogDescription>Uppdatera {editField?.label?.toLowerCase()}.</DialogDescription>
           </DialogHeader>
           <div className="py-2">
             <Label htmlFor="editFieldInput">{editField?.label}</Label>
@@ -305,7 +305,7 @@ export default function ProfilePage() {
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-[26px] hover:bg-gray-100 hover:text-[#1C1C1E]" onClick={() => setEditField(null)}>
-              Cancel
+              Avbryt
             </Button>
             <Button
               className="rounded-[26px] bg-[#F3C10E] text-[#2A2000] hover:bg-[#EDB80D]"
@@ -313,7 +313,7 @@ export default function ProfilePage() {
               disabled={isSaving}
             >
               {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Save
+              Spara
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -329,12 +329,12 @@ export default function ProfilePage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
-            <DialogDescription>Enter your current password and choose a new one.</DialogDescription>
+            <DialogTitle>Ändra lösenord</DialogTitle>
+            <DialogDescription>Ange ditt nuvarande lösenord och välj ett nytt.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label htmlFor="currentPassword">Current Password</Label>
+              <Label htmlFor="currentPassword">Nuvarande lösenord</Label>
               <Input
                 id="currentPassword"
                 type="password"
@@ -344,7 +344,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <Label htmlFor="newPassword">New Password</Label>
+              <Label htmlFor="newPassword">Nytt lösenord</Label>
               <Input
                 id="newPassword"
                 type="password"
@@ -354,7 +354,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
+              <Label htmlFor="confirmNewPassword">Bekräfta nytt lösenord</Label>
               <Input
                 id="confirmNewPassword"
                 type="password"
@@ -366,7 +366,7 @@ export default function ProfilePage() {
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-[26px] hover:bg-gray-100 hover:text-[#1C1C1E]" onClick={() => setChangePasswordOpen(false)}>
-              Cancel
+              Avbryt
             </Button>
             <Button
               className="rounded-[26px] bg-[#F3C10E] text-[#2A2000] hover:bg-[#EDB80D]"
@@ -379,7 +379,7 @@ export default function ProfilePage() {
               }
             >
               {isChangingPassword && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Change Password
+              Ändra lösenord
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -395,13 +395,13 @@ export default function ProfilePage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Account</DialogTitle>
+            <DialogTitle>Ta bort konto</DialogTitle>
             <DialogDescription>
-              This will permanently delete your account and all associated data. This cannot be undone.
+              Det här raderar ditt konto och all tillhörande data permanent. Det går inte att ångra.
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">
-            <Label htmlFor="deletePassword">Enter your password to confirm</Label>
+            <Label htmlFor="deletePassword">Ange ditt lösenord för att bekräfta</Label>
             <Input
               id="deletePassword"
               type="password"
@@ -412,7 +412,7 @@ export default function ProfilePage() {
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-[26px] hover:bg-gray-100 hover:text-[#1C1C1E]" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              Avbryt
             </Button>
             <Button
               variant="destructive"
@@ -421,7 +421,7 @@ export default function ProfilePage() {
               disabled={isDeleting || !deletePassword}
             >
               {isDeleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Delete Account
+              Ta bort konto
             </Button>
           </DialogFooter>
         </DialogContent>
