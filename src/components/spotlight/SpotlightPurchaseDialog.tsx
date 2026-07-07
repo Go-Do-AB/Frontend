@@ -75,6 +75,17 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
   const spotlightActive = isSpotlightActive(event);
   const spotlightScheduled = isSpotlightScheduled(event);
 
+  // When a paid window already exists, new days begin where it ends (the
+  // backend enforces this — a repurchase must never truncate paid days),
+  // so the earliest selectable start date is the current window's end.
+  const hasCurrentWindow = (spotlightActive || spotlightScheduled) && !!event.spotlightEndDate;
+  const earliestStart = React.useMemo(() => {
+    if (!hasCurrentWindow) return today;
+    const end = new Date(event.spotlightEndDate!);
+    end.setHours(0, 0, 0, 0);
+    return end > today ? end : today;
+  }, [hasCurrentWindow, event.spotlightEndDate, today]);
+
   const daysValid =
     Number.isInteger(days) && days >= SPOTLIGHT_MIN_DAYS && days <= SPOTLIGHT_MAX_DAYS;
   const total = daysValid ? days * SPOTLIGHT_PRICE_PER_DAY_SEK : 0;
@@ -167,7 +178,8 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
                   <span className="font-semibold">{formatDate(event.spotlightStartDate)}</span> –{" "}
                   <span className="font-semibold">{formatDate(event.spotlightEndDate)}</span>.
                 </>
-              )}
+              )}{" "}
+              Köper du fler dagar läggs de till efter den nuvarande perioden.
             </span>
           </div>
         )}
@@ -236,7 +248,11 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "dd.MM.yyyy") : "Startar idag"}
+                      {startDate
+                        ? format(startDate, "dd.MM.yyyy")
+                        : hasCurrentWindow
+                          ? `Startar ${format(earliestStart, "dd.MM.yyyy")}`
+                          : "Startar idag"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -244,7 +260,7 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
                       mode="single"
                       selected={startDate}
                       onSelect={(d) => setStartDate(d ?? undefined)}
-                      disabled={{ before: today }}
+                      disabled={{ before: earliestStart }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -256,7 +272,9 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
                     className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                   >
                     <X className="h-3 w-3" />
-                    Rensa — starta idag
+                    {hasCurrentWindow
+                      ? `Rensa — starta ${format(earliestStart, "dd.MM.yyyy")}`
+                      : "Rensa — starta idag"}
                   </button>
                 )}
               </div>
