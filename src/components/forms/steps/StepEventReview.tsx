@@ -24,6 +24,17 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
     <div className="w-full max-w-xl space-y-4">
       <h2 className="text-xl font-semibold text-center">Granska ditt evenemang</h2>
 
+      <div className="flex items-start gap-3 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3">
+        <Sparkles className="w-5 h-5 mt-0.5 shrink-0 text-yellow-600" />
+        <p className="text-sm text-yellow-900">
+          <span className="font-medium">Vill du synas extra?</span> När evenemanget är
+          skapat kan du köpa en spotlightplacering under{" "}
+          <span className="font-medium">Mina evenemang</span> — klicka på{" "}
+          <Sparkles className="inline w-3.5 h-3.5 -mt-0.5 text-yellow-600" />{" "}
+          <span className="font-medium">Spotlight</span> på evenemangskortet.
+        </p>
+      </div>
+
       <Card className="bg-gray-50">
         <CardContent className="space-y-4 pt-6">
           {values.title && (
