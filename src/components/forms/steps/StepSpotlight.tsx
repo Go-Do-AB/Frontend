@@ -10,11 +10,12 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
+import { SPOTLIGHT_PRICE_PER_DAY_SEK } from "@/lib/spotlight";
 
 import type { FormData } from "@/hooks/useEventForm";
 
-const PRICE_PER_DAY = 99; //price
-const VAT_FLAT = 125;     // moms in SEK 
+const PRICE_PER_DAY = SPOTLIGHT_PRICE_PER_DAY_SEK; // shared placeholder price (see lib/spotlight.ts)
+const VAT_FLAT = 125;     // moms in SEK
 
 export function StepSpotlight() {
   const { control, watch, setValue, clearErrors } = useFormContext<FormData>();
@@ -270,7 +271,7 @@ export function StepSpotlight() {
     <div className="rounded-2xl border p-4 bg-muted/30">
       <div className="text-sm">
         <div className="flex justify-between">
-          <span>{days} dagar × 99 kr</span>
+          <span>{days} dagar × {PRICE_PER_DAY} kr</span>
           <span className="font-medium">{fmt.format(subtotal)}</span>
         </div>
         <div className="flex justify-between mt-1">
@@ -284,7 +285,7 @@ export function StepSpotlight() {
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-2">
-        Priset är 99 kr per dag plus 125 kr moms. Momsen ingår i totalpriset.
+        Priset är {PRICE_PER_DAY} kr per dag plus {VAT_FLAT} kr moms. Momsen ingår i totalpriset.
       </p>
     </div>
   </>

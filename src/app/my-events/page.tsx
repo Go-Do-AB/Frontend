@@ -32,12 +32,7 @@ import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import { SpotlightPurchaseDialog } from "@/components/spotlight/SpotlightPurchaseDialog";
 import type { EventDto } from "@/types/events";
 import { getStoredJwtPayload, getUserIdFromPayload } from "@/lib/jwt";
-
-// An event is "in the spotlight" when it's flagged and the spotlight window hasn't ended.
-function isSpotlightActive(event: EventDto): boolean {
-  if (!event.spotlight || !event.spotlightEndDate) return false;
-  return new Date(event.spotlightEndDate) >= new Date();
-}
+import { isSpotlightActive } from "@/lib/spotlight";
 
 function getUserIdFromToken(): string | null {
   const payload = getStoredJwtPayload();
@@ -315,8 +310,7 @@ export default function MyEventsPage() {
           onOpenChange={(open) => {
             if (!open) setSpotlightEvent(null);
           }}
-          eventId={spotlightEvent.id}
-          eventTitle={spotlightEvent.title}
+          event={spotlightEvent}
         />
       )}
     </main>

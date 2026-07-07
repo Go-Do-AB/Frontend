@@ -87,33 +87,52 @@ export const EN = {
     priceNote: "The price is 99 SEK per day plus 125 SEK VAT. VAT is included in the total",
   },
 
-  // SpotlightPurchaseDialog (my-events spotlight placement purchase flow)
+  // SpotlightPurchaseDialog (my-events spotlight placement purchase — Stripe Checkout)
   spotlightPurchase: {
     title: "Spotlight your event",
-    choosePackagePrompt: "Choose how long your event stays in the spotlight.",
-    packagesError: "Could not load packages. Please try again.",
-    continue: "Continue",
+    chooseDurationPrompt: "Choose how long your event stays in the spotlight.",
     days: "{days} days",
-    daysInSpotlight: "{days} days in the spotlight",
-    choosePaymentMethod: "Choose a payment method",
-    demoBadgeTitle: "Demo / test mode.",
-    demoBadgeBody:
-      "Payments are simulated for now — no real money is charged. Real payments will be wired up later.",
-    back: "Back",
-    pay: "Pay",
-    processing: "Processing payment…",
-    paymentSuccess: "Payment successful",
-    spotlightUntil: "Your event is now in the spotlight until {date}.",
-    done: "Done",
+    daysLabel: "Number of days",
+    daysRange: "Enter between {min} and {max} days.",
+    startDateLabel: "Start date (optional)",
+    startsToday: "Starts today",
+    clearStartDate: "Clear — start today",
+    daysPrice: "{days} days × {price}",
+    priceNote: "The price is {price} per day. You will be sent to Stripe for secure payment.",
+    pay: "Pay {total}",
+    startingPayment: "Starting payment…",
+    redirecting: "Sending you to the payment…",
+    activeUntil: "The event is in the spotlight until {date}.",
+    scheduled: "Spotlight is booked {startDate} – {endDate}.",
     errorTitle: "Something went wrong",
     forbidden: "You can only spotlight events that you own.",
+    notFound: "The event was not found or is no longer active.",
     checkoutFailed: "Could not start the payment.",
-    confirmFailed: "Could not confirm the payment.",
     genericError: "Something went wrong. Please try again later.",
     close: "Close",
     retry: "Try again",
     badge: "Spotlight",
-    toastSuccess: "Your event is now in the spotlight",
+  },
+
+  // /spotlight/success (Stripe redirect after completed payment)
+  spotlightSuccess: {
+    title: "Payment received",
+    thanks: "Thank you for your purchase!",
+    activating: "Your spotlight activates within a minute or two.",
+    autoConfirm:
+      "We confirm the payment automatically in the background — nothing more to do. A receipt is sent from Stripe to your email.",
+    reference: "Reference: {sessionId}",
+    ctaMyEvents: "To my events",
+  },
+
+  // /spotlight/cancel (Stripe redirect after aborted payment)
+  spotlightCancel: {
+    title: "Payment cancelled",
+    nothingCharged: "No money has been charged.",
+    tryAgainHint:
+      "You can try again anytime — open your event under My Events and click Spotlight.",
+    ctaTryAgain: "Try again — My Events",
+    ctaHome: "To the start page",
   },
 
   // StepEventReview

@@ -3,37 +3,49 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-06-30
+Last updated: 2026-07-07
 
 ## Active Task
-**Spotlight placement purchase UI** — branch `feature/spotlight-payments-ui` (committed locally, not pushed).
+**Spotlight Stripe Checkout (real payments)** — branch `feature/spotlight-stripe-checkout`, PR opened.
 
-### What was done (2026-06-30):
+### What was done (2026-07-07):
 
-**Branch: `feature/spotlight-payments-ui`**
+**Branch: `feature/spotlight-stripe-checkout`** (cherry-picked the mocked UI from
+`feature/spotlight-payments-ui`, then rewired it to the LIVE backend Stripe endpoint —
+the old mock branch is now superseded and can be deleted).
 
-New organiser-facing flow to buy a Spotlight placement for an event. Consumes the new
-Backend `/api/spotlight` API. Payments are MOCKED end-to-end (no real Stripe/Klarna/Swish SDK).
-
-- `src/types/spotlight.ts` — types for SpotlightPackage, checkout/confirm requests + responses, SpotlightPayment.
-- `src/types/events.ts` — added optional `isForbidden` / `isNotFound` to `OperationResult<T>` (matches BE contract).
-- `src/hooks/useSpotlight.ts` — TanStack Query hooks: packages, payments, checkout, confirm.
-- `src/components/spotlight/SpotlightPurchaseDialog.tsx` — 5-step state machine modal
-  (package → method → processing → success → error). Checkout then immediate confirm
-  (mock gateway auto-approves). Honest "Demo / testläge" badge on payment step.
-- `src/app/my-events/page.tsx` — "Spotlight" button on each event card (entry point) +
-  "Spotlight" badge when an event's spotlight window is active.
-- `src/lib/content/strings-en.ts` — EN archive strings for the new flow.
+- `src/lib/spotlight.ts` — NEW single source for pricing: `SPOTLIGHT_PRICE_PER_DAY_SEK = 99`
+  (PLACEHOLDER pending product-owner confirmation), min/max days (1–90), `formatSek`,
+  `isSpotlightActive` / `isSpotlightScheduled` helpers.
+- `src/types/spotlight.ts` — replaced mock packages/confirm types with the real contract:
+  `SpotlightCheckoutRequest { days, startDate? }` → `SpotlightCheckoutResponse { checkoutUrl, sessionId }`.
+- `src/hooks/useSpotlight.ts` — single `useSpotlightCheckout()` mutation:
+  `POST /api/events/{eventId}/spotlight/checkout` (owner JWT, retry disabled).
+- `src/components/spotlight/SpotlightPurchaseDialog.tsx` — kept the dialog UX/design
+  (yellow chips, step states) but new flow: day presets (7/14/30) + custom input (1–90) +
+  optional start-date picker (min today) + live `days × 99 kr` price → full-page redirect
+  to Stripe `checkoutUrl`. Shows active/scheduled spotlight banner. Errors from
+  `OperationResult.errors[]` + 403/404 messages.
+- `src/app/spotlight/success/page.tsx` — NEW public Stripe return page (`?session_id=`),
+  "activates within a minute" copy, CTA to /my-events.
+- `src/app/spotlight/cancel/page.tsx` — NEW public cancel page, nothing charged, retry CTA.
+- `src/app/my-events/page.tsx` — dialog now takes the whole `event`; `isSpotlightActive`
+  moved to lib.
+- `src/components/forms/steps/StepSpotlight.tsx` — price constant now imported from lib.
+- `src/lib/content/strings-en.ts` — EN archive updated for the new flow + both pages.
 
 ### Decisions made
-- Entry point = button on the my-events event card (best match for existing UX).
-- Runtime copy is Swedish inline (matches the rest of the app post-#87); EN kept in the archive file.
-- Providers shown: Stripe / Klarna / Swish (the real options to wire later); selected provider
-  is sent to `/checkout`, which the mock gateway auto-approves via the immediate `/confirm` call.
+- Replaced the mock wiring instead of building a parallel UI (kept the dialog design).
+- Success/cancel URLs are `/spotlight/success` + `/spotlight/cancel` — BAKED INTO BACKEND
+  CONFIG, do not rename.
+- 99 SEK/day is display-only; the authoritative price lives in the backend Stripe session.
+- Payment confirmation is webhook-driven; the success page makes no API calls (public).
 
 ### What's next:
-1. Push branch + open PR when ready.
-2. Wire real payment SDKs later (replace the immediate confirm with provider redirect/webhook return).
+1. Product owner to confirm 99 SEK/day price (update `src/lib/spotlight.ts` if changed).
+2. Delete superseded branch `feature/spotlight-payments-ui` after merge.
+3. StepSpotlight in create/edit form still writes spotlight fields directly (legacy free
+   path) — decide whether backend ignores them now that spotlight is paid.
 
 ## Earlier Task
 **Translate frontend to Swedish — Issue #87** — PR #89 open, issue moved to "In Review".
