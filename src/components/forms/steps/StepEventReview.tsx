@@ -13,37 +13,13 @@ import {
   User,
   Sparkles,
 } from "lucide-react";
-import { format, differenceInCalendarDays } from "date-fns";
+import { format } from "date-fns";
 
 interface StepReviewEventProps {
   values: FormData;
 }
 
 export function StepReviewEvent({ values }: StepReviewEventProps) {
-  const fmt = (d?: Date | null) => (d ? format(d, "dd.MM.yyyy") : "—");
-
-  const isSpotlight = !!values.spotlight;
-  const s = values.spotlightStartDate ?? null;
-  const e = values.spotlightEndDate ?? null;
-
-    // Dygn inkl. start & end (same date = 1 day)
-  const days =
-    isSpotlight && s && e ? Math.max(1, differenceInCalendarDays(e, s) + 1) : 0;
-
-  const PRICE_PER_DAY = 99;
-  const VAT_FLAT = 125;
-
-  const subtotal = days * PRICE_PER_DAY;
-  const vat = days > 0 ? VAT_FLAT : 0;
-  const total = days > 0 ? subtotal + vat : 0;
-
-  // SEK-format 
-  const money = new Intl.NumberFormat("sv-SE", {
-    style: "currency",
-    currency: "SEK",
-    maximumFractionDigits: 0,
-  });
-
   return (
     <div className="w-full max-w-xl space-y-4">
       <h2 className="text-xl font-semibold text-center">Granska ditt evenemang</h2>
@@ -221,43 +197,20 @@ export function StepReviewEvent({ values }: StepReviewEventProps) {
             <Sparkles className="w-5 h-5 mt-1 text-muted-foreground" />
             <div>
               <Label className="text-muted-foreground">Spotlight</Label>
-              <p className="mt-0.5">
-                {values.spotlight
-                  ? `Aktiverad — ${fmt(values.spotlightStartDate)} → ${fmt(values.spotlightEndDate)}`
-                  : "Inaktiverad"}
-              </p>
-       {/*  this cost box is under Spotlight-text */}
-              {isSpotlight && s && e && days > 0 && (
-                <div className="mt-3 rounded-2xl border p-4 bg-muted/30">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Period:{" "}
-                    <span className="font-medium">{format(s, "dd.MM.yyyy")}</span>{" "}
-                    {"\u2192"}{" "}
-                    <span className="font-medium">{format(e, "dd.MM.yyyy")}</span>
-                  </p>
-
-                  <div className="text-sm">
-                    <div className="flex justify-between">
-                      <span>{days} dagar × 99 kr</span>
-                      <span className="font-medium">{money.format(subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span>Moms (inkluderad)</span>
-                      <span className="font-medium">{money.format(vat)}</span>
-                    </div>
-                    <hr className="my-2" />
-                    <div className="flex justify-between text-base">
-                      <span className="font-semibold">Totalt (inkl. moms)</span>
-                      <span className="font-semibold">{money.format(total)}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Priset är 99 kr per dag plus 125 kr moms. Momsen ingår i totalpriset.
-                  </p>
+              {values.spotlightImageUrl && (
+                <div className="relative w-full max-w-sm aspect-video rounded-xl overflow-hidden border bg-muted mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={values.spotlightImageUrl}
+                    alt="Spotlight banner"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
-              
+              <p className="text-sm text-muted-foreground mt-1">
+                Spotlightplacering köper du under &quot;Mina evenemang&quot; efter att
+                evenemanget har skapats.
+              </p>
             </div>
           </div>
         </CardContent>

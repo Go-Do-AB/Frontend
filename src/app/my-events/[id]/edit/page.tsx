@@ -12,7 +12,6 @@ import {
   MapPin,
   Clock,
   CheckCircleIcon,
-  Sparkles,
   Loader2,
   ArrowLeft,
 } from "lucide-react";
@@ -34,7 +33,6 @@ const steps = [
   { label: "Detaljer", icon: <Info className="w-4 h-4 mr-1" /> },
   { label: "Plats", icon: <MapPin className="w-4 h-4 mr-1" /> },
   { label: "Datum & Tid", icon: <Clock className="w-4 h-4 mr-1" /> },
-  { label: "Spotlight", icon: <Sparkles className="w-4 h-4 mr-1" /> },
   { label: "Bekräfta", icon: <CheckCircleIcon className="w-4 h-4 mr-1" /> },
 ];
 

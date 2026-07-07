@@ -52,9 +52,8 @@ export const createEventSchema = z.object({
 
   isAlwaysOpen: z.boolean().optional(),
 
-  spotlight: z.boolean().optional(),
-  spotlightStartDate: z.date().optional(),
-  spotlightEndDate: z.date().optional(),
+  // Spotlight flag/dates are NOT set here — spotlight placement is purchased
+  // via Stripe from "Mina evenemang" (SpotlightPurchaseDialog).
   spotlightImageUrl: z.string().url().optional().or(z.literal("")),
 }).superRefine((data, ctx) => {
   if (data.hasSingleDates) {
@@ -105,9 +104,6 @@ export const defaultFormValues: CreateEventFormData = {
 
   isAlwaysOpen: false,
 
-  spotlight: false,
-  spotlightStartDate: undefined as unknown as Date,
-  spotlightEndDate: undefined as unknown as Date,
   spotlightImageUrl: "",
 };
 
@@ -185,13 +181,9 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     scheduleEndTime: data.scheduleEndTime || undefined,
 
     isAlwaysOpen: data.isAlwaysOpen,
-    spotlight: data.spotlight,
-    spotlightStartDate: data.spotlightStartDate
-      ? new Date(data.spotlightStartDate).toISOString()
-      : undefined,
-    spotlightEndDate: data.spotlightEndDate
-      ? new Date(data.spotlightEndDate).toISOString()
-      : undefined,
+    // spotlight / spotlightStartDate / spotlightEndDate are intentionally
+    // omitted: spotlight placement is purchased via Stripe (My Events) and
+    // the backend ignores these fields for non-admin callers.
     spotlightImageUrl: data.spotlightImageUrl || undefined,
   };
 };
@@ -229,9 +221,6 @@ export const eventDtoToFormData = (event: {
   scheduleStartTime?: string;
   scheduleEndTime?: string;
   isAlwaysOpen?: boolean;
-  spotlight?: boolean;
-  spotlightStartDate?: string;
-  spotlightEndDate?: string;
   spotlightImageUrl?: string;
 }): CreateEventFormData => {
   // Extract time from ISO date string
@@ -305,13 +294,6 @@ export const eventDtoToFormData = (event: {
 
     isAlwaysOpen: event.isAlwaysOpen || false,
 
-    spotlight: event.spotlight || false,
-    spotlightStartDate: event.spotlightStartDate
-      ? new Date(event.spotlightStartDate)
-      : (undefined as unknown as Date),
-    spotlightEndDate: event.spotlightEndDate
-      ? new Date(event.spotlightEndDate)
-      : (undefined as unknown as Date),
     spotlightImageUrl: event.spotlightImageUrl || "",
   };
 };
