@@ -156,6 +156,8 @@ export type OperationResult<T> = {
   isSuccess: boolean;
   data: T;
   errors: string[];
+  isForbidden?: boolean;
+  isNotFound?: boolean;
 };
 
 // ---- Moderation / Event Reports ----

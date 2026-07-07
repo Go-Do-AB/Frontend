@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 
 import { Navbar } from "@/components/global/Navbar";
@@ -28,8 +29,10 @@ import {
 } from "@/components/ui/dialog";
 
 import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
+import { SpotlightPurchaseDialog } from "@/components/spotlight/SpotlightPurchaseDialog";
 import type { EventDto } from "@/types/events";
 import { getStoredJwtPayload, getUserIdFromPayload } from "@/lib/jwt";
+import { isSpotlightActive } from "@/lib/spotlight";
 
 function getUserIdFromToken(): string | null {
   const payload = getStoredJwtPayload();
@@ -56,6 +59,9 @@ export default function MyEventsPage() {
 
   // Delete state
   const [deletingEvent, setDeletingEvent] = useState<EventDto | null>(null);
+
+  // Spotlight purchase state
+  const [spotlightEvent, setSpotlightEvent] = useState<EventDto | null>(null);
 
   const events = data?.data?.items || [];
   const totalCount = data?.data?.totalCount || 0;
@@ -156,10 +162,27 @@ export default function MyEventsPage() {
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle className="text-xl">{event.title}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-xl">{event.title}</CardTitle>
+                          {isSpotlightActive(event) && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[#F3C10E]/20 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                              <Sparkles className="w-3 h-3" />
+                              Spotlight
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-500 mt-1">{event.organiser}</p>
                       </div>
                       <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5 text-yellow-700 hover:text-yellow-800 hover:bg-[#F3C10E]/10"
+                          onClick={() => setSpotlightEvent(event)}
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          <span className="hidden sm:inline">Spotlight</span>
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => handleEditClick(event)}>
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -279,6 +302,17 @@ export default function MyEventsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Spotlight Purchase Dialog */}
+      {spotlightEvent && (
+        <SpotlightPurchaseDialog
+          open={!!spotlightEvent}
+          onOpenChange={(open) => {
+            if (!open) setSpotlightEvent(null);
+          }}
+          event={spotlightEvent}
+        />
+      )}
     </main>
   );
 }

@@ -87,6 +87,54 @@ export const EN = {
     priceNote: "The price is 99 SEK per day plus 125 SEK VAT. VAT is included in the total",
   },
 
+  // SpotlightPurchaseDialog (my-events spotlight placement purchase — Stripe Checkout)
+  spotlightPurchase: {
+    title: "Spotlight your event",
+    chooseDurationPrompt: "Choose how long your event stays in the spotlight.",
+    days: "{days} days",
+    daysLabel: "Number of days",
+    daysRange: "Enter between {min} and {max} days.",
+    startDateLabel: "Start date (optional)",
+    startsToday: "Starts today",
+    clearStartDate: "Clear — start today",
+    daysPrice: "{days} days × {price}",
+    priceNote: "The price is {price} per day. You will be sent to Stripe for secure payment.",
+    pay: "Pay {total}",
+    startingPayment: "Starting payment…",
+    redirecting: "Sending you to the payment…",
+    activeUntil: "The event is in the spotlight until {date}.",
+    scheduled: "Spotlight is booked {startDate} – {endDate}.",
+    errorTitle: "Something went wrong",
+    forbidden: "You can only spotlight events that you own.",
+    notFound: "The event was not found or is no longer active.",
+    checkoutFailed: "Could not start the payment.",
+    genericError: "Something went wrong. Please try again later.",
+    close: "Close",
+    retry: "Try again",
+    badge: "Spotlight",
+  },
+
+  // /spotlight/success (Stripe redirect after completed payment)
+  spotlightSuccess: {
+    title: "Payment received",
+    thanks: "Thank you for your purchase!",
+    activating: "Your spotlight activates within a minute or two.",
+    autoConfirm:
+      "We confirm the payment automatically in the background — nothing more to do. A receipt is sent from Stripe to your email.",
+    reference: "Reference: {sessionId}",
+    ctaMyEvents: "To my events",
+  },
+
+  // /spotlight/cancel (Stripe redirect after aborted payment)
+  spotlightCancel: {
+    title: "Payment cancelled",
+    nothingCharged: "No money has been charged.",
+    tryAgainHint:
+      "You can try again anytime — open your event under My Events and click Spotlight.",
+    ctaTryAgain: "Try again — My Events",
+    ctaHome: "To the start page",
+  },
+
   // StepEventReview
   review: {
     heading: "Review your event info",
