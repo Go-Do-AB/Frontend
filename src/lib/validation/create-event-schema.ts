@@ -175,10 +175,13 @@ export const createPayload = (data: CreateEventFormData): CreateEventDto => {
     singleDates: data.hasMultipleDates ? singleDatePayload : undefined,
 
     hasSchedule: data.hasSchedule,
-    weekdays: weekdayIndices.length > 0 ? weekdayIndices : undefined,
+    // Only send schedule fields when the recurring mode is selected — stale
+    // values from a previously chosen mode would fail backend validation
+    // (HasSchedule must be true whenever ScheduleStartTime is set).
+    weekdays: data.hasSchedule && weekdayIndices.length > 0 ? weekdayIndices : undefined,
 
-    scheduleStartTime: data.scheduleStartTime || undefined,
-    scheduleEndTime: data.scheduleEndTime || undefined,
+    scheduleStartTime: data.hasSchedule ? data.scheduleStartTime || undefined : undefined,
+    scheduleEndTime: data.hasSchedule ? data.scheduleEndTime || undefined : undefined,
 
     isAlwaysOpen: data.isAlwaysOpen,
     // spotlight / spotlightStartDate / spotlightEndDate are intentionally
