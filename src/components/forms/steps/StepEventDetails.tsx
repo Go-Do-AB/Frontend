@@ -7,6 +7,7 @@ import { Controller, FieldErrors, UseFormRegister, Control, useFormContext } fro
 import { FormData } from "@/hooks/useEventForm";
 import { useState, useEffect, type MouseEvent } from "react";
 import { categoryOptions, filterOptions, subcategoriesMap, CATEGORY_COLORS } from "@/lib/content/contentText";
+import { SpotlightImageUpload } from "@/components/forms/SpotlightImageUpload";
 
 interface StepDetailsProps {
   register: UseFormRegister<FormData>;
@@ -320,6 +321,8 @@ export function StepEventDetails({ register, control, errors }: StepDetailsProps
         <Input placeholder="https://booking-link.com" {...register("bookingUrl")} />
         {errors.bookingUrl && <p className="text-red-500 text-sm">{errors.bookingUrl.message}</p>}
       </div>
+
+      <SpotlightImageUpload />
     </div>
   );
 }

@@ -6,7 +6,41 @@
 Last updated: 2026-07-07
 
 ## Active Task
-**Spotlight Stripe Checkout (real payments)** — branch `feature/spotlight-stripe-checkout`, PR opened.
+**Remove legacy free-spotlight step** — branch `fix/remove-free-spotlight-step`, PR opened.
+
+### What was done (2026-07-07):
+
+Spotlight placement is now PAID via Stripe (PR #92), so the free wizard step that let
+organisers set `spotlight` + `spotlightStartDate`/`spotlightEndDate` directly was removed.
+Backend is being patched in parallel to ignore these fields for non-admin callers.
+
+- `src/components/forms/steps/StepSpotlight.tsx` — DELETED (legacy free-spotlight step,
+  step 4 of the wizard).
+- `src/components/forms/EventFormStepper.tsx` — wizard is now 4 steps (Detaljer, Plats,
+  Datum & Tid, Bekräfta); `LAST_STEP = 3`; spotlight validation/step-filled logic removed.
+- `src/app/create-event/page.tsx` + `src/app/my-events/[id]/edit/page.tsx` — "Spotlight"
+  removed from the step indicator lists.
+- `src/lib/validation/create-event-schema.ts` — `spotlight`/`spotlightStartDate`/
+  `spotlightEndDate` removed from schema, defaults, `createPayload` and
+  `eventDtoToFormData` (fields OMITTED from payloads, never sent as null).
+- `src/types/events.ts` — the three fields removed from `CreateEventDto` (write contract);
+  `EventDto` (read) keeps them for the paid-flow display helpers.
+- `src/components/forms/SpotlightImageUpload.tsx` — NEW: the Cloudinary spotlight banner
+  upload was extracted from the deleted step and kept (mobile app uses the image for paid
+  spotlight display). It now renders at the bottom of StepEventDetails (step 1) with a
+  hint that placement is purchased from "Mina evenemang". `spotlightImageUrl` is still
+  sent in create/update payloads.
+- `src/components/forms/steps/StepEventReview.tsx` — legacy spotlight status + 99 kr/day
+  pricing box replaced with the uploaded banner preview + purchase hint.
+- PR #92 files (SpotlightPurchaseDialog, lib/spotlight, success/cancel pages,
+  strings-en.ts) untouched.
+
+### What's next:
+1. Merge paired Backend PR that ignores spotlight fields for non-admin create/update.
+2. Confirm mobile app reads `spotlightImageUrl` as before (no contract change).
+
+## Earlier Task
+**Spotlight Stripe Checkout (real payments)** — branch `feature/spotlight-stripe-checkout`, PR #92 MERGED.
 
 ### What was done (2026-07-07):
 

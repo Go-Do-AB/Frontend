@@ -40,9 +40,10 @@ export type CreateEventDto = {
   scheduleEndTime?: string;
 
   isAlwaysOpen?: boolean;
-  spotlight?: boolean;
-  spotlightStartDate?: string | null;
-  spotlightEndDate?: string | null;
+  // NOTE: spotlight / spotlightStartDate / spotlightEndDate are intentionally
+  // NOT part of the create/update contract. Spotlight placement is purchased
+  // via Stripe from My Events, and the backend ignores those fields for
+  // non-admin callers.
   spotlightImageUrl?: string;
 
   // ---- Matching backend ----
