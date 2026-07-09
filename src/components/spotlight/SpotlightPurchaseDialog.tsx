@@ -17,9 +17,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { useSpotlightCheckout } from "@/hooks/useSpotlight";
+import { useSpotlightCheckout, useSpotlightPricing } from "@/hooks/useSpotlight";
 import {
   SPOTLIGHT_PRICE_PER_DAY_SEK,
+  SPOTLIGHT_VAT_RATE_PERCENT,
   SPOTLIGHT_MIN_DAYS,
   SPOTLIGHT_MAX_DAYS,
   formatSek,
@@ -52,6 +53,14 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
   const [errorMessage, setErrorMessage] = React.useState<string>("");
 
   const checkout = useSpotlightCheckout();
+  const { data: pricing } = useSpotlightPricing();
+
+  // Prefer the authoritative backend price; fall back to constants while the
+  // pricing request is loading or if it fails. Net is ex-VAT; gross (net + MOMS)
+  // is what Stripe actually charges, so every total shown to the user is gross.
+  const netPerDay = pricing?.dailyPriceNet ?? SPOTLIGHT_PRICE_PER_DAY_SEK;
+  const vatRate = pricing?.vatRatePercent ?? SPOTLIGHT_VAT_RATE_PERCENT;
+  const grossPerDay = pricing?.dailyPriceGross ?? netPerDay * (1 + vatRate / 100);
 
   const today = React.useMemo(() => {
     const d = new Date();
@@ -88,7 +97,9 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
 
   const daysValid =
     Number.isInteger(days) && days >= SPOTLIGHT_MIN_DAYS && days <= SPOTLIGHT_MAX_DAYS;
-  const total = daysValid ? days * SPOTLIGHT_PRICE_PER_DAY_SEK : 0;
+  const netTotal = daysValid ? days * netPerDay : 0;
+  const grossTotal = daysValid ? days * grossPerDay : 0;
+  const vatTotal = grossTotal - netTotal;
 
   const handleDaysInput = (raw: string) => {
     setDaysInput(raw);
@@ -208,7 +219,7 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
                   >
                     <span className="text-base font-semibold">{d} dagar</span>
                     <span className="text-xs text-muted-foreground">
-                      {formatSek(d * SPOTLIGHT_PRICE_PER_DAY_SEK)}
+                      {formatSek(d * grossPerDay, { decimals: 2 })}
                     </span>
                   </button>
                 );
@@ -280,23 +291,34 @@ export function SpotlightPurchaseDialog({ open, onOpenChange, event }: Props) {
               </div>
             </div>
 
-            {/* Price summary */}
-            <div className="rounded-xl border bg-muted/30 p-3 text-sm">
+            {/* Price summary — net, VAT and gross so the amount matches Stripe. */}
+            <div className="space-y-1 rounded-xl border bg-muted/30 p-3 text-sm">
               <div className="flex justify-between">
                 <span>
-                  {daysValid ? days : "–"} dagar × {formatSek(SPOTLIGHT_PRICE_PER_DAY_SEK)}
+                  {daysValid ? days : "–"} dagar × {formatSek(netPerDay)} exkl. moms
                 </span>
-                <span className="font-semibold">{daysValid ? formatSek(total) : "–"}</span>
+                <span>{daysValid ? formatSek(netTotal) : "–"}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Moms ({vatRate} %)</span>
+                <span>{daysValid ? formatSek(vatTotal, { decimals: 2 }) : "–"}</span>
+              </div>
+              <div className="flex justify-between border-t pt-1 font-semibold">
+                <span>Att betala inkl. moms</span>
+                <span>{daysValid ? formatSek(grossTotal, { decimals: 2 }) : "–"}</span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                Priset är {formatSek(SPOTLIGHT_PRICE_PER_DAY_SEK)} per dag. Du skickas till Stripe
-                för säker betalning.
+                Priset är {formatSek(netPerDay)} per dag exkl. moms (
+                {formatSek(grossPerDay, { decimals: 2 })} inkl. moms). Du skickas till Stripe för
+                säker betalning.
               </p>
             </div>
 
             <Button className="w-full" disabled={!daysValid || isBusy} onClick={handlePurchase}>
               {isBusy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isBusy ? "Startar betalning…" : `Betala ${daysValid ? formatSek(total) : ""}`}
+              {isBusy
+                ? "Startar betalning…"
+                : `Betala ${daysValid ? formatSek(grossTotal, { decimals: 2 }) : ""}`}
             </Button>
           </div>
         )}
