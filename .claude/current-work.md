@@ -3,7 +3,45 @@
 > **This file is read at the start of every Claude Code session and updated on every commit/push.**
 > It provides continuity between sessions.
 
-Last updated: 2026-07-07
+Last updated: 2026-08-06
+
+## Latest (2026-08-06)
+
+- ✅ **Organiser-entered event times were shifted by the browser's UTC offset**
+  (`fix/event-time-utc-shift`). Reported via Martina: a new organiser (Vivianne, Östra
+  Karups bygdegård) entered Maxida Märak as 19:00–20:00 and the app showed 17:00–18:00;
+  re-editing the time in the form "didn't take effect". Not a sync issue — the event is
+  `sourceProvider: internal`, served straight from the DB, so no nightly run is involved.
+
+  **Root cause:** `combineDateAndTime` in `src/lib/validation/create-event-schema.ts`
+  did `d.setHours(...)` (local) and then `d.toISOString()` (UTC), so 19:00 CEST was sent
+  as `2026-08-27T17:00:00Z`. The platform stores and renders event times as **naive
+  Swedish wall-clock** everywhere else — the API returns them with no offset, the app
+  uses `parseISO` (local), `eventDtoToFormData.extractTime` reads them back with
+  `getHours()`, and external providers land wall-clock on the UTC container. So the write
+  path shifted −2h (summer) / −1h (winter) and the read path applied no inverse shift.
+  Both `create-event` and `my-events/[id]/edit` go through the same `createPayload`,
+  which is why re-saving never corrected it — and why an untouched re-save drifted a
+  *further* −2h.
+
+  **Fix:** serialise a naive local ISO string (`2026-08-27T19:00:00`, no `Z`) instead of
+  `toISOString()`. Backend DTOs are `DateTime` (not `DateTimeOffset`), so an offset-less
+  string binds as `DateTimeKind.Unspecified` — no backend change needed.
+
+  Verified by driving the real `createPayload`/`eventDtoToFormData` under
+  `TZ=Europe/Stockholm`: 4 assertions fail before the change, 0 after (entered time
+  survives, edit form reopens correctly, re-save doesn't drift, winter CET also correct).
+  `tsc --noEmit`, `eslint`, and `next build` all clean.
+
+  **Prod data:** the Maxida Märak row (`97ED9F61-…`) was corrected in place on Glesys to
+  19:00–20:00 and confirmed live via `/api/events/aggregated`.
+
+  **Still open — needs Martina to confirm intent before touching:** 13 other internal
+  events carry the same shift. Only 3 are still in the future — "Maxida Meräk gästar!"
+  (Båstad, 24 Sep, stored 16:00–20:30), "Winter AI Bootcamp" (Askim, 4 Dec, stored
+  07:00–16:00) and "Lär känna Go.Do." (Ängelholm, 24 Oct, stored 14:30–16:00). They were
+  NOT auto-corrected: an organiser who noticed the shift may have compensated by typing a
+  later time, so blindly adding the offset could break those rows.
 
 ## Active Task
 **Remove legacy free-spotlight step** — branch `fix/remove-free-spotlight-step`, PR opened.
