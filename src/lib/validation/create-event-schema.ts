@@ -107,7 +107,17 @@ export const defaultFormValues: CreateEventFormData = {
   spotlightImageUrl: "",
 };
 
-// Helper to combine date and time into ISO string
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// Combine date + "HH:mm" into a naive local ISO string ("2026-08-27T19:00:00").
+//
+// Deliberately NOT `toISOString()`: event times are stored and rendered as
+// Swedish wall-clock everywhere else in the platform — the API returns them
+// without an offset, the app parses them with `parseISO` (local), and
+// `eventDtoToFormData` reads them back with `getHours()`. Converting to UTC
+// here shifted every organiser-entered time by the browser's offset (−2h in
+// summer, −1h in winter), and because the read path applies no inverse shift,
+// re-saving never corrected it — it drifted a further −2h each time.
 const combineDateAndTime = (
   date: Date | undefined,
   time: string | undefined
@@ -118,7 +128,10 @@ const combineDateAndTime = (
     const [hours, minutes] = time.split(":").map(Number);
     d.setHours(hours, minutes, 0, 0);
   }
-  return d.toISOString();
+  return (
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+    `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  );
 };
 
 const weekdayAbbrevToIndex: Record<string, number> = {
