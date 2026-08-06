@@ -8,7 +8,8 @@ Last updated: 2026-08-06
 ## Latest (2026-08-06)
 
 - ✅ **Organiser-entered event times were shifted by the browser's UTC offset**
-  (`fix/event-time-utc-shift`). Reported via Martina: a new organiser (Vivianne, Östra
+  ([PR #98](https://github.com/Go-Do-AB/Frontend/pull/98), merged/deployed `c4bf2714`).
+  Reported via Martina: a new organiser (Vivianne, Östra
   Karups bygdegård) entered Maxida Märak as 19:00–20:00 and the app showed 17:00–18:00;
   re-editing the time in the form "didn't take effect". Not a sync issue — the event is
   `sourceProvider: internal`, served straight from the DB, so no nightly run is involved.
@@ -44,6 +45,13 @@ Last updated: 2026-08-06
   later time, so blindly adding the offset could break those rows.
 
 ## Active Task
+
+**None open in this repo.** `main` = `c4bf2714`, no open PRs.
+
+Waiting on Martina: confirm the intended times for the 3 future events listed above
+before their DB rows are corrected. Nothing to do here until she answers.
+
+## Previous Task
 **Remove legacy free-spotlight step** — branch `fix/remove-free-spotlight-step`, PR opened.
 
 ### What was done (2026-07-07):
