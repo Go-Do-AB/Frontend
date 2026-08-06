@@ -37,12 +37,17 @@ Last updated: 2026-08-06
   **Prod data:** the Maxida Märak row (`97ED9F61-…`) was corrected in place on Glesys to
   19:00–20:00 and confirmed live via `/api/events/aggregated`.
 
-  **Still open — needs Martina to confirm intent before touching:** 13 other internal
-  events carry the same shift. Only 3 are still in the future — "Maxida Meräk gästar!"
-  (Båstad, 24 Sep, stored 16:00–20:30), "Winter AI Bootcamp" (Askim, 4 Dec, stored
-  07:00–16:00) and "Lär känna Go.Do." (Ängelholm, 24 Oct, stored 14:30–16:00). They were
-  NOT auto-corrected: an organiser who noticed the shift may have compensated by typing a
-  later time, so blindly adding the offset could break those rows.
+  **Other affected rows:** 13 other internal events carry the same shift. An initial pass
+  listed 3 of them as future events needing Martina's confirmation, but that query did not
+  filter on `IsActive` — "Maxida Meräk gästar!" (Båstad, 24 Sep) and "Lär känna Go.Do."
+  (Ängelholm, 24 Oct) were already soft-deleted weeks earlier, within ~3 minutes of being
+  created, and are invisible to the app. Martina confirmed both should be gone; no change
+  was needed. Always filter `IsActive = 1` when reporting live event data.
+
+  **Only genuinely open item:** "Winter AI Bootcamp – Founders Edition" (Askim, 4 Dec) is
+  still active and stores the shifted 07:00–16:00 (probably 08:00–17:00 intended). NOT
+  auto-corrected: an organiser who noticed the shift may have compensated by typing a later
+  time, so blindly adding the offset could break the row.
 
 ## Active Task
 
