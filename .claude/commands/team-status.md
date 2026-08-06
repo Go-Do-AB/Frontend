@@ -20,9 +20,9 @@ echo "=== MobileApp ===" && gh pr list --repo Go-Do-AB/MobileApp --json number,t
 
 ### 3. Fetch Active Branches
 ```bash
-echo "=== Backend ===" && git -C "C:/InFiNetCode/Projects/GODO/BACKEND/Backend" branch -r --sort=-committerdate | head -10
-echo "=== Frontend ===" && git -C "C:/InFiNetCode/Projects/GODO/FORM/Frontend" branch -r --sort=-committerdate | head -10
-echo "=== MobileApp ===" && git -C "C:/InFiNetCode/Projects/GODO/APP/MobileApp" branch -r --sort=-committerdate | head -10
+echo "=== Backend ===" && git -C "C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/BEProject/CleanArchitectureBE-DOTNET" branch -r --sort=-committerdate | head -10
+echo "=== Frontend ===" && git -C "C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/FEProject/godo-fe-web" branch -r --sort=-committerdate | head -10
+echo "=== MobileApp ===" && git -C "C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/APP/MobileApp" branch -r --sort=-committerdate | head -10
 ```
 
 ### 4. Build Dashboard

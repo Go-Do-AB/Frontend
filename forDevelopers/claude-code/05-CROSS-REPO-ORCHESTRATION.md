@@ -8,9 +8,9 @@ All 3 GODO repos live on the same machine:
 
 | Repo | Local Path |
 |------|-----------|
-| Backend | `C:/InFiNetCode/Projects/GODO/BACKEND/Backend` |
-| Frontend | `C:/InFiNetCode/Projects/GODO/FORM/Frontend` |
-| MobileApp | `C:/InFiNetCode/Projects/GODO/APP/MobileApp` |
+| Backend | `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/BEProject/CleanArchitectureBE-DOTNET` |
+| Frontend | `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/FEProject/godo-fe-web` |
+| MobileApp | `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/APP/MobileApp` |
 
 Claude uses the **Agent tool** to spawn sub-agents that work in each repo directory with its own `CLAUDE.md` context. This means:
 - Each repo's patterns and conventions are respected

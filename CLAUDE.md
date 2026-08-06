@@ -60,9 +60,12 @@ All 3 repos live on the same machine. You can work cross-repo:
 
 | Repo | Local Path |
 |------|-----------|
-| Backend | `C:/InFiNetCode/Projects/GODO/BACKEND/Backend` |
-| Frontend | `C:/InFiNetCode/Projects/GODO/FORM/Frontend` |
-| MobileApp | `C:/InFiNetCode/Projects/GODO/APP/MobileApp` |
+| Backend | `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/BEProject/CleanArchitectureBE-DOTNET` |
+| Frontend | `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/FEProject/godo-fe-web` |
+| MobileApp | `C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/APP/MobileApp` |
+
+These paths contain spaces and non-ASCII characters — always quote them in shell
+commands (`git -C "<path>"`, `grep ... "<path>"`).
 
 When a task spans multiple repos, use the Agent tool to delegate work to the correct repo directory with its patterns and conventions.
 

@@ -11,17 +11,17 @@ Check that all repos have the same categories:
 
 **Backend** — DataSeeder (source of truth):
 ```bash
-grep -n "Code\s*=" "C:/InFiNetCode/Projects/GODO/BACKEND/Backend/Infrastructure/Database/Seeding/DataSeeder.cs" | head -30
+grep -n "Code\s*=" "C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/BEProject/CleanArchitectureBE-DOTNET/Infrastructure/Database/Seeding/DataSeeder.cs" | head -30
 ```
 
 **Frontend** — contentText.tsx:
 ```bash
-grep -n "code" "C:/InFiNetCode/Projects/GODO/FORM/Frontend/src/lib/content/contentText.tsx" | head -30
+grep -n "code" "C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/FEProject/godo-fe-web/src/lib/content/contentText.tsx" | head -30
 ```
 
 **MobileApp** — types/api.ts or constants:
 ```bash
-grep -rn "category" "C:/InFiNetCode/Projects/GODO/APP/MobileApp/types/" | head -20
+grep -rn "category" "C:/Nemanja/Företag/FIRMA/InFiNet Code AB/Projects/GODO/APP/MobileApp/types/" | head -20
 ```
 
 ### 2. API Types
